@@ -3,13 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>PreSub — Karmand edit tools</title>
- <link rel="icon" type="image/png" href="favicon.png">
-<link rel="apple-touch-icon" href="favicon.png">
-<meta property="og:type" content="website">
-<meta property="og:title" content="PreSub — Karmand edit tools">
-<meta property="og:image" content="https://kqrmand.github.io/K9/favicon.png">
-<meta property="og:url" content="https://kqrmand.github.io/K9/">
+<title>PreSub</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,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fvv6XaPD+8fj6pkLgEKdJEVeJPWjEvFIKbq03v3smRABPUI6Gr797qOvvnTr0vba3/v5v92Me6XPcFF4FQDjoqFBOi3DDPTXMgAAdBCGiAoArffHg8nnPvXE9dsPv3frPojNytJ4VkoBijADoiba2z9uNpvLy0uz2azVaqVZ5stykPL1w8Q6omoYSmY8nrRbjSBqXr9xQwMi4r3++NKFCxtnA2vdr/23P3zz3n42S8ajyYNHv55z7Ud/5DOtZquwHkQAAViqCszs57OZU6kNVLXM1WiGwqgWhDUd1MjUGAiYP/d9TyCKMRoErHPOe+c8ETlh650wW2utc0menYxHzGKtbTUbxphAa01GkYmMYVu6bKZ9UUPQKMKWy+L9wWQwSf7Nb/zun772XjKbsXC71bx5891/9Iu/9OUv/8y1N26urC63W21FmhlEKk1EAloAkZRUvA9UzauBSBDVL/zkZ1EbIRRSQmQdd1uN7739/vFwRgq952pgUi0YIKDzHgm985oUIQkCe15dX+60u56FARgEEIoie/f27YP9w7gZT7JMoYobDdT6d776Fy/feFALo8l4rLWuNxpepMjyfv+4fzy6dv1N6/jCxQutVkeboMgL9izAhOBB2Hl2zrPjSj47553XQAoQSRnxHkl5oCikcxvL79zfo2ooyUxazYsioRDmZamItFZKaefdfJqGIsgoAIICMBxP++NCKV3gjIUVgQ7M8SS982jQbjXzonDOKa2TLNcmqFY6ptPZq989eO21t77+9T/7yJUnn//R5y9ffkJrnWZJkiTsxDrnvWN27Nn5ateDtbNCCmUh8IQ9gl7ptgRRhFm4QmA166l0rBdBAu+9IfICokhpDQDMWC2YaNRRWNdaK6WywuWlG46zuNdpISiEvLRFUSijASlJU4VIREVR7h/sr29sTifjWzdvvXnj5lf/+P8+/dSVZ65effbZZ5786JX+8QAETGCKaZrmGXjPzhGiLj2L94qUAIiw956dN0YDorAIS8UHLEIARLS6tnoyHFtrWZBEBJCQlFLgURgYBATY+7BeCwOtAIRImJnZWseerfN5OSGiwBhrS+89GG1LC4hZkkwnk8l0GjcatXo9SbI///NvXrv25nc+8uTP/t2fO3f2XJYls8mo3W5urp/b332YZONhmtAsLZK0SJI0y/OyLG3pHPtpmoFUUwYEBO+99+xZvOfpbJbneVUVUU7JmTxU8QsCeOeajdqF7cdW19Y21le31lfOba2vLvXEs7fWWetKKwJ5njtnnXXMzMzO+dl04q2bzGbj0Wg8GiFiEIa3bt3+vf/x+/ls8sILf/rPfuVXy7x4/OKTaCJr7Xp3SZfWOlsCCClUpCqR/HB/AICOvQAj6mpYW9kavii990SktbLOU7VpQcBy2jMJi5TOtbudZjtm9htqKTCEwiBYvUsEAlKWZWC09U6qzRnvy6JUWuVZJt57a+OVtZPhuCyLw4P+n/zJVxsN8/GPfzIt/eHRaJImB/3DZ5fXtGXvRYQ9eAFwYRi8u3Pw9r1HzOCcR2AEWky7RQS0JkRg9oT6dOiwMI2rmT8Su7OxNsiRMmG9uT/O9oczIqpHYeX0K1LOWvEejJFqoIQAAN57VOSYfZ4TImmzv7e3tNQrbf7mW7cvXbqQp248TUZJnhfWW1+qQAsAkmJh57xzPJgk/+uFlwejVBGI+EpQiQgSAVIVsFaqtE5CUUrNmYlUta5DCGmef/7C2o9ePDMaD+IIG91OGTYeDJL3+uNX374znE7brRYDiwNmzzKfeFWTRQZx3nsWEK7X67MkTdP03Lnzw+HI6HCWufVz55USrZCZm63Om/1j7Zxj9s65NC+PB6O/vHbr1t39ah8MQAho7sUAyDxtSSnFZeE9a62c94CnO22MQMJumMxmk0lAGgTTWW6APrpef2aj+WOXVgPPf/zi9+JG3YsDRK52nRSBsLOerW0YY7TO8pyQhsOTRhwPR4MoqnuRwdFh2K6VnDGpWZIPh8NCRRpIEYD35cnJ8JVrN27cPeT5vgiDzBlU2AOQVJYBAClCAWut0Uor5Z1j7xWgA2SRelh78e7ht2/cubDcXu82ntpa3V5j5y2y7wbRv/7Fn3vt5v3BZKaUQqU9c7V/xYh+vtaGQRCkaV7kRVGWnXq93z9+4vJHsjQZeL7U3mqqAIu0raxo37eZunV39423715/5961t+/ePxg5CEVYgAEExRtjlAoW8o8qgUhE1llmCYxBIhbZ2tyo1eueBQQIsbD+9dvv3zka78zK944n4ySNCSKlR+Pxaq+bgPmL196KosCzr8bS1TCvtF4rzSJJkiulRBhArHMguLS0XBZlkqbb57a+dHUpTHbOdI1NRv3xTI0mk6OT4dHJaDJLrS2FtFFK5stzEAQBkuaFjVG1bFoRs1jngiAgRcx8ZmsriCLvfbUWkCTpYDBQhJsrKyoM33p03B9Pr2z0UJGA/8iVp/7gG3/prK96RFKqUorO8XwdzDqltLD3InletNttBJglUxFfby49s93tBMXRwWFA0ggC9W//3a89fLCjTfDZH//iT3zpy1rhyfAkS7OoVmPmMAgYgIWrBR0EQCStSBDKwiJhEGjn/NbmehSGyJ4qu0+rVlzrtVv1eo1IGU1JXj59fqPTirPSXji3efNh/8137kdRIACC6KoZO1QTVXDOGmM8e8cMgq1WO8+z6WzWbXfqjfbmmY1zj2/bsBMvb3ld17/8y7/06ec+1ah3z5w7DyJHhwdf+9qf/MZv/ZfdvQMIQ6UUO55PDkWqNsuLKKVQoXNukmShRpISbJqmael8teagdXUWR4ha4XhWXLu3u9G7zECj/v7PfO4H/+ibryw8E/QA7L1SxOyxWvNj74XZ+7het7aYTGZBEDQa8WQ02J/i9nNfSVlE8Byz7vePZtPJ6tr58XCsNQ2HJ8889fRv/qdf/8f/9JfuPXhotHG+QKTKChARZhABpchoXebZz/7Qc1/5gacbmgEgB0g8Fx7Y8TRJdvqjO8fTk1lpFBljbu7s/43LG/W4ubu//9yly5//oU989cVXu502e09E1jpgT6Sq/T5rLYMoBCQ1Hs+8t5ubG3lRMMvOw0eJdUprZmEGPZmMEMSWJZEOg9poeHx0uP+FL375C1/44r//j/9B12tkSzwdbi5W64jQOXny/Ma/+Pm/Nc1Sl5yQgsZqr1avs0g+yzgr+JI/SLNrD/uv3d2/vXPw+JmlUBtbWlR6tL/7Kz//xZffeLt0TiEqIq/IOgF2SiEIePYConVYzYrW1tZFIEkTrvFoNEymSbPd9l4AQJ8MjoKoUavHeZIURTEZDTWhc+7q1atam/l+NPjFJiMgYrVXqo0qrTscHIWKlCZRWDrwqWWQLE15VpJWy3H9K5988vlnLt54f78T16hWA+sR4Hg0/uTHL3/phz/1W3/0Z8vdtvceEQnBMzKjsGdm0prZs7dxs8nMk+m4XotygLxw49G41Wl77xBRW2vjeldESCGITKbTbrudJOnm5tZSr5elyamxISIAzELg2Xlq1KL7B8N/+Gu//dS5tY9cPKtDXQ/Maqux2m0vtWpBS3tAR3rG2gTmuY9eJK0ZENmjADOPxpOfff77f/dPv8UiSITeIzIAA6hqFUiYBXwQRs7LZDqp1cLpdLr92FqRlbPZVBNoRQCilVJ5npH4WhiJ+Ml0vLWxxZ7rUb3X6+4ks/li7GJiBQIi4lmQMIzCu3t79/qjXa88+zzP0LtA4Vq7cXFt6cpjG9tbG61W7ARmSYGcR8R1DY1mvPL41fF48ukztZ/+4mf++/95odftzLdpxDrvq/8ByKRDZgLwJtDW2pWllWazeTIcDI6PhSWdTWuNWG9snX3pxf937Y3vfezqJzY3Nq0trbOlLeJmHBhTrd0tbFBabA8yABNqQvz7X/yxzzy9Xbh8lBXjtHTMkcE0zd+6t//N6++udeJntjd/4JnLnU5HBG1WZEWRnQxD3Wmc33ZK/sFP/c0/+rNvO2urvlUp5b2b70irQASQQBslIkEQdHs9ZmGWwdFxlhfHxycrFP1/wId/+OJR5gwAAAAASUVORK5CYII=">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -81,6 +77,7 @@
     font-size:22px;font-weight:800;margin:0;letter-spacing:0.1px;
     color:var(--text);
   }
+  img.brand-mark{object-fit:cover;background:none;display:block;}
   .tagline{color:var(--text-dim);font-size:14px;max-width:640px;margin:0;}
   .timecode-strip{display:none;}
 
@@ -846,8 +843,8 @@
 
   <header class="hero">
     <div class="brand-row">
-      <div class="brand-mark">SRT</div>
-      <h1 style="direction:ltr;">preTranslate</h1>
+      <img class="brand-mark" alt="PreSub" src="data:image/jpeg;base64,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">
+      <h1 style="direction:ltr;">PreSub</h1>
     </div>
     <p class="tagline">ئامرازێکی سادە بۆ بەراوردکردنی کاتەکانی دوو فایلی ژێرنووس، دەرهێنانی دەق بۆ وەرگێڕان، و پاراستنی ڕیزبەندی دەق — بەبێ گۆڕینی timestamp ـەکان.</p>
   </header>
@@ -892,7 +889,9 @@
 
       <div class="btn-row">
         <button class="btn btn-download" id="btnDownloadTxt">داونلۆدکردنی دەق (.txt)</button>
+        <button class="btn btn-ghost" id="btnCopyTxt">کۆپیکردنی هەموو دەق</button>
         <button class="btn btn-download" id="btnBuildSrt" disabled>دروستکردن و داونلۆدکردنی SRT</button>
+        <button class="btn btn-ghost" id="btnCopySrt">دروستکردن و کۆپیکردنی SRT</button>
         <button class="btn btn-ghost" id="btnResetExtract">سڕینەوەی فایلەکە</button>
       </div>
 
@@ -927,6 +926,7 @@
 
       <div class="btn-row">
         <button class="btn btn-download" id="btnChunkBuild" disabled>دروستکردن و داونلۆدکردنی SRT</button>
+        <button class="btn btn-ghost" id="btnChunkCopy">دروستکردن و کۆپیکردنی SRT</button>
         <button class="btn btn-ghost" id="btnChunkReset">سڕینەوەی فایلەکە</button>
       </div>
 
@@ -1082,6 +1082,7 @@
 
       <div class="btn-row">
         <button class="btn btn-download" id="btnDownloadRtl">داونلۆدکردنی فایلی نوێ (.srt)</button>
+        <button class="btn btn-ghost" id="btnCopyRtl">کۆپیکردنی فایلی نوێ</button>
         <button class="btn btn-ghost" id="btnResetRtl">سڕینەوەی فایلەکە</button>
       </div>
     </div>
@@ -1217,6 +1218,7 @@
 
       <div class="btn-row" id="unifyDownloadAllRow" style="display:none;">
         <button class="btn btn-download" id="btnDownloadAllUnify">⬇ داونلۆدی هەموو فایلەکان</button>
+        <button class="btn btn-ghost" id="btnCopyAllUnify">📋 کۆپیکردنی هەموو فایلەکان</button>
       </div>
     </div>
 
@@ -1342,7 +1344,7 @@
   function buildSRT(blocks){
     // بلۆکی بەتاڵیش وەک بلۆک دەنووسرێت (ژمارە + کات، بێ دەق)
     return blocks.map((b,i)=>{
-      const t = (b.text || '').trim();
+      const t = (b.text || '').trim().replace(/\n[ \t]*\n+/g, '\n');
       return (i+1)+"\n"+b.start+" --> "+b.end + (t ? "\n"+t : "");
     }).join("\n\n") + "\n";
   }
@@ -2037,10 +2039,12 @@
 
   const PART_MAX_BLOCKS = 350;   // هیچ بەشێک نابێت لەمە زیاتر بێت
   const SPLIT_THRESHOLD = 900;   // تەنها ئەگەر فایلەکە لەمە زیاتر بوو دابەش بکرێت بۆ چەند بەش
+  const EXTRACT_SEP = '\n\n&&&\n\n';
+  const INVIS_STRIP = /[\s\u200B-\u200F\u202A-\u202E\u2066-\u2069\uFEFF]+/g;
 
-  // ژمارەی بەشەکان و سنووری هەریەکەیان دیاری دەکات.
-  // فایلی ٩٠٠ بلۆک یان کەمتر: هەمیشە دوو بەش (وەک پێشتر).
-  // زیاتر لە ٩٠٠: بەشی زیاتر، هەریەکە لە نێوان نزیکەی ٣٠٠-٣٥٠ بلۆک، هیچیان لە ٣٥٠ زیاتر نابێت.
+  // بلۆکی بەتاڵ = هیچ دەقێکی تێدا نییە (تەنها بۆشایی یان پیتی نەبینراو)
+  function isEmptyBlock(b){ return (b.text || '').replace(INVIS_STRIP, '') === ''; }
+
   function computePartRanges(total){
     let numParts;
     if(total > SPLIT_THRESHOLD){
@@ -2057,10 +2061,14 @@
     for(let p=0; p<numParts; p++){
       const size = base + (p < remainder ? 1 : 0);
       if(size <= 0) continue;
-      ranges.push({ start, end: start + size }); // end exclusive
+      ranges.push({ start, end: start + size }); // end exclusive — پێگەی ناو لیستی بلۆکە پڕەکان
       start += size;
     }
     return ranges;
+  }
+
+  function extractPartText(r){
+    return extractState.ne.slice(r.start, r.end).map(i => extractState.blocks[i].text.trim()).join(EXTRACT_SEP);
   }
 
   wireDrop(document.getElementById('dropX'), document.getElementById('fileX'), document.getElementById('filenameX'), (content, name)=>{
@@ -2071,10 +2079,22 @@
       extractState = null;
       return;
     }
-    clearStatus(statusExtract);
-    const ranges = computePartRanges(blocks.length);
-    extractState = { blocks, fileName: name, ranges };
-    document.getElementById('blockCountBadge').textContent = blocks.length + ' بلۆک';
+    const ne = [];
+    blocks.forEach((b, i)=>{ if(!isEmptyBlock(b)) ne.push(i); });
+    if(ne.length === 0){
+      setStatus(statusExtract, 'error', 'هەموو بلۆکەکان بەتاڵن، دەقێک نییە بۆ دەرهێنان.');
+      document.getElementById('extractCard').style.display = 'none';
+      extractState = null;
+      return;
+    }
+    const empties = blocks.length - ne.length;
+    if(empties > 0){
+      setStatus(statusExtract, 'info', empties + ' بلۆکی بەتاڵ هەیە — بۆ وەرگێڕان نانێردرێن، بەڵام دەژمێردرێن و لە کاتی دروستکردنی SRT دا بە ڕێک لە شوێنی خۆیان دەگەڕێنەوە.');
+    } else {
+      clearStatus(statusExtract);
+    }
+    extractState = { blocks, fileName: name, ne, ranges: computePartRanges(ne.length) };
+    document.getElementById('blockCountBadge').textContent = blocks.length + ' بلۆک' + (empties ? ' (' + empties + ' بەتاڵ)' : '');
     renderExtractPairs();
     document.getElementById('btnBuildSrt').disabled = false;
     clearStatus(statusRebuild);
@@ -2094,13 +2114,15 @@
 
     extractState.ranges.forEach((r, idx)=>{
       const n = idx + 1;
-      const rangeLabel = 'بلۆکی ' + (r.start+1) + ' تا ' + r.end;
-      const text = extractState.blocks.slice(r.start, r.end).map(b=>b.text.trim()).join('\n\n&&&\n\n');
+      const firstAll = extractState.ne[r.start], lastAll = extractState.ne[r.end - 1];
+      const expNE = r.end - r.start;
+      const emptiesInside = (lastAll - firstAll + 1) - expNE;
+      const rangeLabel = 'بلۆکی ' + (firstAll+1) + ' تا ' + (lastAll+1);
+      const text = extractPartText(r);
 
       const col = document.createElement('div');
       col.className = 'extract-pair';
 
-      // ---- سەرەوە: دەقی دەرهێنراو (کۆپی) ----
       const wrap = document.createElement('div');
       wrap.className = 'chunk-part';
 
@@ -2112,6 +2134,12 @@
       b1.className = 'badge';
       b1.textContent = rangeLabel;
       head.appendChild(title); head.appendChild(b1);
+      if(emptiesInside > 0){
+        const b2 = document.createElement('span');
+        b2.className = 'badge';
+        b2.textContent = emptiesInside + ' بەتاڵ';
+        head.appendChild(b2);
+      }
 
       const ta = document.createElement('textarea');
       ta.readOnly = true;
@@ -2125,10 +2153,8 @@
       copyBtn.className = 'btn btn-primary';
       copyBtn.textContent = 'کۆپیکردنی بەشی ' + ordinalName(n);
       copyBtn.addEventListener('click', ()=>{
-        copyTextToClipboard(text, ()=>{
+        copyBtnFeedback(copyBtn, text, ()=>{
           setStatus(statusExtract, 'success', 'بەشی ' + ordinalName(n) + ' (' + rangeLabel + ') کۆپیکرا. ✓');
-          copyBtn.textContent = '✓ کۆپی کرا';
-          setTimeout(()=>{ copyBtn.textContent = 'کۆپیکردنی بەشی ' + ordinalName(n); }, 1800);
         }, ()=>{
           setStatus(statusExtract, 'error', 'کۆپیکردن سەرکەوتوو نەبوو.');
         });
@@ -2137,7 +2163,6 @@
 
       wrap.appendChild(head); wrap.appendChild(ta); wrap.appendChild(row);
 
-      // ---- ژێرەوە: گەڕاندنەوەی وەرگێڕان (هەمان بەش) ----
       const field = document.createElement('div');
       field.className = 'paste-field';
 
@@ -2151,7 +2176,7 @@
       const count = document.createElement('span');
       count.className = 'count';
       count.id = 'pasteCount' + idx;
-      count.textContent = '0 / ' + (r.end - r.start) + ' بلۆک';
+      count.textContent = '0 / ' + expNE + ' بلۆک';
 
       label.appendChild(span);
       label.appendChild(count);
@@ -2200,16 +2225,53 @@
     }
   }
 
+  // کۆپیکردن + گۆڕینی کاتیی نووسینی دوگمەکە
+  function copyBtnFeedback(btn, text, onDone, onError){
+    if(!btn.dataset.orig) btn.dataset.orig = btn.textContent;
+    copyTextToClipboard(text, ()=>{
+      btn.textContent = '✓ کۆپی کرا';
+      setTimeout(()=>{ btn.textContent = btn.dataset.orig; }, 1800);
+      if(onDone) onDone();
+    }, ()=>{ if(onError) onError(); });
+  }
+
   document.getElementById('btnDownloadTxt').addEventListener('click', ()=>{
     if(!extractState) return;
     const filename = withActionPrefix('EXT', extractState.fileName, 'extracted-text.txt');
-    const fullText = extractState.blocks.map(b=>b.text.trim()).join('\n\n&&&\n\n');
+    const fullText = extractState.ne.map(i => extractState.blocks[i].text.trim()).join(EXTRACT_SEP);
     download(filename, fullText, 'text/plain;charset=utf-8');
   });
 
+  document.getElementById('btnCopyTxt').addEventListener('click', ()=>{
+    if(!extractState) return;
+    const fullText = extractState.ne.map(i => extractState.blocks[i].text.trim()).join(EXTRACT_SEP);
+    copyBtnFeedback(document.getElementById('btnCopyTxt'), fullText, ()=>{
+      setStatus(statusExtract, 'success', 'هەموو دەقەکە کۆپیکرا. ✓');
+    }, ()=>{
+      setStatus(statusExtract, 'error', 'کۆپیکردن سەرکەوتوو نەبوو.');
+    });
+  });
+
+  // جیاکەرەوە: &&& (بە بۆشاییشەوە قبوڵ دەکرێت، وەک & & &) — هێڵی بەتاڵی ناو بلۆک پاک دەکرێتەوە
   function splitChunks(value){
-    // بلۆکی بەتاڵ (نێوان دوو &&& بێ دەق) وەک بلۆک دەژمێردرێت
-    return value.replace(/\r/g,'').split(/&&&/).map(s=>s.trim());
+    return value.replace(/\r/g,'').split(/&\s*&\s*&/).map(s => tidyChunk(s));
+  }
+
+  // ئەگەر ژمارەی بەشەکان بەرامبەر بلۆکە پڕەکان بێت → ڕاستەوخۆ.
+  // ئەگەر بەرامبەر هەموو بلۆکەکان (بەتاڵەکانیشەوە) بێت → شوێنی بەتاڵەکان فەرامۆش دەکرێت.
+  function resolveExtractPart(value, r){
+    const chunks = splitChunks(value);
+    const firstAll = extractState.ne[r.start], lastAll = extractState.ne[r.end - 1];
+    const expNE = r.end - r.start, expAll = lastAll - firstAll + 1;
+    if(chunks.length === expNE) return { texts: chunks, ok: true, expected: expNE, got: chunks.length };
+    if(chunks.length === expAll){
+      const texts = [];
+      for(let i = firstAll; i <= lastAll; i++){
+        if(!isEmptyBlock(extractState.blocks[i])) texts.push(chunks[i - firstAll]);
+      }
+      return { texts, ok: true, expected: expNE, got: chunks.length };
+    }
+    return { texts: chunks, ok: false, expected: expNE, got: chunks.length };
   }
 
   function refreshPasteCounts(){
@@ -2219,45 +2281,70 @@
       const countEl = document.getElementById('pasteCount' + idx);
       if(!ta || !countEl) return;
       const expected = r.end - r.start;
-      const chunks = ta.value.trim() ? splitChunks(ta.value) : [];
-      countEl.textContent = chunks.length + ' / ' + expected + ' بلۆک';
-      countEl.className = 'count' + (ta.value.trim().length === 0 ? '' : (chunks.length === expected ? ' ok' : ' bad'));
+      const has = ta.value.trim().length > 0;
+      if(!has){
+        countEl.textContent = '0 / ' + expected + ' بلۆک';
+        countEl.className = 'count';
+        return;
+      }
+      const res = resolveExtractPart(ta.value, r);
+      countEl.textContent = (res.ok ? expected : res.got) + ' / ' + expected + ' بلۆک';
+      countEl.className = 'count' + (res.ok ? ' ok' : ' bad');
     });
+  }
+
+  function makeExtractResult(){
+    const st = extractState;
+    const usable = st.ranges.map((r, idx)=>{
+      const ta = document.getElementById('translatedText' + idx);
+      if(!ta || !ta.value.trim()) return null;
+      const res = resolveExtractPart(ta.value, r);
+      return res.ok ? res : null;
+    });
+    // بلۆکە بەتاڵەکان وەک خۆیان (بەتاڵ) لە شوێنی خۆیان دەمێننەوە
+    const newBlocks = st.blocks.map(b => ({ start: b.start, end: b.end, text: isEmptyBlock(b) ? '' : b.text }));
+    st.ranges.forEach((r, idx)=>{
+      const res = usable[idx];
+      if(!res) return;
+      res.texts.forEach((t, k)=>{ newBlocks[st.ne[r.start + k]].text = t; });
+    });
+    const notes = [];
+    usable.forEach((u, idx)=>{
+      if(!u) notes.push('بەشی ' + ordinalName(idx+1) + ' بە دەقی سەرەتایی (وەرگێڕدراو نەکراو) نووسرا');
+    });
+    return {
+      srt: buildSRT(newBlocks),
+      filename: withActionPrefix('TRA', st.fileName, 'translated.srt'),
+      notes
+    };
+  }
+
+  function reportExtract(res, verb){
+    if(res.notes.length === 0){
+      setStatus(statusRebuild, 'success', 'فایلی SRT ' + verb + ' (هەموو بەشەکان وەرگێڕدراو بوون). ✓');
+    } else {
+      setStatus(statusRebuild, 'info', 'فایلی SRT ' + verb + '. ' + res.notes.join('، ') + ' — کاتێک ئامادەبوو، دەقەکەی تری بخە ناو بۆکسەکەی خۆی و دووبارە دروستیکەرەوە.');
+    }
   }
 
   document.getElementById('btnBuildSrt').addEventListener('click', ()=>{
     if(!extractState) return;
+    const res = makeExtractResult();
+    download(res.filename, res.srt, 'application/x-subrip;charset=utf-8');
+    reportExtract(res, 'دروستکرا و دابەزێنرا');
+  });
 
-    const usableByPart = extractState.ranges.map((r, idx)=>{
-      const ta = document.getElementById('translatedText' + idx);
-      const expected = r.end - r.start;
-      if(!ta || !ta.value.trim()) return null;
-      const chunks = splitChunks(ta.value);
-      return chunks.length === expected ? chunks : null;
-    });
-
-    const newBlocks = extractState.blocks.map((b, i)=>{
-      const partIdx = extractState.ranges.findIndex(r => i >= r.start && i < r.end);
-      const usable = usableByPart[partIdx];
-      const r = extractState.ranges[partIdx];
-      const text = usable ? usable[i - r.start] : b.text;
-      return { start: b.start, end: b.end, text };
-    });
-
-    const srt = buildSRT(newBlocks);
-    const filename = withActionPrefix('TRA', extractState.fileName, 'translated.srt');
-    download(filename, srt, 'application/x-subrip;charset=utf-8');
-
-    const notes = [];
-    usableByPart.forEach((usable, idx)=>{
-      if(!usable) notes.push('بەشی ' + ordinalName(idx+1) + ' بە دەقی سەرەتایی (وەرگێڕدراو نەکراو) نووسرا');
-    });
-
-    if(notes.length === 0){
-      setStatus(statusRebuild, 'success', 'فایلی SRT دروستکرا و دابەزێنرا (هەموو بەشەکان وەرگێڕدراو بوون). ✓');
-    } else {
-      setStatus(statusRebuild, 'info', 'فایلی SRT دروستکرا و دابەزێنرا. ' + notes.join('، ') + ' — کاتێک ئامادەبوو، دەقەکەی تری بخە ناو بۆکسەکەی خۆی و دووبارە دروستیکەرەوە.');
+  document.getElementById('btnCopySrt').addEventListener('click', ()=>{
+    if(!extractState){
+      setStatus(statusRebuild, 'error', 'سەرەتا فایلی SRT باربکە.');
+      return;
     }
+    const res = makeExtractResult();
+    copyBtnFeedback(document.getElementById('btnCopySrt'), res.srt, ()=>{
+      reportExtract(res, 'دروستکرا و کۆپیکرا');
+    }, ()=>{
+      setStatus(statusRebuild, 'error', 'کۆپیکردن سەرکەوتوو نەبوو.');
+    });
   });
 
   document.getElementById('btnResetExtract').addEventListener('click', ()=>{
@@ -2447,9 +2534,7 @@
     }
   });
 
-  document.getElementById('btnChunkBuild').addEventListener('click', ()=>{
-    if(!chunkState) return;
-
+  function makeChunkResult(){
     const newBlocks = chunkState.blocks.map(b=>({ start: b.start, end: b.end, text: b.text }));
     const notes = [];
     let hasMismatch = false;
@@ -2472,16 +2557,40 @@
       r.chunks.forEach((t, k)=>{ newBlocks[p.start + k].text = t; });
     });
 
-    const srt = buildSRT(newBlocks);
-    const filename = withActionPrefix('TRA', chunkState.fileName, 'translated.srt');
-    download(filename, srt, 'application/x-subrip;charset=utf-8');
+    return {
+      srt: buildSRT(newBlocks),
+      filename: withActionPrefix('TRA', chunkState.fileName, 'translated.srt'),
+      notes, hasMismatch
+    };
+  }
 
-    if(notes.length === 0){
-      setStatus(statusChunkRebuild, 'success', 'فایلی SRT دروستکرا و دابەزێنرا (هەموو بەشەکان وەرگێڕدراو بوون). ✓');
+  function reportChunk(res, verb){
+    if(res.notes.length === 0){
+      setStatus(statusChunkRebuild, 'success', 'فایلی SRT ' + verb + ' (هەموو بەشەکان وەرگێڕدراو بوون). ✓');
     } else {
-      setStatus(statusChunkRebuild, hasMismatch ? 'error' : 'info',
-        'فایلی SRT دروستکرا و دابەزێنرا، بەڵام: ' + notes.join('، ') + ' — ئەو بەشانە بە دەقی سەرەتایی نووسران. کاتێک ئامادەبوو، دەقەکەی ڕاست بکەرەوە و دووبارە دروستیکەرەوە.');
+      setStatus(statusChunkRebuild, res.hasMismatch ? 'error' : 'info',
+        'فایلی SRT ' + verb + '، بەڵام: ' + res.notes.join('، ') + ' — ئەو بەشانە بە دەقی سەرەتایی نووسران. کاتێک ئامادەبوو، دەقەکەی ڕاست بکەرەوە و دووبارە دروستیکەرەوە.');
     }
+  }
+
+  document.getElementById('btnChunkBuild').addEventListener('click', ()=>{
+    if(!chunkState) return;
+    const res = makeChunkResult();
+    download(res.filename, res.srt, 'application/x-subrip;charset=utf-8');
+    reportChunk(res, 'دروستکرا و دابەزێنرا');
+  });
+
+  document.getElementById('btnChunkCopy').addEventListener('click', ()=>{
+    if(!chunkState){
+      setStatus(statusChunkRebuild, 'error', 'سەرەتا فایلی SRT باربکە.');
+      return;
+    }
+    const res = makeChunkResult();
+    copyBtnFeedback(document.getElementById('btnChunkCopy'), res.srt, ()=>{
+      reportChunk(res, 'دروستکرا و کۆپیکرا');
+    }, ()=>{
+      setStatus(statusChunkRebuild, 'error', 'کۆپیکردن سەرکەوتوو نەبوو.');
+    });
   });
 
   document.getElementById('btnChunkReset').addEventListener('click', ()=>{
@@ -2498,11 +2607,12 @@
 
   /* ===================== RTL-FIX TAB LOGIC (U+202B) ===================== */
   const RLE = '\u202B';
+  const PDF = '\u202C';
   let rtlState = null;
   const statusRtl = document.getElementById('statusRtl');
 
   function wrapWithRLE(text){
-    return text.split('\n').map(line => RLE + line + RLE).join('\n');
+    return text.split('\n').map(line => RLE + line.replace(/[\u202B\u202C]/g, '') + PDF).join('\n');
   }
 
   wireDrop(document.getElementById('dropR'), document.getElementById('fileR'), document.getElementById('filenameR'), (content, name)=>{
@@ -2519,17 +2629,31 @@
     document.getElementById('rtlCard').style.display = 'block';
   });
 
+  function makeRtlSrt(){
+    const newBlocks = rtlState.blocks.map(b => {
+      const t = b.text.trim();
+      return { start: b.start, end: b.end, text: t ? wrapWithRLE(t) : '' };
+    });
+    return buildSRT(newBlocks);
+  }
+
   document.getElementById('btnDownloadRtl').addEventListener('click', ()=>{
     if(!rtlState) return;
-    const newBlocks = rtlState.blocks.map(b => ({
-      start: b.start,
-      end: b.end,
-      text: wrapWithRLE(b.text.trim())
-    }));
-    const srt = buildSRT(newBlocks);
     const filename = withActionPrefix('RTL', rtlState.fileName, 'subtitle.srt');
-    download(filename, srt, 'application/x-subrip;charset=utf-8');
+    download(filename, makeRtlSrt(), 'application/x-subrip;charset=utf-8');
     setStatus(statusRtl, 'success', 'فایلی نوێ دروستکرا و دابەزێنرا. ✓');
+  });
+
+  document.getElementById('btnCopyRtl').addEventListener('click', ()=>{
+    if(!rtlState){
+      setStatus(statusRtl, 'error', 'سەرەتا فایلی SRT باربکە.');
+      return;
+    }
+    copyBtnFeedback(document.getElementById('btnCopyRtl'), makeRtlSrt(), ()=>{
+      setStatus(statusRtl, 'success', 'فایلی نوێ کۆپیکرا. ✓');
+    }, ()=>{
+      setStatus(statusRtl, 'error', 'کۆپیکردن سەرکەوتوو نەبوو.');
+    });
   });
 
   document.getElementById('btnResetRtl').addEventListener('click', ()=>{
@@ -3301,7 +3425,7 @@ ${text}`;
       const names = [];
       nameSpans.forEach(s=>{
         const t = s.trim().replace(/\s+/g,' ');
-        if(/^[\p{L}\p{M}’ʼ'\s]{3,}$/u.test(t)) names.push(t);
+        if(/^[\p{L}\p{M}’ʼ'\s\u200c\u200d\-]{2,}$/u.test(t)) names.push(t);
       });
       return names;
     }
@@ -3366,7 +3490,9 @@ ${text}`;
       allNames.forEach(n=>{
         const chip = document.createElement('span');
         chip.className = 'name-chip' + (selectedNames.includes(n.word) ? ' active' : '');
-        chip.innerHTML = '<span>'+n.word+'</span><span class="cnt">×'+n.count+'</span>';
+        const cw = document.createElement('span'); cw.textContent = n.word;
+        const cc = document.createElement('span'); cc.className = 'cnt'; cc.textContent = '×' + n.count;
+        chip.appendChild(cw); chip.appendChild(cc);
         chip.addEventListener('click', ()=>{
           // Multi-selection: toggle this name in/out of the picked list.
           const i = selectedNames.indexOf(n.word);
@@ -3419,7 +3545,7 @@ ${text}`;
         setStatus(statusUnify, 'error', 'تکایە شێوازەکان و ناوی دروست پڕبکەرەوە.');
         return;
       }
-      const from = fromRaw.split(',').map(s=>s.trim()).filter(Boolean);
+      const from = fromRaw.split(/[,،\n]/).map(s=>s.trim()).filter(Boolean);
       if(from.length === 0) return;
       manualRules.push({ id: Date.now()+'-'+Math.random().toString(36).slice(2), from, to: toRaw });
       manualFrom.value = '';
@@ -3436,14 +3562,41 @@ ${text}`;
     });
 
     /* ---------- apply & download ---------- */
+    // ئۆپشنی پاشگر
+    const optBox = document.createElement('div');
+    optBox.style.margin = '12px 0 0';
+    optBox.innerHTML = '<label class="cluster-toggle"><input type="checkbox" id="optSuffix"> پاشگریش بپارێزە (جۆن ← جۆنەکە، جۆنی، جۆنیش، جۆنان ...)</label>';
+    const applyRow = btnApplyUnify.parentNode;
+    applyRow.parentNode.insertBefore(optBox, applyRow);
+    const optSuffix = optBox.querySelector('#optSuffix');
+
+    // ــ ڕێکخستنی نووسین: ي/ى→ی ، ك→ک ، ھ→ه ، و لابردنی ZWNJ / تەتوین / نیشانەی دەنگ
+    const STRIP_RE = /[\u200c\u200d\u0640\u064B-\u065F\u0670]/g;
+    const INTER = '[\\u200c\\u200d\\u0640\\u064B-\\u065F\\u0670]*';
+    const VARIANTS = { 'ی':'[یيى]', 'ک':'[کك]', 'ه':'[هھ]' };
+    const SUFFIX = '(?:ەکانیش|ەکانی|ەکان|ەکەیش|ەکەی|ەکە|ێکی|ێک|یانی|یان|یەکی|یەک|یش|مان|تان|ەوە|ەش|ی|ش|م|ت|ە|ان|ێ)';
+
+    function normKey(w){
+      return w.replace(STRIP_RE,'').replace(/[يى]/g,'ی').replace(/ك/g,'ک').replace(/ھ/g,'ه').replace(/\s+/g,' ').trim();
+    }
+    function wordToPattern(w){
+      return Array.from(normKey(w)).map(c => c === ' ' ? '\\s+' : (VARIANTS[c] || escapeRegExp(c))).join(INTER);
+    }
+
     btnApplyUnify.addEventListener('click', ()=>{
       if(unifyFiles.length === 0){
         setStatus(statusUnifyApply, 'error', 'تکایە سەرەتا فایلێک باربکە.');
         return;
       }
       const map = new Map();
+      const conflicts = [];
       manualRules.forEach(r=>{
-        r.from.forEach(w=>{ if(w && w !== r.to) map.set(w, r.to); });
+        r.from.forEach(w=>{
+          const k = normKey(w);
+          if(!k || w === r.to) return;
+          if(map.has(k) && map.get(k) !== r.to) conflicts.push(w);
+          map.set(k, r.to);
+        });
       });
 
       if(map.size === 0){
@@ -3451,23 +3604,35 @@ ${text}`;
         return;
       }
 
-      const words = [...map.keys()].sort((a,b)=> b.length - a.length).map(escapeRegExp);
-      const pattern = new RegExp('(?<![\\p{L}\\p{M}])(' + words.join('|') + ')(?![\\p{L}\\p{M}])', 'gu');
+      const keys = [...map.keys()].sort((a,b)=> b.length - a.length);
+      const names = keys.map(wordToPattern).join('|');
+      const useSuffix = optSuffix.checked;
+      const pattern = new RegExp(
+        '(?<![\\p{L}\\p{M}])(' + names + ')' +
+        (useSuffix ? '(' + INTER + SUFFIX + '?)' : '') +
+        '(?![\\p{L}\\p{M}])', 'gu');
 
       unifyResults = [];
       let totalReplacements = 0;
       unifyFiles.forEach(f=>{
         let count = 0;
-        const newContent = f.content.replace(pattern, (match)=>{
-          count++;
-          return map.get(match) || match;
+        const newContent = f.content.replace(pattern, (match, name, suffix)=>{
+          const to = map.get(normKey(name));
+          if(to === undefined) return match;
+          const out = to + (typeof suffix === 'string' ? suffix : '');
+          if(out !== match) count++;
+          return out;
         });
         totalReplacements += count;
         unifyResults.push({ name: f.name, content: newContent, replacements: count });
       });
 
       renderResults();
-      setStatus(statusUnifyApply, 'success', totalReplacements + ' گۆڕانکاری لەسەر ' + unifyFiles.length + ' فایل جێبەجێکرا. ✓');
+      let msg = totalReplacements + ' گۆڕانکاری لەسەر ' + unifyFiles.length + ' فایل جێبەجێکرا. ✓';
+      if(conflicts.length){
+        msg += ' ئاگاداری: ' + conflicts.length + ' شێواز لە دوو یاسادا بە ناوی جیاواز هاتبوون (یاسای دواتر بەکارهات): ' + [...new Set(conflicts)].join('، ');
+      }
+      setStatus(statusUnifyApply, conflicts.length ? 'info' : 'success', msg);
       unifyDownloadAllRow.style.display = 'flex';
     });
 
@@ -3487,11 +3652,7 @@ ${text}`;
         copyBtn.type = 'button';
         copyBtn.textContent = '📋 کۆپیکردن';
         copyBtn.addEventListener('click', ()=>{
-          copyTextToClipboard(r.content, ()=>{
-            const original = copyBtn.textContent;
-            copyBtn.textContent = 'کۆپیکرا ✓';
-            setTimeout(()=>{ copyBtn.textContent = original; }, 1500);
-          }, ()=>{
+          copyBtnFeedback(copyBtn, r.content, null, ()=>{
             setStatus(statusUnifyApply, 'error', 'کۆپیکردنی فایلی "'+r.name+'" سەرکەوتوو نەبوو.');
           });
         });
@@ -3516,6 +3677,17 @@ ${text}`;
         setTimeout(()=>{
           download(withActionPrefix('UNIFIED', r.name, 'output.srt'), r.content, 'text/plain;charset=utf-8');
         }, i * 350);
+      });
+    });
+
+    // کۆپیکردنی هەموو فایلەکان پێکەوە (هەرفایلێک بە هێڵی ناونیشانەوە جیادەکرێتەوە)
+    document.getElementById('btnCopyAllUnify').addEventListener('click', ()=>{
+      if(!unifyResults.length) return;
+      const all = unifyResults.map(r => '===== ' + r.name + ' =====\n' + r.content).join('\n\n');
+      copyBtnFeedback(document.getElementById('btnCopyAllUnify'), all, ()=>{
+        setStatus(statusUnifyApply, 'success', 'هەموو ' + unifyResults.length + ' فایلەکە کۆپیکران (هەریەکە بە ناونیشانی خۆیەوە). ✓');
+      }, ()=>{
+        setStatus(statusUnifyApply, 'error', 'کۆپیکردن سەرکەوتوو نەبوو.');
       });
     });
 
