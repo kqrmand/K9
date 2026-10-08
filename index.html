@@ -672,7 +672,6 @@
   }
   .toast.show{opacity:1;}
   .toast.error{background:var(--danger);}
-  #btnSaveSelf{display:none;margin:12px auto 0;}
 
   /* ---------- Chunk (9500 chars) tab ---------- */
   .chunk-part{
@@ -835,6 +834,24 @@
   @media (prefers-reduced-motion: reduce){
     *{animation:none !important;transition:none !important;}
   }
+
+  /* ---------- Desktop-mode fixes (overflow / stacking) ---------- */
+  html,body{max-width:100%;overflow-x:hidden;}
+  .wrap{width:100%;box-sizing:border-box;}
+  .layout{max-width:100%;}
+  @media(min-width:900px){
+    .layout{grid-template-columns:248px minmax(0,1fr);}
+  }
+  .content{min-width:0;max-width:100%;}
+  .card{box-sizing:border-box;max-width:100%;min-width:0;}
+  #panel-extract > .card, #panel-chunk > .card, #panel-clean > .card{flex:1 1 100%;}
+  @media(min-width:1500px){
+    #panel-extract > .card, #panel-chunk > .card, #panel-clean > .card{flex:1 1 420px;}
+  }
+  #extractPairsContainer,#chunkPairsContainer,#cleanRowsList,.hscroll{max-width:100%;min-width:0;}
+  .cols,.stats,.deep-item .di-body{min-width:0;}
+  textarea,input,select,.drop{max-width:100%;box-sizing:border-box;}
+  img,iframe,table,pre{max-width:100%;}
 </style>
 </head>
 <body>
@@ -888,9 +905,8 @@
       <div id="extractPairsContainer" class="hscroll"></div>
 
       <div class="btn-row">
-        <button class="btn btn-download" id="btnDownloadTxt">داونلۆدکردنی دەق (.txt)</button>
         <button class="btn btn-ghost" id="btnCopyTxt">کۆپیکردنی هەموو دەق</button>
-        <button class="btn btn-download" id="btnBuildSrt" disabled>دروستکردن و داونلۆدکردنی SRT</button>
+        <button class="btn btn-ghost" id="btnBuildSrt" disabled>دروستکردنەوەی SRT</button>
         <button class="btn btn-ghost" id="btnCopySrt">دروستکردن و کۆپیکردنی SRT</button>
         <button class="btn btn-ghost" id="btnResetExtract">سڕینەوەی فایلەکە</button>
       </div>
@@ -925,7 +941,7 @@
       <div id="chunkPairsContainer" class="hscroll"></div>
 
       <div class="btn-row">
-        <button class="btn btn-download" id="btnChunkBuild" disabled>دروستکردن و داونلۆدکردنی SRT</button>
+        <button class="btn btn-ghost" id="btnChunkBuild" disabled>دروستکردنەوەی SRT</button>
         <button class="btn btn-ghost" id="btnChunkCopy">دروستکردن و کۆپیکردنی SRT</button>
         <button class="btn btn-ghost" id="btnChunkReset">سڕینەوەی فایلەکە</button>
       </div>
@@ -1081,7 +1097,6 @@
       <p class="sub">کۆدی U+202B لە سەرەتا و کۆتایی هەر هێڵی دەقێک زیادکرا. timestamp ـەکان بەبێ دەستکاری ماونەتەوە.</p>
 
       <div class="btn-row">
-        <button class="btn btn-download" id="btnDownloadRtl">داونلۆدکردنی فایلی نوێ (.srt)</button>
         <button class="btn btn-ghost" id="btnCopyRtl">کۆپیکردنی فایلی نوێ</button>
         <button class="btn btn-ghost" id="btnResetRtl">سڕینەوەی فایلەکە</button>
       </div>
@@ -1205,8 +1220,8 @@
     </div>
 
     <div class="card" id="unifyApplyCard" style="display:none;">
-      <h2><span class="step-badge">4</span>جێبەجێکردن و داونلۆد</h2>
-      <p class="sub">کاتێک ئامادەیت، دوگمەکە بکە تاکو یاساکان بەسەر هەموو فایلە بارکراوەکاندا جێبەجێ بکرێن، پاشان هەریەکەیان یان هەموویان پێکەوە داونلۆد بکە.</p>
+      <h2><span class="step-badge">4</span>جێبەجێکردن و کۆپیکردن</h2>
+      <p class="sub">کاتێک ئامادەیت، دوگمەکە بکە تاکو یاساکان بەسەر هەموو فایلە بارکراوەکاندا جێبەجێ بکرێن، پاشان هەریەکەیان یان هەموویان پێکەوە کۆپی بکە.</p>
 
       <div class="btn-row">
         <button class="btn btn-primary" id="btnApplyUnify">▶ یەکخستنی هەموو فایلەکان</button>
@@ -1217,7 +1232,6 @@
       <div id="unifyResultsList" style="margin-top:14px;"></div>
 
       <div class="btn-row" id="unifyDownloadAllRow" style="display:none;">
-        <button class="btn btn-download" id="btnDownloadAllUnify">⬇ داونلۆدی هەموو فایلەکان</button>
         <button class="btn btn-ghost" id="btnCopyAllUnify">📋 کۆپیکردنی هەموو فایلەکان</button>
       </div>
     </div>
@@ -1260,7 +1274,6 @@
 
       <div class="btn-row">
         <button class="btn btn-ghost" id="btnCopyClean">کۆپیکردنی دەق</button>
-        <button class="btn btn-download" id="btnDownloadClean">داونلۆدکردنی فایلی SRT</button>
       </div>
     </div>
 
@@ -1302,7 +1315,7 @@
   </div>
   </div>
 
-  <footer>فایلەکانت لە ناو وێبگەڕەکەت دەمێننەوە — هیچ شتێک ناردرێت بۆ هیچ سێرڤەرێک.<br><button type="button" class="btn btn-ghost" id="btnSaveSelf">⬇ داونلۆدکردنی ئەم ئامرازە وەک فایلی HTML</button></footer>
+  <footer>فایلەکانت لە ناو وێبگەڕەکەت دەمێننەوە — هیچ شتێک ناردرێت بۆ هیچ سێرڤەرێک.</footer>
   <div class="toast" id="toast" role="status"></div>
 
 </div>
@@ -1311,8 +1324,6 @@
 (function(){
   "use strict";
 
-  // کۆپییەکی سەرەتایی لەم پەڕەیە، بۆ داونلۆدکردنی ئامرازەکە وەک فایل
-  const PAGE_SOURCE = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
 
   /* ---------------- SRT helpers ---------------- */
   function parseSRT(raw){
@@ -1359,57 +1370,6 @@
     clearTimeout(toastTimer);
     toastTimer = setTimeout(()=>{ t.className = 'toast'; }, 7000);
   }
-
-  /* ---- Downloads ----
-     لە پەڕەی هۆست‌کراودا (claude.ai) داونلۆدی ڕاستەوخۆ کار ناکات، بۆیە توانای downloads بەکاردێت.
-     لە فایلی ئاسایی (لەسەر ئامێرەکەت) هەمان داونلۆدی جاران بەکاردێت. */
-  const downloadsCapPromise = (window.claude && typeof window.claude.use === 'function')
-    ? window.claude.use('downloads').catch(()=>null)
-    : Promise.resolve(null);
-
-  function blobDownload(filename, content, mime){
-    const blob = new Blob([content], {type: mime || 'text/plain;charset=utf-8'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = filename;
-    document.body.appendChild(a); a.click();
-    document.body.removeChild(a);
-    setTimeout(()=>URL.revokeObjectURL(url), 2000);
-  }
-
-  async function download(filename, content, mime){
-    const cap = await downloadsCapPromise;
-    if(!cap){ blobDownload(filename, content, mime); return; }
-    try{
-      await cap.save({ filename, data: content });
-    } catch(e){
-      if(e && e.code === 'rejected_extension'){
-        // .srt لە لیستی ڕێگەپێدراودا نییە، بۆیە وەک .txt پاشەکەوت دەکرێت
-        try{
-          await cap.save({ filename: filename + '.txt', data: content });
-          showToast('فایلەکە وەک «' + filename + '.txt» پاشەکەوت کرا. دوای داونلۆد، «.txt»ی کۆتایی ناوەکەی لابەرە بۆ ئەوەی ببێتەوە .srt', false);
-        } catch(e2){
-          if(!e2 || e2.code !== 'declined') showToast('داونلۆدکردن سەرکەوتوو نەبوو.', true);
-        }
-      } else if(!e || e.code !== 'declined'){
-        showToast('داونلۆدکردن سەرکەوتوو نەبوو.', true);
-      }
-    }
-  }
-
-  // داونلۆدکردنی خودی ئامرازەکە وەک فایلی HTML (تەنها لە پەڕەی هۆست‌کراودا دەردەکەوێت)
-  downloadsCapPromise.then(cap=>{
-    const b = document.getElementById('btnSaveSelf');
-    if(!cap || !b) return;
-    b.style.display = 'inline-flex';
-    b.addEventListener('click', async ()=>{
-      try{
-        await cap.save({ filename: 'PreSub_VIP.html', data: PAGE_SOURCE });
-      } catch(e){
-        if(!e || e.code !== 'declined') showToast('داونلۆدکردن سەرکەوتوو نەبوو.', true);
-      }
-    });
-  });
 
   const safeStore = {
     get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },
@@ -2235,12 +2195,6 @@
     }, ()=>{ if(onError) onError(); });
   }
 
-  document.getElementById('btnDownloadTxt').addEventListener('click', ()=>{
-    if(!extractState) return;
-    const filename = withActionPrefix('EXT', extractState.fileName, 'extracted-text.txt');
-    const fullText = extractState.ne.map(i => extractState.blocks[i].text.trim()).join(EXTRACT_SEP);
-    download(filename, fullText, 'text/plain;charset=utf-8');
-  });
 
   document.getElementById('btnCopyTxt').addEventListener('click', ()=>{
     if(!extractState) return;
@@ -2330,8 +2284,7 @@
   document.getElementById('btnBuildSrt').addEventListener('click', ()=>{
     if(!extractState) return;
     const res = makeExtractResult();
-    download(res.filename, res.srt, 'application/x-subrip;charset=utf-8');
-    reportExtract(res, 'دروستکرا و دابەزێنرا');
+    reportExtract(res, 'دروستکرایەوە');
   });
 
   document.getElementById('btnCopySrt').addEventListener('click', ()=>{
@@ -2576,8 +2529,7 @@
   document.getElementById('btnChunkBuild').addEventListener('click', ()=>{
     if(!chunkState) return;
     const res = makeChunkResult();
-    download(res.filename, res.srt, 'application/x-subrip;charset=utf-8');
-    reportChunk(res, 'دروستکرا و دابەزێنرا');
+    reportChunk(res, 'دروستکرایەوە');
   });
 
   document.getElementById('btnChunkCopy').addEventListener('click', ()=>{
@@ -2637,12 +2589,6 @@
     return buildSRT(newBlocks);
   }
 
-  document.getElementById('btnDownloadRtl').addEventListener('click', ()=>{
-    if(!rtlState) return;
-    const filename = withActionPrefix('RTL', rtlState.fileName, 'subtitle.srt');
-    download(filename, makeRtlSrt(), 'application/x-subrip;charset=utf-8');
-    setStatus(statusRtl, 'success', 'فایلی نوێ دروستکرا و دابەزێنرا. ✓');
-  });
 
   document.getElementById('btnCopyRtl').addEventListener('click', ()=>{
     if(!rtlState){
@@ -2874,14 +2820,6 @@
     clearStatus(statusClean);
   });
 
-  document.getElementById('btnDownloadClean').addEventListener('click', ()=>{
-    if(!cleanBlocks) return;
-    const srt = buildSRT(cleanBlocks);
-    const baseName = (cleanFileName || 'subtitle.srt').replace(/\.vtt$/i, '.srt');
-    const filename = withActionPrefix('CLN', baseName, 'subtitle.srt');
-    download(filename, srt, 'application/x-subrip;charset=utf-8');
-    setStatus(statusClean, 'success', 'فایلی SRT دروستکرا و دابەزێنرا. ✓');
-  });
 
   document.getElementById('btnCopyClean').addEventListener('click', ()=>{
     copyTextToClipboard(cleanOutput.value, ()=>{
@@ -3270,7 +3208,6 @@ ${text}`;
     const statusUnifyApply = document.getElementById('statusUnifyApply');
     const unifyResultsList = document.getElementById('unifyResultsList');
     const unifyDownloadAllRow = document.getElementById('unifyDownloadAllRow');
-    const btnDownloadAllUnify = document.getElementById('btnDownloadAllUnify');
     const allNamesSection = document.getElementById('allNamesSection');
     const allNamesStrip = document.getElementById('allNamesStrip');
     const allNamesCount = document.getElementById('allNamesCount');
@@ -3657,28 +3594,13 @@ ${text}`;
           });
         });
 
-        const btn = document.createElement('button');
-        btn.className = 'btn btn-download';
-        btn.type = 'button';
-        btn.textContent = '⬇ داونلۆد';
-        btn.addEventListener('click', ()=>{
-          download(withActionPrefix('UNIFIED', r.name, 'output.srt'), r.content, 'text/plain;charset=utf-8');
-        });
         row.appendChild(name);
         row.appendChild(count);
         row.appendChild(copyBtn);
-        row.appendChild(btn);
         unifyResultsList.appendChild(row);
       });
     }
 
-    btnDownloadAllUnify.addEventListener('click', ()=>{
-      unifyResults.forEach((r, i)=>{
-        setTimeout(()=>{
-          download(withActionPrefix('UNIFIED', r.name, 'output.srt'), r.content, 'text/plain;charset=utf-8');
-        }, i * 350);
-      });
-    });
 
     // کۆپیکردنی هەموو فایلەکان پێکەوە (هەرفایلێک بە هێڵی ناونیشانەوە جیادەکرێتەوە)
     document.getElementById('btnCopyAllUnify').addEventListener('click', ()=>{
