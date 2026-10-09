@@ -953,7 +953,7 @@
   <nav class="tabs">
     <button class="tab-btn active" data-tab="extract">✎&nbsp; دەق دەرهێنەر</button>
     <button class="tab-btn" data-tab="chunk">✂&nbsp; هەڵەچن</button>
-    <button class="tab-btn" data-tab="seditor">📝&nbsp; ئیدیتۆری SRT</button>
+    <button class="tab-btn" data-tab="seditor">📝&nbsp; ئیدتەری SRT</button>
     <button class="tab-btn" data-tab="compare">⇄&nbsp; بەراورد</button>
     <button class="tab-btn" data-tab="rtlfix">⇋&nbsp; (U+202B)</button>
     <button class="tab-btn" data-tab="movie">🎬&nbsp; زانیاری فیلم</button>
@@ -975,7 +975,7 @@
         <input type="file" id="fileX" accept=".srt,text/plain">
         <span class="drop-icon">◍</span>
         <div class="label">فایلی SRT</div>
-        <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە لێرە</div>
+        <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە ئێرەوە</div>
         <div class="filename" id="filenameX"></div>
       </div>
 
@@ -1011,7 +1011,7 @@
         <input type="file" id="fileChunk" accept=".srt,text/plain">
         <span class="drop-icon">◍</span>
         <div class="label">فایلی SRT</div>
-        <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە لێرە</div>
+        <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە ئێرەوە</div>
         <div class="filename" id="filenameChunk"></div>
       </div>
 
@@ -1056,7 +1056,7 @@
           <div class="drop" id="seDrop" style="max-width:420px;">
             <span class="drop-icon">◍</span>
             <div class="label">فایلی SRT</div>
-            <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە لێرە</div>
+            <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە ئێرەوە</div>
           </div>
           <input type="file" id="seFile" accept=".srt,.txt,text/plain" style="display:none">
         </div>
@@ -1064,9 +1064,9 @@
           <div class="se-bar">
             <div class="se-name" id="seName"></div>
             <span class="se-go"><input type="number" id="seGoIn" inputmode="numeric" enterkeyhint="go" min="1" placeholder="بلۆک" aria-label="ژمارەی بلۆک"><button class="se-gob" id="seGoBtn" type="button" aria-label="بڕۆ">↵</button></span>
-            <button class="btn btn-ghost" id="seFs" type="button">⛶ شاشەی تەواو</button>
+            <button class="btn btn-ghost" id="seFs" type="button">⛶ پڕاوپڕ</button>
             <button class="btn btn-download" id="seDl" type="button">دابەزاندن</button>
-            <button class="btn btn-ghost" id="seNew" type="button">فایلی نوێ</button>
+            <button class="btn btn-ghost" id="seNew" type="button">فا. نوێ</button>
           </div>
           <div class="se-lw">
             <div class="se-list" id="seList"></div>
@@ -1090,14 +1090,14 @@
           <input type="file" id="file1" accept=".srt,text/plain">
           <span class="drop-icon">◤</span>
           <div class="label">فایلی یەکەم</div>
-          <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە لێرە</div>
+          <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە ئێرەوە</div>
           <div class="filename" id="filename1"></div>
         </div>
         <div class="drop" id="drop2">
           <input type="file" id="file2" accept=".srt,text/plain">
           <span class="drop-icon">◢</span>
           <div class="label">فایلی دووەم</div>
-          <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە لێرە</div>
+          <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە ئێرەوە</div>
           <div class="filename" id="filename2"></div>
         </div>
       </div>
@@ -1201,7 +1201,7 @@
         <input type="file" id="fileR" accept=".srt,text/plain">
         <span class="drop-icon">⇋</span>
         <div class="label">فایلی SRT</div>
-        <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە لێرە</div>
+        <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە ئێرەوە</div>
         <div class="filename" id="filenameR"></div>
       </div>
 
@@ -1213,7 +1213,7 @@
       <p class="sub">کۆدی U+202B لە سەرەتا و کۆتایی هەر هێڵی دەقێک زیادکرا. timestamp ـەکان بەبێ دەستکاری ماونەتەوە.</p>
 
       <div class="btn-row">
-        <button class="btn btn-ghost" id="btnCopyRtl">کۆپیکردنی فایلی نوێ</button>
+        <button class="btn btn-ghost" id="btnCopyRtl">کۆپیکردنی فا. نوێ</button>
         <button class="btn btn-ghost" id="btnResetRtl">سڕینەوەی فایلەکە</button>
       </div>
     </div>
@@ -1283,7 +1283,7 @@
         <input type="file" id="fileU" accept=".srt,text/plain" multiple>
         <span class="drop-icon">🧩</span>
         <div class="label">فایلەکانی SRT</div>
-        <div class="hint">کرتە بکە یان فایلەکان فڕێبدەرە لێرە (چەند فایلێک پێکەوە)</div>
+        <div class="hint">کرتە بکە یان فایلەکان فڕێبدەرە ئێرەوە (چەند فایلێک پێکەوە)</div>
       </div>
 
       <div id="unifyFileList" style="margin-top:14px;"></div>
@@ -1365,7 +1365,7 @@
         <input type="file" id="fileC" accept=".srt,.vtt,text/plain">
         <span class="drop-icon">✦</span>
         <div class="label">فایلی SRT یان VTT</div>
-        <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە لێرە</div>
+        <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە ئێرەوە</div>
         <div class="filename" id="filenameC"></div>
       </div>
 
@@ -2728,7 +2728,7 @@
       return;
     }
     copyBtnFeedback(document.getElementById('btnCopyRtl'), makeRtlSrt(), ()=>{
-      setStatus(statusRtl, 'success', 'فایلی نوێ کۆپیکرا. ✓');
+      setStatus(statusRtl, 'success', 'فا. نوێ کۆپیکرا. ✓');
     }, ()=>{
       setStatus(statusRtl, 'error', 'کۆپیکردن سەرکەوتوو نەبوو.');
     });
@@ -4508,7 +4508,7 @@ $('seFs').onclick=()=>{
 };
 function fsLabel(){
   const on=fsEl()===root||root.classList.contains('se-pfs');
-  $('seFs').textContent=on?'✕ دەرچوون':'⛶ شاشەی تەواو';
+  $('seFs').textContent=on?'✕ دەرچوون':'⛶ پڕاوپڕ';
   closeMenu();
 }
 ['fullscreenchange','webkitfullscreenchange'].forEach(v=>document.addEventListener(v,fsLabel));
