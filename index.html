@@ -4246,21 +4246,66 @@ function setText(i,v,push){
   if(push)snap(i);
   save();
 }
+/* line-aware editing: colour / music note act on the caret's line or the selected lines only */
+/*PURE-START*/
 const STRIP=/<font\b[^>]*>|<\/font\s*>/gi;
-function applyColor(i,color){
-  const ta=list.children[i].querySelector('textarea'),x=S.blocks[i].x;
-  let s=ta.selectionStart,e=ta.selectionEnd;
-  if(s==null||s===e){s=0;e=x.length;}
-  const mid=x.slice(s,e).replace(STRIP,'');
-  setText(i,x.slice(0,s)+(color?'<font color="'+color+'">'+mid+'</font>':mid)+x.slice(e),true);
+function explode(x){
+  let cur=null;
+  return x.split('\n').map(ln=>{
+    const st=cur;
+    for(const t of ln.match(/<font\b[^>]*>|<\/font\s*>/gi)||[])cur=/^<\/font/i.test(t)?null:t;
+    if(!ln.replace(/<[^>]*>/g,'').trim())return ln;
+    return (st||'')+ln+(cur?'</font>':'');
+  }).join('\n');
 }
-function toggleNote(x){
-  const lead=x.match(/^\s*(?:<[^>]+>\s*)*/)[0],rest=x.slice(lead.length);
+function lineInfo(x,s,e){
+  if(s==null||e==null){s=e=x.length;}
+  s=Math.min(s,x.length);e=Math.min(e,x.length);
+  const ln=p=>x.slice(0,p).split('\n').length-1;
+  const e2=(e>s&&x[e-1]==='\n')?e-1:e;
+  return {s,e,a:ln(s),b:ln(e2)};
+}
+function colorText(x,s,e,color){
+  const i=lineInfo(x,s,e);
+  if(i.s<i.e&&i.a===i.b){
+    const mid=x.slice(i.s,i.e).replace(STRIP,'');
+    return x.slice(0,i.s)+(color?'<font color="'+color+'">'+mid+'</font>':mid)+x.slice(i.e);
+  }
+  const L=explode(x).split('\n');
+  for(let k=i.a;k<=i.b;k++){
+    const t=L[k].replace(STRIP,'');
+    L[k]=color&&t.trim()?'<font color="'+color+'">'+t+'</font>':t;
+  }
+  return L.join('\n');
+}
+function noteParts(l){
+  const lead=l.match(/^\s*(?:<[^>]+>\s*)*/)[0],rest=l.slice(lead.length);
   const trail=rest.match(/(?:\s*<\/[^>]+>)*\s*$/)[0];
-  let core=rest.slice(0,rest.length-trail.length);
-  if(/^♪|♪$/.test(core))core=core.replace(/^♪\s*/,'').replace(/\s*♪$/,'');
-  else core=core?'♪ '+core+' ♪':'♪';
-  return lead+core+trail;
+  return {lead,core:rest.slice(0,rest.length-trail.length),trail};
+}
+function noteText(x,s,e){
+  const i=lineInfo(x,s,e),L=x.split('\n');
+  let t=[];for(let k=i.a;k<=i.b;k++)t.push(k);
+  const nz=t.filter(k=>L[k].replace(/<[^>]*>/g,'').trim());
+  if(nz.length)t=nz;
+  const has=l=>/^♪|♪$/.test(noteParts(l).core);
+  const on=!t.every(k=>has(L[k]));
+  for(const k of t){
+    const p=noteParts(L[k]);let c=p.core;
+    if(on){if(!has(L[k]))c=c?'♪ '+c+' ♪':'♪';}
+    else c=c.replace(/^♪\s*/,'').replace(/\s*♪$/,'');
+    L[k]=p.lead+c+p.trail;
+  }
+  return L.join('\n');
+}
+/*PURE-END*/
+function applyColor(i,color){
+  const ta=list.children[i].querySelector('textarea');
+  setText(i,colorText(S.blocks[i].x,ta.selectionStart,ta.selectionEnd,color),true);
+}
+function applyNote(i){
+  const ta=list.children[i].querySelector('textarea');
+  setText(i,noteText(S.blocks[i].x,ta.selectionStart,ta.selectionEnd),true);
 }
 
 /* keep the block being edited above the on-screen keyboard */
@@ -4380,7 +4425,7 @@ menu.addEventListener('click',async e=>{
   const a=e.target.closest('button');if(!a||a.disabled)return;
   const i=mi,b=S.blocks[i],h=H(i);closeMenu();
   switch(a.dataset.a){
-    case 'note':setText(i,toggleNote(b.x),true);break;
+    case 'note':applyNote(i);break;
     case 'red':applyColor(i,'#FF262F');break;
     case 'yellow':applyColor(i,'#ffff00');break;
     case 'nocol':applyColor(i,null);break;
@@ -4514,7 +4559,8 @@ goIn.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();goTo(
 /* save on leave, restore when tab is opened */
 addEventListener('beforeunload',()=>{if(S)save(true);});
 document.addEventListener('visibilitychange',()=>{if(S&&document.hidden)save(true);});
-document.querySelector('.tab-btn[data-tab="seditor"]').addEventListener('click',()=>setTimeout(onShow,30));
+const tabBtn=document.querySelector('.tab-btn[data-tab="seditor"]');
+if(tabBtn)tabBtn.addEventListener('click',()=>setTimeout(onShow,30));
 
 /* boot */
 try{
