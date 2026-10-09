@@ -899,19 +899,35 @@
   .se-go input::-webkit-inner-spin-button,.se-go input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
   .se-gob{border:0;background:var(--accent);color:#fff;width:32px;font-size:14px;cursor:pointer;padding:0;}
   .se-gob:active{background:var(--accent-dim);}
-  .se-blk{background:var(--surface-2);border:1px solid var(--border-soft);border-radius:var(--radius-sm);padding:8px;display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;contain:layout style;}
-  .se-blk.cur{border-color:var(--accent);}
-  .se-meta{flex:none;width:92px;font-family:var(--font-mono);font-size:11px;color:var(--text-dim);direction:ltr;text-align:left;line-height:1.6;padding-top:6px;}
-  .se-meta b{display:block;font-size:13px;color:var(--accent);}
-  .se-tw{flex:1;min-width:0;position:relative;background:#1b2733;border-radius:12px;}
-  #panel-seditor .se-tw .se-ta,#panel-seditor .se-hl{font-family:var(--font-body);font-size:16px;line-height:1.7;padding:6px 10px;margin:0;border:0;width:100%;white-space:pre-wrap;overflow-wrap:break-word;border-radius:12px;}
-  #panel-seditor .se-tw .se-ta{display:block;position:relative;outline:0;resize:none;background:transparent;color:transparent;caret-color:#fff;overflow:hidden;min-height:2.6em;max-height:none;box-shadow:none;transition:none;field-sizing:content;}
+  .se-blk{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:22px;padding:12px;display:flex;gap:12px;align-items:stretch;margin-bottom:12px;box-shadow:var(--shadow-card);contain:layout style;transition:border-color .2s,box-shadow .2s;}
+  .se-blk::before{content:"";position:absolute;top:16px;bottom:16px;right:-1px;width:4px;border-radius:4px 0 0 4px;background:linear-gradient(180deg,#4f8a76,var(--accent));opacity:0;transform:scaleY(.4);transition:opacity .2s,transform .2s;}
+  .se-blk:hover{border-color:var(--text-faint);}
+  .se-blk.cur{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft),var(--shadow-card);}
+  .se-blk.cur::before{opacity:1;transform:none;}
+  .se-meta{flex:none;width:80px;display:flex;flex-direction:column;align-items:flex-start;gap:5px;font-family:var(--font-mono);font-size:10px;font-weight:500;line-height:1.2;color:var(--text-dim);direction:ltr;text-align:left;padding:1px 0;}
+  .se-meta b{display:inline-flex;align-items:center;justify-content:center;min-width:30px;height:24px;padding:0 8px;border-radius:9px;background:linear-gradient(135deg,#3f6b5b,var(--accent));color:#fff;font-size:12px;font-weight:800;line-height:1;box-shadow:0 5px 12px -6px var(--accent);}
+  .se-meta span{display:flex;flex-direction:column;gap:2px;width:100%;}
+  .se-meta i{display:flex;align-items:center;gap:4px;font-style:normal;padding:2px 5px;border-radius:7px;background:var(--surface-2);white-space:nowrap;letter-spacing:-.2px;font-variant-numeric:tabular-nums;}
+  .se-meta i::before{content:"";flex:none;width:5px;height:5px;border-radius:50%;background:var(--ok);}
+  .se-meta i+i::before{background:var(--danger);}
+  .se-tw{flex:1;min-width:0;position:relative;background:linear-gradient(160deg,#233140,#17212c);border-radius:16px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.06),inset 0 2px 10px rgba(0,0,0,.25);transition:box-shadow .2s;}
+  .se-tw:focus-within{box-shadow:inset 0 0 0 1.5px var(--ok),0 0 0 4px var(--accent-soft),inset 0 2px 10px rgba(0,0,0,.25);}
+  #panel-seditor .se-tw .se-ta,#panel-seditor .se-hl{font-family:var(--font-body);font-size:16px;line-height:1.8;padding:9px 14px;margin:0;border:0;width:100%;white-space:pre-wrap;overflow-wrap:break-word;border-radius:16px;}
+  #panel-seditor .se-tw .se-ta{display:block;position:relative;outline:0;resize:none;background:transparent;color:transparent;caret-color:#fff;overflow:hidden;min-height:2.9em;max-height:none;box-shadow:none;transition:none;field-sizing:content;}
   #panel-seditor .se-tw .se-ta:focus{border:0;box-shadow:none;outline:0;}
   #panel-seditor .se-tw .se-ta::selection{background:rgba(79,190,99,.45);color:transparent;}
   #panel-seditor .se-hl{position:absolute;inset:0;pointer-events:none;overflow:hidden;color:#fff;}
   .se-hl .tg{opacity:.4;}
-  .se-dots{flex:none;width:36px;height:36px;border:0;background:transparent;border-radius:50%;font-size:20px;line-height:1;color:var(--text-dim);cursor:pointer;}
-  .se-dots:hover,.se-dots:active{background:var(--accent-soft);color:var(--accent);}
+  .se-dots{flex:none;align-self:flex-start;width:36px;height:36px;border:1px solid var(--border);background:var(--surface-2);border-radius:12px;font-size:18px;line-height:1;color:var(--text-dim);cursor:pointer;transition:.15s;}
+  .se-dots:hover,.se-dots:active{background:var(--accent-soft);color:var(--accent);border-color:var(--accent);}
+  @media(max-width:560px){
+    .se-blk{display:grid;grid-template-columns:1fr auto;grid-template-areas:"meta dots" "tw tw";gap:10px;padding:10px;border-radius:20px;}
+    .se-meta{grid-area:meta;width:auto;flex-direction:row;align-items:center;gap:6px;}
+    .se-meta span{flex-direction:row;width:auto;gap:4px;}
+    .se-meta i{padding:2px 5px;font-size:10px;}
+    .se-tw{grid-area:tw;}
+    .se-dots{grid-area:dots;align-self:center;}
+  }
   #panel-seditor.active::after{content:"";display:block;height:55vh;}
   #seMenu{position:fixed;z-index:10000;background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow-pop);padding:4px;min-width:150px;max-height:min(210px,45dvh);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;display:block;visibility:hidden;opacity:0;transform:scale(.85,.4);transition:opacity .15s,transform .15s,visibility 0s .15s;}
   #seMenu.open{visibility:visible;opacity:1;transform:none;transition:opacity .15s,transform .15s,visibility 0s;}
@@ -937,7 +953,7 @@
   <nav class="tabs">
     <button class="tab-btn active" data-tab="extract">✎&nbsp; دەق دەرهێنەر</button>
     <button class="tab-btn" data-tab="chunk">✂&nbsp; هەڵەچن</button>
-    <button class="tab-btn" data-tab="seditor">📝&nbsp; ئیدیتەری SRT</button>
+    <button class="tab-btn" data-tab="seditor">📝&nbsp; ئیدیتۆری SRT</button>
     <button class="tab-btn" data-tab="compare">⇄&nbsp; بەراورد</button>
     <button class="tab-btn" data-tab="rtlfix">⇋&nbsp; (U+202B)</button>
     <button class="tab-btn" data-tab="movie">🎬&nbsp; زانیاری فیلم</button>
@@ -1040,7 +1056,7 @@
           <div class="drop" id="seDrop" style="max-width:420px;">
             <span class="drop-icon">◍</span>
             <div class="label">فایلی SRT</div>
-            <div class="hint">کرتە بکە یان فایلەکە فڕێی بدەرە ئێرە</div>
+            <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە لێرە</div>
           </div>
           <input type="file" id="seFile" accept=".srt,.txt,text/plain" style="display:none">
         </div>
@@ -1048,9 +1064,9 @@
           <div class="se-bar">
             <div class="se-name" id="seName"></div>
             <span class="se-go"><input type="number" id="seGoIn" inputmode="numeric" enterkeyhint="go" min="1" placeholder="بلۆک" aria-label="ژمارەی بلۆک"><button class="se-gob" id="seGoBtn" type="button" aria-label="بڕۆ">↵</button></span>
-            <button class="btn btn-ghost" id="seFs" type="button">⛶ پڕاوپڕ</button>
-            <button class="btn btn-download" id="seDl" type="button">داونلۆد</button>
-            <button class="btn btn-ghost" id="seNew" type="button">فا. نوێ</button>
+            <button class="btn btn-ghost" id="seFs" type="button">⛶ شاشەی تەواو</button>
+            <button class="btn btn-download" id="seDl" type="button">دابەزاندن</button>
+            <button class="btn btn-ghost" id="seNew" type="button">فایلی نوێ</button>
           </div>
           <div class="se-lw">
             <div class="se-list" id="seList"></div>
@@ -4209,7 +4225,8 @@ function render(){
     const d=document.createElement('div');d.className='se-blk';d.dataset.i=i;
     d.innerHTML='<div class="se-meta"><b></b><span></span></div><div class="se-tw"><div class="se-hl" aria-hidden="true"></div><textarea class="se-ta" spellcheck="false" rows="2" readonly></textarea></div><button class="se-dots" type="button" aria-label="menu">⋮</button>';
     d.querySelector('b').textContent=b.n;
-    d.querySelector('span').textContent=b.t.replace(/,/g,'.').replace(/\s*-->\s*/,' → ');
+    {const sp=d.querySelector('span'),tp=b.t.replace(/,/g,'.').split(/\s*-->\s*/);
+    for(const v of [tp[0],tp[1]]){if(v==null)continue;const e=document.createElement('i');e.textContent=v;sp.appendChild(e);}}
     d.querySelector('textarea').value=b.x;
     paint(d);fr.appendChild(d);
   });
