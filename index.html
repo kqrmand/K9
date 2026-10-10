@@ -980,7 +980,7 @@
   <nav class="tabs">
     <button class="tab-btn active" data-tab="extract">✎&nbsp; دەق دەرهێنەر</button>
     <button class="tab-btn" data-tab="chunk">✂&nbsp; هەڵەچن</button>
-    <button class="tab-btn" data-tab="seditor">📝&nbsp; ئیدیتەری SRT</button>
+    <button class="tab-btn" data-tab="seditor">📝&nbsp; ئیدیتۆری SRT</button>
     <button class="tab-btn" data-tab="compare">⇄&nbsp; بەراورد</button>
     <button class="tab-btn" data-tab="rtlfix">⇋&nbsp; (U+202B)</button>
     <button class="tab-btn" data-tab="movie">🎬&nbsp; زانیاری فیلم</button>
@@ -1002,7 +1002,7 @@
         <input type="file" id="fileX" accept=".srt,text/plain">
         <span class="drop-icon">◍</span>
         <div class="label">فایلی SRT</div>
-        <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە ئێرەوە</div>
+        <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە لێرە</div>
         <div class="filename" id="filenameX"></div>
       </div>
 
@@ -1038,7 +1038,7 @@
         <input type="file" id="fileChunk" accept=".srt,text/plain">
         <span class="drop-icon">◍</span>
         <div class="label">فایلی SRT</div>
-        <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە ئێرەوە</div>
+        <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە لێرە</div>
         <div class="filename" id="filenameChunk"></div>
       </div>
 
@@ -1118,14 +1118,14 @@
           <input type="file" id="file1" accept=".srt,text/plain">
           <span class="drop-icon">◤</span>
           <div class="label">فایلی یەکەم</div>
-          <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە ئێرەوە</div>
+          <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە لێرە</div>
           <div class="filename" id="filename1"></div>
         </div>
         <div class="drop" id="drop2">
           <input type="file" id="file2" accept=".srt,text/plain">
           <span class="drop-icon">◢</span>
           <div class="label">فایلی دووەم</div>
-          <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە ئێرەوە</div>
+          <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە لێرە</div>
           <div class="filename" id="filename2"></div>
         </div>
       </div>
@@ -1229,7 +1229,7 @@
         <input type="file" id="fileR" accept=".srt,text/plain">
         <span class="drop-icon">⇋</span>
         <div class="label">فایلی SRT</div>
-        <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە ئێرەوە</div>
+        <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە لێرە</div>
         <div class="filename" id="filenameR"></div>
       </div>
 
@@ -1311,7 +1311,7 @@
         <input type="file" id="fileU" accept=".srt,text/plain" multiple>
         <span class="drop-icon">🧩</span>
         <div class="label">فایلەکانی SRT</div>
-        <div class="hint">کرتە بکە یان فایلەکان فڕێبدەرە ئێرەوە (چەند فایلێک پێکەوە)</div>
+        <div class="hint">کرتە بکە یان فایلەکان فڕێبدەرە لێرە (چەند فایلێک پێکەوە)</div>
       </div>
 
       <div id="unifyFileList" style="margin-top:14px;"></div>
@@ -1393,7 +1393,7 @@
         <input type="file" id="fileC" accept=".srt,.vtt,text/plain">
         <span class="drop-icon">✦</span>
         <div class="label">فایلی SRT یان VTT</div>
-        <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە ئێرەوە</div>
+        <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە لێرە</div>
         <div class="filename" id="filenameC"></div>
       </div>
 
@@ -4220,17 +4220,19 @@ function save(now,quiet){
 const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const RTL=/[\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/;
 function dirOf(t){
-  const m=t.replace(/<[^>]*>/g,'').match(/[A-Za-z\u00C0-\u024F\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/);
+  const m=t.replace(/<[^>]*>|\{[^}]*\}/g,'').match(/[A-Za-z\u00C0-\u024F\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/);
   return m&&!RTL.test(m[0])?'ltr':'rtl';
 }
 function hlt(x){
   let col=null,out='';
-  for(const p of x.split(/(<[^>]*>)/)){
+  for(const p of x.split(/(<[^>]*>|\{[^}]*\})/)){
     if(!p)continue;
     if(p[0]==='<'&&p[p.length-1]==='>'){
       const m=p.match(/^<font\b[^>]*\bcolor\s*=\s*["']?([#\w]+)["']?[^>]*>$/i);
       if(m&&/^(#[0-9a-f]{3,8}|[a-z]+)$/i.test(m[1]))col=m[1];
       else if(/^<\/font\s*>$/i.test(p))col=null;
+      out+='<span class="tg">'+esc(p)+'</span>';
+    }else if(p[0]==='{'&&p[p.length-1]==='}'){
       out+='<span class="tg">'+esc(p)+'</span>';
     }else out+=col?'<span style="color:'+col+'">'+esc(p)+'</span>':esc(p);
   }
@@ -4294,13 +4296,26 @@ function setText(i,v,push){
 /* line-aware editing: colour / music note act on the caret's line or the selected lines only */
 /*PURE-START*/
 const STRIP=/<font\b[^>]*>|<\/font\s*>/gi;
+const NOVIS=/<[^>]*>|\{[^}]*\}/g;
+function wrapColor(t,color){
+  if(!color)return t;
+  return t.split(/(\{[^}]*\})/).map((p,k)=>(k%2||!p.trim())?p:'<font color="'+color+'">'+p+'</font>').join('');
+}
+function snapOut(x,p,dir){
+  if(p<=0||p>=x.length)return p;
+  const o=x.lastIndexOf('{',p-1),c=x.lastIndexOf('}',p-1);
+  if(o>c){if(dir>0){const n=x.indexOf('}',p);return n<0?p:n+1;}return o;}
+  return p;
+}
 function explode(x){
   let cur=null;
   return x.split('\n').map(ln=>{
     const st=cur;
     for(const t of ln.match(/<font\b[^>]*>|<\/font\s*>/gi)||[])cur=/^<\/font/i.test(t)?null:t;
-    if(!ln.replace(/<[^>]*>/g,'').trim())return ln;
-    return (st||'')+ln+(cur?'</font>':'');
+    if(!ln.replace(NOVIS,'').trim())return ln;
+    const lead=ln.match(/^(?:\{[^}]*\})*/)[0],rest=ln.slice(lead.length);
+    const trail=rest.match(/(?:\{[^}]*\})*$/)[0],core=rest.slice(0,rest.length-trail.length);
+    return lead+(st||'')+core+(cur?'</font>':'')+trail;
   }).join('\n');
 }
 function lineInfo(x,s,e){
@@ -4313,25 +4328,24 @@ function lineInfo(x,s,e){
 function colorText(x,s,e,color){
   const i=lineInfo(x,s,e);
   if(i.s<i.e&&i.a===i.b){
-    const mid=x.slice(i.s,i.e).replace(STRIP,'');
-    return x.slice(0,i.s)+(color?'<font color="'+color+'">'+mid+'</font>':mid)+x.slice(i.e);
+    const s2=snapOut(x,i.s,1),e2=snapOut(x,i.e,-1);
+    if(s2>=e2)return x;
+    const mid=x.slice(s2,e2).replace(STRIP,'');
+    return x.slice(0,s2)+wrapColor(mid,color)+x.slice(e2);
   }
   const L=explode(x).split('\n');
-  for(let k=i.a;k<=i.b;k++){
-    const t=L[k].replace(STRIP,'');
-    L[k]=color&&t.trim()?'<font color="'+color+'">'+t+'</font>':t;
-  }
+  for(let k=i.a;k<=i.b;k++)L[k]=wrapColor(L[k].replace(STRIP,''),color);
   return L.join('\n');
 }
 function noteParts(l){
-  const lead=l.match(/^\s*(?:<[^>]+>\s*)*/)[0],rest=l.slice(lead.length);
-  const trail=rest.match(/(?:\s*<\/[^>]+>)*\s*$/)[0];
+  const lead=l.match(/^\s*(?:(?:<[^>]+>|\{[^}]*\})\s*)*/)[0],rest=l.slice(lead.length);
+  const trail=rest.match(/(?:\s*(?:<\/[^>]+>|\{[^}]*\}))*\s*$/)[0];
   return {lead,core:rest.slice(0,rest.length-trail.length),trail};
 }
 function noteText(x,s,e){
   const i=lineInfo(x,s,e),L=x.split('\n');
   let t=[];for(let k=i.a;k<=i.b;k++)t.push(k);
-  const nz=t.filter(k=>L[k].replace(/<[^>]*>/g,'').trim());
+  const nz=t.filter(k=>L[k].replace(NOVIS,'').trim());
   if(nz.length)t=nz;
   const has=l=>/^♪|♪$/.test(noteParts(l).core);
   const on=!t.every(k=>has(L[k]));
@@ -4347,20 +4361,20 @@ function colorUpTo(x,e,color,keep){
   const M='\u0001';
   const lo=x.lastIndexOf('<',e-1),gt=x.lastIndexOf('>',e-1);
   if(lo>gt){const n=x.indexOf('>',e);e=n<0?x.length:n+1;}
+  e=snapOut(x,e,1);
   if(e<=0)return keep?M+x:x;
   if(e>=x.length)return colorText(x,0,x.length,color);
   const b=x.slice(0,e).split('\n').length-1;
   const L=explode(x.slice(0,e)+M+x.slice(e)).split('\n');
   for(let k=0;k<b;k++){
-    const t=L[k].replace(STRIP,'');
-    L[k]=color&&t.trim()?'<font color="'+color+'">'+t+'</font>':t;
+    L[k]=wrapColor(L[k].replace(STRIP,''),color);
   }
   const ln=L[b],ix=ln.indexOf(M),head=ln.slice(0,ix),tail=ln.slice(ix+1);
   let st=null;
   for(const t of head.match(/<font\b[^>]*>|<\/font\s*>/gi)||[])st=/^<\/font/i.test(t)?null:t;
   const hs=head.replace(STRIP,'');
-  const nh=color&&hs.trim()?'<font color="'+color+'">'+hs+'</font>':hs;
-  const nt=(st&&tail.replace(/<[^>]*>/g,'').trim())?st+tail:tail;
+  const nh=wrapColor(hs,color);
+  const nt=(st&&tail.replace(NOVIS,'').trim())?st+tail:tail;
   L[b]=nh+(keep?M:'')+nt;
   return L.join('\n');
 }
