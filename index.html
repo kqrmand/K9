@@ -958,6 +958,19 @@
   .se-gob{width:34px;font-size:15px;background:linear-gradient(135deg,var(--accent-lt),var(--accent));}
   .se-gob:active{filter:brightness(.9);}
   .se-list{padding:4px 28px 70vh 4px;}
+  /* ---- solo mode: one block opened alone + nav row underneath ---- */
+  .se-nav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:60;gap:8px;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--border);box-shadow:0 -8px 22px -12px rgba(0,0,0,.35);}
+  .se-nb{flex:1 1 0;min-width:0;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:14px;padding:12px 6px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:var(--shadow-card);-webkit-tap-highlight-color:transparent;transition:.15s;}
+  .se-nb:hover{border-color:var(--accent);color:var(--accent);}
+  .se-nb:active{transform:scale(.97);}
+  .se-nb:disabled{opacity:.35;cursor:default;transform:none;}
+  .se-nb:disabled:hover{border-color:var(--border);color:var(--text);}
+  .se-nb-ok,.se-nb-ok:hover{background:linear-gradient(135deg,var(--accent-lt),var(--accent));border-color:transparent;color:#fff;}
+  .se-lw.solo{display:flex;flex-direction:column;}
+  .se-lw.solo .se-list{flex:0 1 auto;height:auto;padding:4px 4px 84px 4px;}
+  .se-lw.solo .se-sb{display:none!important;}
+  .se-lw.solo .se-nav{display:flex;}
+  .se-list.solo .se-blk:not(.sv){display:none;}
   #panel-seditor .se-tw .se-ta{touch-action:manipulation;}
   #panel-seditor.active::after{content:"";display:block;height:55vh;}
   #seMenu{position:fixed;z-index:10000;background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:0 16px 40px -12px rgba(0,0,0,.4);padding:5px;min-width:158px;max-height:min(220px,45dvh);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;display:block;visibility:hidden;opacity:0;transform:scale(.85,.4);transition:opacity .15s,transform .15s,visibility 0s .15s;}
@@ -1177,6 +1190,11 @@
           <div class="se-lw">
             <div class="se-list" id="seList"></div>
             <div class="se-sb" id="seSb"><div class="se-thumb" id="seThumb"><span class="se-tip" id="seTip"></span></div></div>
+            <div class="se-nav" id="seNav" dir="rtl">
+              <button class="se-nb" id="seNavNext" type="button">لاینی دواتر</button>
+              <button class="se-nb se-nb-ok" id="seNavApply" type="button">✓ ئەپڵای</button>
+              <button class="se-nb" id="seNavPrev" type="button">لاینی پێشتر</button>
+            </div>
           </div>
         </div>
         <div id="seMenu"></div>
@@ -4260,6 +4278,8 @@ const $=id=>document.getElementById(id);
 const root=$('seRoot'),list=$('seList'),menu=$('seMenu'),panel=$('panel-seditor');
 const FS=CSS.supports('field-sizing','content');
 let S=null,mi=-1,restored=false,saveT,fadeT;
+let solo=false,soloScroll=0,soloStart=0;
+const lw=list.parentNode,nav=$('seNav');
 const hist=new Map(),snapT={};
 
 /* parse / build (times are never touched) */
@@ -4291,7 +4311,7 @@ function save(now,quiet){
   const go=()=>{
     const show=loud;loud=false;
     try{
-      if(visible()&&restored)S.scroll=list.scrollTop;
+      if(visible()&&restored)S.scroll=solo?soloScroll:list.scrollTop;
       localStorage.setItem(KEY,JSON.stringify(S));
       if(show&&visible())flash('se-saved',450);
     }catch(e){flash('se-err',1800);}
@@ -4330,6 +4350,7 @@ const fitAll=()=>{if(!FS)list.querySelectorAll('textarea').forEach(fit);};
 function render(){
   $('seEmpty').classList.add('se-hide');$('seApp').classList.remove('se-hide');
   $('seName').textContent=S.name;
+  solo=false;list.classList.remove('solo');lw.classList.remove('solo');
   list.innerHTML='';
   const fr=document.createDocumentFragment();
   S.blocks.forEach((b,i)=>{
@@ -4473,7 +4494,10 @@ function ensure(){
   const ta=document.activeElement;
   if(!ta||ta.tagName!=='TEXTAREA'||ta.readOnly||!list.contains(ta))return;
   const blk=ta.closest('.se-blk');if(!blk)return;
-  const top=VV?VV.offsetTop:0,h=VV?VV.height:innerHeight,bottom=top+h,m=12;
+  const top=VV?VV.offsetTop:0,m=12;
+  let bottom=top+(VV?VV.height:innerHeight);
+  if(solo)bottom=Math.min(bottom,nav.getBoundingClientRect().top);
+  const h=bottom-top;
   const r=blk.getBoundingClientRect();
   if(r.top>=top+m&&r.bottom<=bottom-m)return;
   const tgt=r.height>h-2*m?top+m:Math.max(top+m,top+(h-r.height)/3);
@@ -4526,7 +4550,66 @@ list.addEventListener('mousedown',e=>{if(e.target.closest('.se-dots'))e.preventD
 menu.addEventListener('mousedown',e=>e.preventDefault());
 addEventListener('resize',closeMenu);
 
-/* single tap/click opens the keyboard; double tap/click selects the whole text */
+/* solo mode: touching a block opens it alone, with prev / next / apply underneath */
+function showSolo(i,focus){
+  const nb=list.children[i],old=list.querySelector('.se-blk.sv');
+  if(!nb)return;
+  nb.classList.add('sv');
+  const ta=nb.querySelector('textarea');
+  if(!FS)fit(ta);
+  if(focus){
+    ta.readOnly=false;ta.focus();
+    try{ta.setSelectionRange(ta.value.length,ta.value.length);}catch(_){}
+  }
+  if(old&&old!==nb)old.classList.remove('sv');
+  S.cur=i;markCur();
+  list.scrollTop=0;
+  $('seNavPrev').disabled=i<=0;
+  $('seNavNext').disabled=i>=S.blocks.length-1;
+  sbUpdate();
+}
+function placeNav(){
+  if(!solo)return;
+  const off=VV?Math.max(0,innerHeight-VV.offsetTop-VV.height):0;
+  nav.style.bottom=off+'px';
+}
+if(VV){VV.addEventListener('resize',placeNav);VV.addEventListener('scroll',placeNav);}
+addEventListener('resize',placeNav);
+function enterSolo(i){
+  if(!solo){
+    soloScroll=list.scrollTop;soloStart=i;solo=true;
+    list.classList.add('solo');lw.classList.add('solo');
+  }
+  placeNav();
+  showSolo(i,false);
+}
+function exitSolo(){
+  if(!solo)return;
+  const i=S.cur,a=document.activeElement;
+  if(a&&a.tagName==='TEXTAREA'&&list.contains(a))a.blur();
+  clearTimeout(snapT[i]);snap(i);
+  solo=false;
+  list.classList.remove('solo');lw.classList.remove('solo');
+  list.querySelectorAll('.sv').forEach(e=>e.classList.remove('sv'));
+  fitAll();
+  const blk=list.children[i];
+  list.scrollTop=(i===soloStart)?soloScroll:Math.max(0,blk.offsetTop-6);
+  markCur();sbUpdate();
+  save(true);
+}
+function soloStep(d){
+  const j=S.cur+d;
+  if(!solo||j<0||j>=S.blocks.length)return;
+  clearTimeout(snapT[S.cur]);snap(S.cur);
+  showSolo(j,true);
+}
+nav.addEventListener('mousedown',e=>e.preventDefault());
+$('seNavPrev').onclick=()=>soloStep(-1);
+$('seNavNext').onclick=()=>soloStep(1);
+$('seNavApply').onclick=exitSolo;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&solo&&visible())exitSolo();});
+
+/* single tap/click opens the block alone + keyboard; double tap/click selects the whole text */
 let lastTap=0,lastTa=null;
 list.addEventListener('click',e=>{
   const bt=e.target.closest('.se-dots');
@@ -4536,7 +4619,18 @@ list.addEventListener('click',e=>{
     if(menu.classList.contains('open')&&mi===i)closeMenu();else openMenu(i,bt);
     return;
   }
-  const ta=e.target.closest('textarea');if(!ta)return;
+  const blk=e.target.closest('.se-blk');if(!blk)return;
+  const was=solo;
+  if(!was)enterSolo(+blk.dataset.i);
+  const ta=e.target.closest('textarea');
+  if(!ta){
+    if(!was){
+      const t0=blk.querySelector('textarea');
+      t0.readOnly=false;t0.focus();
+      try{t0.setSelectionRange(t0.value.length,t0.value.length);}catch(_){}
+    }
+    return;
+  }
   const t=Date.now(),dbl=lastTa===ta&&t-lastTap<450;
   if(ta.readOnly){
     const s=ta.selectionStart,en=ta.selectionEnd;
@@ -4633,7 +4727,7 @@ $('seDl').onclick=()=>{
 $('seNew').onclick=()=>{
   if(!confirm('فایلی ئێستا دادەخرێت و دەسکارییەکان دەسڕێنەوە. بەردەوام بیت؟ (پێشتر «دابەزاندن» بکە)'))return;
   try{localStorage.removeItem(KEY);}catch(_){}
-  S=null;hist.clear();list.innerHTML='';
+  S=null;hist.clear();solo=false;list.classList.remove('solo');lw.classList.remove('solo');list.innerHTML='';
   $('seApp').classList.add('se-hide');$('seEmpty').classList.remove('se-hide');
   exitFs();
 };
@@ -4712,6 +4806,7 @@ function goTo(){
   let idx=S.blocks.findIndex(b=>String(b.n)===String(v));
   if(idx<0)idx=Math.min(v,S.blocks.length)-1;
   goIn.blur();closeMenu();
+  if(solo){showSolo(idx,false);save(false,true);return;}
   S.cur=idx;markCur();
   list.scrollTop=Math.max(0,list.children[idx].offsetTop-6);
   save(false,true);
