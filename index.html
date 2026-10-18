@@ -996,6 +996,27 @@
   .theme-opt.on{border-color:var(--accent);background:var(--accent-soft);}
   .theme-sw{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;box-shadow:inset 0 0 0 1px rgba(0,0,0,.10);}
   .theme-sw i{width:28px;height:28px;border-radius:50%;display:block;font-style:normal;color:#fff;font-size:15px;font-weight:800;line-height:28px;text-align:center;box-shadow:0 4px 10px -3px rgba(0,0,0,.45);}
+
+/* ===== Login gate ===== */
+body:not(.authed) .wrap{display:none !important;}
+#authOverlay{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+  background:var(--bg,#e8f0f7);padding:20px;}
+body.authed #authOverlay{display:none;}
+.auth-card{width:100%;max-width:380px;background:var(--surface,#fff);border:1px solid var(--border,#d0def1);
+  border-radius:18px;padding:26px 22px;box-shadow:0 10px 30px -12px rgba(0,0,0,.25);text-align:center;}
+.auth-card h1{margin:0 0 4px;font-size:26px;direction:ltr;color:var(--text,#14233b);}
+.auth-card p{margin:0 0 18px;color:var(--text-dim,#5f7899);font-size:14px;}
+.auth-card input{width:100%;box-sizing:border-box;margin-bottom:10px;padding:12px 14px;font-size:15px;
+  border:1px solid var(--border,#d0def1);border-radius:10px;background:var(--surface-2,#f4f7fb);
+  color:var(--text,#14233b);direction:ltr;text-align:left;font-family:inherit;}
+.auth-card button{width:100%;padding:12px;font-size:15px;font-weight:700;border:0;border-radius:10px;
+  background:var(--accent,#27423a);color:#fff;cursor:pointer;font-family:inherit;}
+.auth-card button:disabled{opacity:.6;cursor:wait;}
+#authErr{min-height:20px;margin-top:10px;color:var(--danger,#ec5e6f);font-size:13px;}
+#logoutBtn{display:none;position:fixed;bottom:14px;left:14px;z-index:900;padding:8px 14px;font-size:13px;
+  border:1px solid var(--border,#d0def1);border-radius:999px;background:var(--surface,#fff);
+  color:var(--text,#14233b);cursor:pointer;font-family:inherit;box-shadow:0 4px 14px -6px rgba(0,0,0,.3);}
+body.authed #logoutBtn{display:block;}
 </style>
 <meta name="theme-color" content="#e8f0f7" id="metaTheme">
 <script>
@@ -1051,6 +1072,20 @@
 </script>
 </head>
 <body>
+
+<!-- ===== Login overlay ===== -->
+<div id="authOverlay">
+  <div class="auth-card">
+    <h1>PreSub</h1>
+    <p>بۆ چوونەژوورەوە، ناو و پاسۆردەکەت بنووسە</p>
+    <input type="email" id="authEmail" placeholder="Username" autocomplete="username">
+    <input type="password" id="authPass" placeholder="Password" autocomplete="current-password">
+    <button id="authBtn" type="button">چوونەژوورەوە</button>
+    <div id="authErr"></div>
+  </div>
+</div>
+<button id="logoutBtn" type="button">چوونەدەرەوە</button>
+
 
 <div class="wrap">
 
@@ -4871,6 +4906,88 @@ document.addEventListener('click',function(e){
 });
 document.addEventListener('keydown',function(e){if(e.key==='Escape')setOpen(false);});
 })();
+</script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, onSnapshot, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD84IM9RTcGD2_Mc__0qQfah0LrKuZ8QY0",
+  authDomain: "karo-1998.firebaseapp.com",
+  projectId: "karo-1998",
+  storageBucket: "karo-1998.firebasestorage.app",
+  messagingSenderId: "376308051611",
+  appId: "1:376308051611:web:cf92fa468540ca195a603e"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+const $ = id => document.getElementById(id);
+const SID_KEY = 'presub_sid';
+const DOMAIN  = '@presub.app';   // ئەگەر تەنها ناو بنووسرێت، ئەمە بۆی زیاد دەبێت
+
+let pendingSid = null;   // دوای چوونەژوورەوەی نوێ
+let unsub = null;
+
+function lock(msg){
+  document.body.classList.remove('authed');
+  if(msg) $('authErr').textContent = msg;
+}
+
+onAuthStateChanged(auth, async user => {
+  if(unsub){ unsub(); unsub = null; }
+  if(!user){ lock(); return; }
+
+  const ref = doc(db, 'sessions', user.uid);
+  try{
+    if(pendingSid){
+      await setDoc(ref, { sid: pendingSid, t: serverTimestamp() });
+      pendingSid = null;
+    }
+    unsub = onSnapshot(ref, snap => {
+      const d = snap.data();
+      if(d && d.sid === localStorage.getItem(SID_KEY)){
+        document.body.classList.add('authed');
+      }else{
+        lock('ئەم ئەکاونتە لە ئامێرێکی دیکە کراوەتەوە. دووبارە بچۆرە ژوورەوە.');
+        signOut(auth);
+      }
+    }, () => { lock('هەڵە لە پشکنینی ئامێر.'); signOut(auth); });
+  }catch(e){
+    lock('هەڵە لە پشکنینی ئامێر. دووبارە هەوڵبدەرەوە.');
+    signOut(auth);
+  }
+});
+
+async function doLogin(){
+  const btn = $('authBtn'), err = $('authErr');
+  err.textContent = '';
+  let email = $('authEmail').value.trim().toLowerCase();
+  const pass = $('authPass').value;
+  if(!email || !pass){ err.textContent = 'ناو و پاسۆرد بنووسە'; return; }
+  if(!email.includes('@')) email += DOMAIN;
+  btn.disabled = true;
+  try{
+    pendingSid = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random());
+    localStorage.setItem(SID_KEY, pendingSid);
+    await signInWithEmailAndPassword(auth, email, pass);
+    $('authPass').value = '';
+  }catch(e){
+    pendingSid = null;
+    err.textContent = (e.code === 'auth/too-many-requests')
+      ? 'هەوڵی زۆر دراوە، دواتر تاقی بکەرەوە'
+      : 'ناو یان پاسۆرد هەڵەیە';
+  }
+  btn.disabled = false;
+}
+$('authBtn').addEventListener('click', doLogin);
+$('authPass').addEventListener('keydown', e => { if(e.key === 'Enter') doLogin(); });
+$('logoutBtn').addEventListener('click', () => signOut(auth));
 </script>
 </body>
 </html>
