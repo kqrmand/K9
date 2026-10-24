@@ -169,8 +169,17 @@
   #panel-player.tv .pl-nav{display:grid;}
   #panel-player .pl-help{font-size:12.5px;color:var(--text-dim);margin:14px 0 0;}
   #panel-player .pl-help a{color:var(--accent);}
+  #panel-player .pl-stage{position:relative;}
+  #panel-player .pl-stage.pl-full{position:fixed;inset:0;z-index:10000;width:100vw;height:100vh;height:100dvh;aspect-ratio:auto;border-radius:0;border:0;padding:0;}
+  #panel-player #plStage:fullscreen{width:100vw;height:100vh;aspect-ratio:auto;border-radius:0;border:0;padding:0;}
+  #panel-player #plStage:-webkit-full-screen{width:100vw;height:100vh;aspect-ratio:auto;border-radius:0;border:0;padding:0;}
+  #panel-player #plExit{position:absolute;top:10px;left:10px;z-index:2;width:38px;height:38px;border:0;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;font-size:18px;line-height:1;cursor:pointer;}
+  #panel-player .pl-custom-only{display:none;}
   #panel-player details{margin-top:14px;color:var(--text-dim);font-size:13px;}
   #panel-player summary{cursor:pointer;}
+  #panel-player.custom .pl-custom-only{display:block;}
+  #panel-player.custom .pl-tmdb-only{display:none;}
+  #panel-player.custom .pl-nav{display:none;}
   .panel{display:none;}
   .panel.active{display:block;animation:fade .2s ease;}
   @keyframes fade{from{opacity:0;transform:translateY(3px);}to{opacity:1;transform:translateY(0);}}
@@ -1591,32 +1600,45 @@
     <div class="card">
       <h2><span class="step-badge">1</span>پلەیەری فیلم و زنجیرە</h2>
       <div class="pl-stage" id="plStage">ژمارەی TMDB بنووسە و دوگمەی «پەخش بکە» دابگرە</div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="plFull" type="button">⛶ پڕ بە شاشە</button>
+        <button class="btn btn-ghost" id="plOpen" type="button">↗ لە تابی نوێدا بیکەرەوە</button>
+      </div>
     </div>
 
     <div class="card">
       <h2><span class="step-badge">2</span>هەڵبژاردنی ناوەڕۆک</h2>
-      <div class="pl-seg" role="group" aria-label="جۆر">
-        <button type="button" id="plBMovie" aria-pressed="true">فیلم</button>
-        <button type="button" id="plBTv" aria-pressed="false">زنجیرە / دراما</button>
-      </div>
-
       <label class="label-sm" for="plSource">سەرچاوە</label>
       <select id="plSource" class="text-input ltr" style="margin-bottom:10px;">
         <option value="framextv">framextv.xyz</option>
         <option value="vidhive">vidhive.lol</option>
+        <option value="custom">ئادرەسی ڕاستەوخۆ (لینک یان کۆدی embed)</option>
       </select>
 
-      <label class="label-sm" for="plTmdb">ژمارەی TMDB</label>
-      <input id="plTmdb" class="text-input ltr" inputmode="numeric" placeholder="ژمارەی TMDB">
+      <div class="pl-custom-only">
+        <label class="label-sm" for="plCustomUrl">ئادرەسی ڤیدیۆ یان کۆدی embed</label>
+        <input id="plCustomUrl" class="text-input ltr" placeholder="https://...  یان  &lt;iframe src=&quot;https://...&quot;&gt;">
+        <p class="pl-help">ئادرەسێکی https یان کۆدی &lt;iframe&gt; لێرە دابنێ، خۆی ئادرەسەکەی لێ دەردەهێنێت. زۆربەی ماڵپەڕەکان ڕێگە نادەن لە ناو ئەپی دیکەدا بکرێنەوە؛ ئەگەر شاشەکە بەتاڵ مایەوە، دوگمەی «لە تابی نوێدا بیکەرەوە» بەکاربهێنە.</p>
+      </div>
 
-      <div class="pl-row pl-tv-only">
-        <div>
-          <label class="label-sm" for="plSeason">وەرز (Season)</label>
-          <input id="plSeason" class="text-input ltr" inputmode="numeric" value="1">
+      <div class="pl-tmdb-only">
+        <div class="pl-seg" role="group" aria-label="جۆر">
+          <button type="button" id="plBMovie" aria-pressed="true">فیلم</button>
+          <button type="button" id="plBTv" aria-pressed="false">زنجیرە / دراما</button>
         </div>
-        <div>
-          <label class="label-sm" for="plEpisode">ئەڵقە (Episode)</label>
-          <input id="plEpisode" class="text-input ltr" inputmode="numeric" value="1">
+
+        <label class="label-sm" for="plTmdb">ژمارەی TMDB</label>
+        <input id="plTmdb" class="text-input ltr" inputmode="numeric" placeholder="ژمارەی TMDB">
+
+        <div class="pl-row pl-tv-only">
+          <div>
+            <label class="label-sm" for="plSeason">وەرز (Season)</label>
+            <input id="plSeason" class="text-input ltr" inputmode="numeric" value="1">
+          </div>
+          <div>
+            <label class="label-sm" for="plEpisode">ئەڵقە (Episode)</label>
+            <input id="plEpisode" class="text-input ltr" inputmode="numeric" value="1">
+          </div>
         </div>
       </div>
 
@@ -4982,7 +5004,11 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')setOpen(fals
     $("plMovieTpl").value = t.movie;
     $("plTvTpl").value = t.tv;
   }
-  $("plSource").addEventListener("change", function(){ applySource(this.value); });
+  function syncSource(){ panel.classList.toggle("custom", $("plSource").value==="custom"); }
+  $("plSource").addEventListener("change", function(){
+    if(this.value!=="custom") applySource(this.value);
+    syncSource();
+  });
 
   function setMode(m){
     mode = m;
@@ -4999,38 +5025,96 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')setOpen(fals
     if(s.season) $("plSeason").value = s.season;
     if(s.episode) $("plEpisode").value = s.episode;
     if(s.mode) setMode(s.mode);
-    if(s.source && SOURCES[s.source]) $("plSource").value = s.source;
+    if(s.source && (SOURCES[s.source] || s.source==="custom")) $("plSource").value = s.source;
+    if(s.custom) $("plCustomUrl").value = s.custom;
     if(s.movieTpl) $("plMovieTpl").value = s.movieTpl;
     if(s.tvTpl) $("plTvTpl").value = s.tvTpl;
   }catch(e){}
 
   function num(v){ var n = parseInt(String(v).replace(/\D/g,""),10); return isNaN(n)?null:n; }
 
+  var lastUrl = "", pseudo = false;
+
   function play(){
     var stage = $("plStage");
-    var id = num($("plTmdb").value);
-    if(!id){ stage.textContent = "ژمارەیەکی دروست بنووسە."; return; }
-    var tpl = mode==="movie" ? $("plMovieTpl").value : $("plTvTpl").value;
-    var se = num($("plSeason").value)||1, ep = num($("plEpisode").value)||1;
-    var url = tpl.replace("{id}",id).replace("{s}",se).replace("{e}",ep);
+    if(pseudo) exitPseudo();
+    var url, id = null, se = 1, ep = 1;
+
+    if($("plSource").value === "custom"){
+      var raw = $("plCustomUrl").value.trim();
+      var m = raw.match(/src\s*=\s*["']([^"']+)["']/i);   // accept a pasted <iframe ...> snippet
+      url = (m ? m[1] : raw).trim();
+      if(url.indexOf("//") === 0) url = "https:" + url;
+      if(!url){ stage.textContent = "ئادرەسێک بنووسە."; return; }
+    }else{
+      id = num($("plTmdb").value);
+      if(!id){ stage.textContent = "ژمارەیەکی دروست بنووسە."; return; }
+      var tpl = mode==="movie" ? $("plMovieTpl").value : $("plTvTpl").value;
+      se = num($("plSeason").value)||1; ep = num($("plEpisode").value)||1;
+      url = tpl.replace("{id}",id).replace("{s}",se).replace("{e}",ep);
+    }
     if(!/^https:\/\//i.test(url)){ stage.textContent = "ئادرەسەکە دەبێت بە https دەست پێبکات."; return; }
+    lastUrl = url;
 
     var f = document.createElement("iframe");
     f.src = url;
     f.allowFullscreen = true;
-    f.setAttribute("allow","autoplay; fullscreen; picture-in-picture; encrypted-media");
+    f.setAttribute("allowfullscreen","");
+    f.setAttribute("webkitallowfullscreen","");
+    f.setAttribute("mozallowfullscreen","");
+    f.setAttribute("allow","autoplay; fullscreen *; picture-in-picture; encrypted-media");
     f.setAttribute("referrerpolicy","no-referrer");
     stage.textContent = "";
     stage.appendChild(f);
 
     try{
       localStorage.setItem(KEY, JSON.stringify({
-        id:id, season:se, episode:ep, mode:mode, source:$("plSource").value,
+        id:id, season:se, episode:ep, mode:mode, source:$("plSource").value, custom:$("plCustomUrl").value,
         movieTpl:$("plMovieTpl").value, tvTpl:$("plTvTpl").value
       }));
     }catch(e){}
   }
 
+  /* ---- Fullscreen: fullscreen the wrapper (not the iframe), so it works even when the
+         embedded page forgot to allow fullscreen. Falls back to a CSS "fake" fullscreen
+         where the browser has no element fullscreen (e.g. iPhone Safari). ---- */
+  function enterPseudo(){
+    var stage = $("plStage");
+    stage.classList.add("pl-full");
+    document.documentElement.style.overflow = "hidden";
+    var b = document.createElement("button");
+    b.id = "plExit"; b.type = "button"; b.textContent = "✕"; b.setAttribute("aria-label","دەرچوون");
+    b.onclick = exitPseudo;
+    stage.appendChild(b);
+    pseudo = true;
+  }
+  function exitPseudo(){
+    $("plStage").classList.remove("pl-full");
+    document.documentElement.style.overflow = "";
+    var b = $("plExit"); if(b) b.remove();
+    pseudo = false;
+  }
+  function toggleFull(){
+    var stage = $("plStage");
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    if(fsEl){ (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; }
+    if(pseudo){ exitPseudo(); return; }
+    var req = stage.requestFullscreen || stage.webkitRequestFullscreen;
+    if(!req){ enterPseudo(); return; }
+    try{
+      var r = req.call(stage);
+      if(r && r.catch) r.catch(enterPseudo);
+    }catch(e){ enterPseudo(); }
+  }
+  $("plFull").onclick = toggleFull;
+  document.addEventListener("keydown", function(e){ if(e.key==="Escape" && pseudo) exitPseudo(); });
+
+  $("plOpen").onclick = function(){
+    if(lastUrl) window.open(lastUrl, "_blank", "noopener,noreferrer");
+    else $("plStage").textContent = "سەرەتا پەخش بکە، پاشان دەتوانیت لە تابی نوێدا بیکەیتەوە.";
+  };
+
+  syncSource();
   $("plPlay").onclick = play;
   $("plTmdb").addEventListener("keydown", function(e){ if(e.key==="Enter") play(); });
 
