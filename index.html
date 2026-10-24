@@ -767,7 +767,7 @@
   .hscroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:var(--r-chip);}
   .hscroll::-webkit-scrollbar-track{background:transparent;}
 
-  #extractPairsContainer, #chunkPairsContainer, #cleanRowsList{
+  #extractPairsContainer, #extractPairsContainer2, #chunkPairsContainer, #cleanRowsList{
     display:flex;
     flex-wrap:nowrap;
     align-items:flex-start;
@@ -1187,7 +1187,8 @@
   .btn-download{background:var(--gold);background-image:none;color:#241a08;border-color:var(--gold);box-shadow:none;}
   .btn-download:hover{background:var(--gold-lt);}
   .btn:disabled{opacity:.45;cursor:not-allowed;}
-  .btn-row{gap:10px;}
+  .btn-row{display:flex;flex-wrap:nowrap;gap:8px;align-items:stretch;}
+  .btn-row .btn:not(:only-child){flex:1 1 0;min-width:0;padding-inline:10px;white-space:normal;line-height:1.45;text-align:center;}
 
   /* ---------- fields ---------- */
   textarea,.text-input,select{
@@ -1234,7 +1235,6 @@
     h1{font-size:26px;}
     .card{padding:18px 16px;}
     .tab-btn{padding:8px 12px;font-size:13px;}
-    .btn-row .btn{flex:1 1 auto;}
   }
   @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
 
@@ -1393,6 +1393,19 @@
       <div class="status" id="statusRebuild"></div>
     </div>
 
+    <div class="card" id="extractCard2" style="display:none;">
+      <h2><span class="step-badge">3</span>گەڕاندنەوەی وەرگێڕان (دووەم) <span class="badge" id="blockCountBadge2">0 بلۆک</span><span class="badge" id="extractPartBadge2">0 بەش</span></h2>
+      <p class="sub">وەشانی دووەمی وەرگێڕانەکە ڕاستەوخۆ لە بۆکسەکەی هەر بەشێکدا دابنێ. نیشانەی <span class="badge" style="margin-inline-start:2px;">&amp;&amp;&amp;</span> بلۆکەکان لە یەکتری جیادەکاتەوە — لەکاتی وەرگێڕان مەیسڕەوە و ڕیزبەندییەکەی مەگۆڕە.</p>
+
+      <div id="extractPairsContainer2" class="hscroll"></div>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="btnCopySrt2">دروستکردن و کۆپیکردنی SRT</button>
+      </div>
+
+      <div class="status" id="statusRebuild2"></div>
+    </div>
+
   </section>
 
   <!-- ===================== TAB: CHUNK (9500 CHARS) ===================== -->
@@ -1421,7 +1434,6 @@
 
       <div class="btn-row">
         <button class="btn btn-ghost" id="btnChunkCopy">دروستکردن و کۆپیکردنی SRT</button>
-        <button class="btn btn-ghost" id="btnChunkReset">سڕینەوەی فایلەکە</button>
       </div>
 
       <div class="status" id="statusChunkRebuild"></div>
@@ -2600,6 +2612,8 @@
   let extractState = null;
   const statusExtract = document.getElementById('statusExtract');
   const statusRebuild = document.getElementById('statusRebuild');
+  const statusRebuild2 = document.getElementById('statusRebuild2');
+  const extractPairsContainer2 = document.getElementById('extractPairsContainer2');
 
   const PART_MAX_BLOCKS = 350;   // هیچ بەشێک نابێت لەمە زیاتر بێت
   const SPLIT_THRESHOLD = 900;   // تەنها ئەگەر فایلەکە لەمە زیاتر بوو دابەش بکرێت بۆ چەند بەش
@@ -2640,6 +2654,7 @@
     if(blocks.length === 0){
       setStatus(statusExtract, 'error', 'فایلەکە بە دروستی ناخوێنرێتەوە وەک SRT.');
       document.getElementById('extractCard').style.display = 'none';
+      document.getElementById('extractCard2').style.display = 'none';
       extractState = null;
       return;
     }
@@ -2648,6 +2663,7 @@
     if(ne.length === 0){
       setStatus(statusExtract, 'error', 'هەموو بلۆکەکان بەتاڵن، دەقێک نییە بۆ دەرهێنان.');
       document.getElementById('extractCard').style.display = 'none';
+      document.getElementById('extractCard2').style.display = 'none';
       extractState = null;
       return;
     }
@@ -2659,9 +2675,13 @@
     }
     extractState = { blocks, fileName: name, ne, ranges: computePartRanges(ne.length) };
     document.getElementById('blockCountBadge').textContent = blocks.length + ' بلۆک' + (empties ? ' (' + empties + ' بەتاڵ)' : '');
-    renderExtractPairs();
+    renderExtractPairs(extractPairsContainer, '', 'extractPartBadge', statusExtract);
+    renderExtractPairs(extractPairsContainer2, '2', 'extractPartBadge2', statusRebuild2, true);
+    document.getElementById('blockCountBadge2').textContent = document.getElementById('blockCountBadge').textContent;
     clearStatus(statusRebuild);
+    clearStatus(statusRebuild2);
     document.getElementById('extractCard').style.display = 'block';
+    document.getElementById('extractCard2').style.display = 'block';
   });
 
   /* -------- هەر بەشێک: بۆکسی دەقی دەرهێنراو لەسەرەوە، بۆکسی گەڕاندنەوەی وەرگێڕان لەژێرەوە -------- */
@@ -2671,9 +2691,9 @@
     return KURDISH_ORDINALS[n-1] || ('بەشی ژمارە ' + n);
   }
 
-  function renderExtractPairs(){
-    extractPairsContainer.innerHTML = '';
-    document.getElementById('extractPartBadge').textContent = extractState.ranges.length + ' بەش';
+  function renderExtractPairs(container, sfx, badgeId, stat, pasteOnly){
+    container.innerHTML = '';
+    document.getElementById(badgeId).textContent = extractState.ranges.length + ' بەش';
 
     extractState.ranges.forEach((r, idx)=>{
       const n = idx + 1;
@@ -2717,9 +2737,9 @@
       copyBtn.textContent = 'کۆپیکردنی بەشی ' + ordinalName(n);
       copyBtn.addEventListener('click', ()=>{
         copyBtnFeedback(copyBtn, text, ()=>{
-          setStatus(statusExtract, 'success', 'بەشی ' + ordinalName(n) + ' (' + rangeLabel + ') کۆپیکرا. ✓');
+          setStatus(stat, 'success', 'بەشی ' + ordinalName(n) + ' (' + rangeLabel + ') کۆپیکرا. ✓');
         }, ()=>{
-          setStatus(statusExtract, 'error', 'کۆپیکردن سەرکەوتوو نەبوو.');
+          setStatus(stat, 'error', 'کۆپیکردن سەرکەوتوو نەبوو.');
         });
       });
       row.appendChild(copyBtn);
@@ -2731,30 +2751,30 @@
 
       const label = document.createElement('div');
       label.className = 'field-label';
-      label.id = 'partLabel' + idx;
+      label.id = 'partLabel' + sfx + idx;
 
       const span = document.createElement('span');
       span.textContent = 'وەرگێڕانی بەشی ' + ordinalName(n);
 
       const count = document.createElement('span');
       count.className = 'count';
-      count.id = 'pasteCount' + idx;
+      count.id = 'pasteCount' + sfx + idx;
       count.textContent = '0 / ' + expNE + ' بلۆک';
 
       label.appendChild(span);
       label.appendChild(count);
 
       const pta = document.createElement('textarea');
-      pta.id = 'translatedText' + idx;
+      pta.id = 'translatedText' + sfx + idx;
       pta.placeholder = 'وەرگێڕانی بەشی ' + ordinalName(n) + ' لێرە بلکێنە (paste بکە)...';
-      pta.addEventListener('input', refreshPasteCounts);
+      pta.addEventListener('input', ()=>refreshPasteCounts(sfx));
 
       field.appendChild(label);
       field.appendChild(pta);
 
-      col.appendChild(wrap);
+      if(!pasteOnly) col.appendChild(wrap);
       col.appendChild(field);
-      extractPairsContainer.appendChild(col);
+      container.appendChild(col);
     });
   }
 
@@ -2832,11 +2852,11 @@
     return { texts: chunks, ok: false, expected: expNE, got: chunks.length };
   }
 
-  function refreshPasteCounts(){
+  function refreshPasteCounts(sfx = ''){
     if(!extractState) return;
     extractState.ranges.forEach((r, idx)=>{
-      const ta = document.getElementById('translatedText' + idx);
-      const countEl = document.getElementById('pasteCount' + idx);
+      const ta = document.getElementById('translatedText' + sfx + idx);
+      const countEl = document.getElementById('pasteCount' + sfx + idx);
       if(!ta || !countEl) return;
       const expected = r.end - r.start;
       const has = ta.value.trim().length > 0;
@@ -2851,10 +2871,10 @@
     });
   }
 
-  function makeExtractResult(){
+  function makeExtractResult(sfx = ''){
     const st = extractState;
     const usable = st.ranges.map((r, idx)=>{
-      const ta = document.getElementById('translatedText' + idx);
+      const ta = document.getElementById('translatedText' + sfx + idx);
       if(!ta || !ta.value.trim()) return null;
       const res = resolveExtractPart(ta.value, r);
       return res.ok ? res : null;
@@ -2877,11 +2897,11 @@
     };
   }
 
-  function reportExtract(res, verb){
+  function reportExtract(res, verb, stat = statusRebuild){
     if(res.notes.length === 0){
-      setStatus(statusRebuild, 'success', 'فایلی SRT ' + verb + ' (هەموو بەشەکان وەرگێڕدراو بوون). ✓');
+      setStatus(stat, 'success', 'فایلی SRT ' + verb + ' (هەموو بەشەکان وەرگێڕدراو بوون). ✓');
     } else {
-      setStatus(statusRebuild, 'info', 'فایلی SRT ' + verb + '. ' + res.notes.join('، ') + ' — کاتێک ئامادەبوو، دەقەکەی تری بخە ناو بۆکسەکەی خۆی و دووبارە دروستیکەرەوە.');
+      setStatus(stat, 'info', 'فایلی SRT ' + verb + '. ' + res.notes.join('، ') + ' — کاتێک ئامادەبوو، دەقەکەی تری بخە ناو بۆکسەکەی خۆی و دووبارە دروستیکەرەوە.');
     }
   }
 
@@ -2904,9 +2924,26 @@
     document.getElementById('filenameX').textContent = '';
     document.getElementById('fileX').value = '';
     document.getElementById('extractCard').style.display = 'none';
+      document.getElementById('extractCard2').style.display = 'none';
     extractPairsContainer.innerHTML = '';
+    extractPairsContainer2.innerHTML = '';
     clearStatus(statusExtract);
     clearStatus(statusRebuild);
+    clearStatus(statusRebuild2);
+  });
+
+  /* ---- second, independent card: copy all text · build & copy SRT · reset ---- */
+  document.getElementById('btnCopySrt2').addEventListener('click', ()=>{
+    if(!extractState){
+      setStatus(statusRebuild2, 'error', 'سەرەتا فایلی SRT باربکە.');
+      return;
+    }
+    const res = makeExtractResult('2');
+    copyBtnFeedback(document.getElementById('btnCopySrt2'), res.srt, ()=>{
+      reportExtract(res, 'دروستکرا و کۆپیکرا', statusRebuild2);
+    }, ()=>{
+      setStatus(statusRebuild2, 'error', 'کۆپیکردن سەرکەوتوو نەبوو.');
+    });
   });
 
   /* ===================== CHUNK (9500 CHARS) TAB LOGIC ===================== */
@@ -3136,16 +3173,6 @@
     });
   });
 
-  document.getElementById('btnChunkReset').addEventListener('click', ()=>{
-    chunkState = null;
-    document.getElementById('dropChunk').classList.remove('filled');
-    document.getElementById('filenameChunk').textContent = '';
-    document.getElementById('fileChunk').value = '';
-    document.getElementById('chunkCard').style.display = 'none';
-    chunkPairsContainer.innerHTML = '';
-    clearStatus(statusChunk);
-    clearStatus(statusChunkRebuild);
-  });
 
   /* ===================== RTL-FIX TAB LOGIC (U+202B) ===================== */
   const RLE = '\u202B';
