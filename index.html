@@ -30,8 +30,8 @@
     --accent-2:#27423a;
     --danger:#ec5e6f;
     --danger-soft:#fdebee;
-    --ok:#4fbe63;
-    --ok-soft:#eaf9ec;
+    --ok:var(--accent);
+    --ok-soft:var(--accent-soft);
     --match:#e8b100;
     --radius:22px;
     --radius-sm:16px;
@@ -299,7 +299,7 @@
   .btn-primary:disabled{background:var(--border);color:var(--text-faint);box-shadow:none;cursor:not-allowed;}
   .btn-ghost{background:var(--surface);color:var(--text);border:1px solid var(--border);}
   .btn-ghost:hover{border-color:var(--accent);color:var(--accent-ink);background:var(--accent-soft);}
-  .btn-download{background:var(--ok);color:var(--on-accent);box-shadow:0 6px 16px -6px rgba(79,190,99,0.55);}
+  .btn-download{background:var(--ok);color:var(--on-accent);box-shadow:0 6px 16px -6px rgba(var(--accent-rgb),0.55);}
   .btn-download:hover{background:#3fa953;}
   .btn-download:disabled{background:var(--border);color:var(--text-faint);box-shadow:none;cursor:not-allowed;}
   .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
@@ -529,7 +529,7 @@
   .status.show{display:flex;}
   .status.info{background:var(--accent-soft);color:var(--accent-ink);border:1px solid var(--accent-line);}
   .status.error{background:var(--danger-soft);color:var(--danger);border:1px solid #f9d3da;}
-  .status.success{background:var(--ok-soft);color:var(--ok);border:1px solid #c9f0d1;}
+  .status.success{background:var(--ok-soft);color:var(--ok);border:1px solid var(--accent-line);}
 
   .divider{height:1px;background:var(--border-soft);margin:22px 0;}
 
@@ -963,7 +963,7 @@
   #panel-seditor .se-tw .se-ta,#panel-seditor .se-hl{font-family:var(--font-body);font-size:16px;line-height:1.8;padding:9px 14px;margin:0;border:0;width:100%;white-space:pre-wrap;overflow-wrap:break-word;border-radius:var(--r-lg);}
   #panel-seditor .se-tw .se-ta{display:block;position:relative;outline:0;resize:none;background:transparent;color:transparent;caret-color:#fff;overflow:hidden;min-height:2.9em;max-height:none;box-shadow:none;transition:none;field-sizing:content;}
   #panel-seditor .se-tw .se-ta:focus{border:0;box-shadow:none;outline:0;}
-  #panel-seditor .se-tw .se-ta::selection{background:rgba(79,190,99,.45);color:transparent;}
+  #panel-seditor .se-tw .se-ta::selection{background:rgba(var(--accent-rgb),.45);color:transparent;}
   #panel-seditor .se-hl{position:absolute;inset:0;pointer-events:none;overflow:hidden;color:var(--on-accent);}
   .se-hl .tg{opacity:.4;}
   .se-dots{flex:none;align-self:flex-start;width:36px;height:36px;border:1px solid var(--border);background:var(--surface-2);border-radius:var(--r-sm);font-size:18px;line-height:1;color:var(--text-dim);cursor:pointer;transition:.15s;}
@@ -1257,7 +1257,7 @@
     --bg:#0a0907;--bg-2:#110f0b;--surface:#15120d;--surface-2:#1d1912;
     --border:#3a3020;--border-soft:#2a2418;
     --text:#f3ebd7;--text-dim:#b5a785;--text-faint:#7f7350;
-    --danger:#ff7a86;--danger-soft:#3a1a1e;--ok:#6fd48a;--ok-soft:#14301c;--match:#f0cf74;
+    --danger:#ff7a86;--danger-soft:#3a1a1e;--ok:#f0cf74;--ok-soft:#2a2310;--match:#f0cf74;
     --shadow-pop:0 18px 40px -14px rgba(0,0,0,.85);
   }
   body{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Cpath d='M14 0L28 14L14 28L0 14Z' fill='none' stroke='%23d4a937' stroke-opacity='.07' stroke-width='1'/%3E%3C/svg%3E");}
@@ -1308,8 +1308,8 @@
       set('--bg',t.bg);set('--bg-2',t.bg2);set('--surface',t.s||'#ffffff');set('--surface-2',t.s2);
       set('--border',t.b);set('--border-soft',t.bs);
       set('--on-accent',t.on||'#ffffff');set('--text',t.t);set('--text-dim',t.td);set('--text-faint',t.tf);
-      if(!t.dark){set('--danger','#d6455a');set('--danger-soft','#fdebee');set('--ok','#2f9a45');set('--ok-soft','#eaf9ec');set('--shadow-pop','0 18px 40px -16px rgba(20,30,28,.35)');set('--match','#e8b100');}if(t.dark){
-        set('--danger-soft',t.ds);set('--ok-soft',t.os);
+      if(!t.dark){set('--danger','#d6455a');set('--danger-soft','#fdebee');set('--ok',t.a);set('--ok-soft',t.soft);set('--shadow-pop','0 18px 40px -16px rgba(20,30,28,.35)');set('--match','#e8b100');}if(t.dark){
+        set('--danger-soft',t.ds);set('--ok',t.lt);set('--ok-soft',t.soft);
         set('--shadow-card','0 1px 2px rgba(0,0,0,.35), 0 10px 26px -14px rgba(0,0,0,.7)');
         set('--shadow-pop','0 14px 34px -10px rgba(0,0,0,.75)');
       }
@@ -3289,16 +3289,27 @@
     return out;
   }
 
+  // Two-speaker dialogue: when 2+ lines of a block start with a dash ("-سڵاو"),
+  // put one space between the dash and the text ("- سڵاو"). Single dashes only
+  // (a "--" is left alone), and blocks with fewer than two dash lines are untouched.
+  const DIALOGUE_DASH_RE = /^([\u200E\u200F\u202A-\u202E\u2066-\u2069]*[-\u2013\u2014])(?=[^\s\-\u2013\u2014])/;
+  function fixDialogueDashSpacing(lines){
+    const dashLines = lines.filter(l => DIALOGUE_DASH_RE.test(l) || /^[\u200E\u200F\u202A-\u202E\u2066-\u2069]*[-\u2013\u2014]\s/.test(l)).length;
+    if (dashLines < 2) return lines;
+    return lines.map(l => l.replace(DIALOGUE_DASH_RE, '$1 '));
+  }
+
   function opCollapseExtraSpaces(blocks){
     return blocks.map(b=>{
-      const lines = b.text.split('\n').map(l => fixQuoteSpacing(l.replace(/[ \t]{2,}/g, ' ').trim()).trim());
+      let lines = b.text.split('\n').map(l => fixQuoteSpacing(l.replace(/[ \t]{2,}/g, ' ').trim()).trim());
+      lines = fixDialogueDashSpacing(lines);
       return { start:b.start, end:b.end, text: lines.join('\n').trim() };
     });
   }
 
   const CLEAN_OPS = [
     { key:'linebreaks', title:'لابردنی هێڵ‌بڕەکان', desc:'هێڵ‌بڕی ناو دەقی هەر بلۆکێک لادەبرێت، جگە لە بلۆکی گفتوگۆی دوو کەس (کە هەردوو دێڕەکەی بە "-" دەستپێدەکەن).', fn:opRemoveLineBreaks },
-    { key:'spaces', title:'لابردنی سپەیسی زیادە', desc:'سپەیسی سەرەتا و کۆتایی دەقی هەر دێڕێک لادەبرێت، و ئەگەر دوو سپەیس یان زیاتر بەسەر یەکەوە هەبوو دەکرێتە یەک سپەیس. هەروەها سپەیسی دوای تەقەڵی کردنەوە و پێش تەقەڵی داخستن، و سپەیسی نێوان تەقەڵی داخستن و «ـ» لادەبرێت.', fn:opCollapseExtraSpaces },
+    { key:'spaces', title:'لابردنی سپەیسی زیادە', desc:'سپەیسی سەرەتا و کۆتایی دەقی هەر دێڕێک لادەبرێت، و ئەگەر دوو سپەیس یان زیاتر بەسەر یەکەوە هەبوو دەکرێتە یەک سپەیس. هەروەها سپەیسی دوای تەقەڵی کردنەوە و پێش تەقەڵی داخستن، و سپەیسی نێوان تەقەڵی داخستن و «ـ» لادەبرێت. هەروەها لە بلۆکی گفتوگۆی دوو کەس، ئەگەر "-" بە دەقەکەوە نووسرابوو (-سڵاو) جیا دەکرێتەوە (- سڵاو).', fn:opCollapseExtraSpaces },
     { key:'emptyblocks', title:'سڕینەوەی بلۆکی بەتاڵ', desc:'ئەو بلۆکانەی هیچ دەقێکیان تێدا نییە (بە تەواوی بەتاڵن) بە تەواوی دەسڕدرێنەوە.', fn:opRemoveEmptyBlocks },
     { key:'tags', title:'لابردنی ئینکۆدەکان', desc:'تاگەکانی وەک <i></i> و <b></b> و هاوشێوەکانیان لادەبرێن. کۆدی ڕەنگ دەست نادرێت.', fn:opStripFormattingTags },
     { key:'brackets', title:'لابردنی دەقی ناو [ ]', desc:'هەر دەقێکی ناو کەوانەی چوارگۆشە لادەبرێت. ئەگەر بلۆکێک بەم شێوەیە بەتاڵ بێتەوە، بە تەواوی دەسڕدرێتەوە.', fn:opRemoveBrackets },
