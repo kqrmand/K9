@@ -874,6 +874,11 @@
     margin-top:36px;
   }
 
+
+  footer .credit{display:inline-flex;align-items:center;gap:7px;margin-top:10px;padding:6px 14px;border:1px solid var(--border);border-radius:999px;background:var(--surface);color:var(--text-dim);font-size:13px;font-weight:600;text-decoration:none;transition:.15s;}
+  footer .credit:hover{border-color:var(--accent);color:var(--accent-ink);background:var(--accent-soft);}
+  footer .credit svg{flex:none;}
+
   @media (prefers-reduced-motion: reduce){
     *{animation:none !important;transition:none !important;}
   }
@@ -1365,7 +1370,7 @@
 
     <div class="card">
       <h2><span class="step-badge">1</span>فایلی SRT باربکە</h2>
-      <p class="sub">دەقی هەر بلۆکێک جیادەکرێتەوە بۆ وەرگێڕان، کاتەکان لە کۆدەکەدا دەپارێزرێن تاکو دواتر بیانگەڕێنیتەوە.</p>
+      <p class="sub">دەقی هەر بلۆکێک بۆ وەرگێڕان جیادەکرێتەوە و کاتەکان دەپارێزرێن.</p>
 
       <div class="drop" id="dropX" style="max-width:420px;">
         <input type="file" id="fileX" accept=".srt,text/plain">
@@ -1380,7 +1385,7 @@
 
     <div class="card" id="extractCard" style="display:none;">
       <h2><span class="step-badge">2</span>دەقی دەرهێنراو و گەڕاندنەوەی وەرگێڕان <span class="badge" id="blockCountBadge">0 بلۆک</span><span class="badge" id="extractPartBadge">0 بەش</span></h2>
-      <p class="sub">هەر بەشێک کۆپی بکە و بینێرە بۆ وەرگێڕان، پاشان وەرگێڕانەکەی ڕاستەوخۆ لە بۆکسەکەی ژێری خۆیدا دابنێ. نیشانەی <span class="badge" style="margin-inline-start:2px;">&amp;&amp;&amp;</span> بلۆکەکان لە یەکتری جیادەکاتەوە — لەکاتی وەرگێڕان مەیسڕەوە و ڕیزبەندییەکەی مەگۆڕە.</p>
+      <p class="sub">هەر بەشێک کۆپی بکە و وەرگێڕانەکەی لە بۆکسی ژێری دابنێ. <span class="badge" style="margin-inline-start:2px;">&amp;&amp;&amp;</span> مەسڕەوە و ڕیزبەندییەکەی مەگۆڕە.</p>
 
       <div id="extractPairsContainer" class="hscroll"></div>
 
@@ -1399,7 +1404,7 @@
 
     <div class="card">
       <h2><span class="step-badge">1</span>فایلی SRT باربکە</h2>
-      <p class="sub">دەقەکە بەبێ ژمارەی بلۆک و کاتەکان دەردەهێنرێت و دابەش دەکرێت بۆ چەند بەشێک. هەر بەشێک لە ٩٥٠٠ پیت کەمترە و تا دەتوانرێت زۆرترین بلۆکی تەواو لە خۆی دەگرێت. کاتەکان لە کۆدەکەدا دەپارێزرێن.</p>
+      <p class="sub">دەقەکە بەبێ ژمارە و کات دەردەهێنرێت و دابەش دەکرێت بۆ بەشی کەمتر لە ٩٥٠٠ پیت.</p>
 
       <div class="drop" id="dropChunk" style="max-width:420px;">
         <input type="file" id="fileChunk" accept=".srt,text/plain">
@@ -1414,7 +1419,7 @@
 
     <div class="card" id="chunkCard" style="display:none;">
       <h2><span class="step-badge">2</span>بەشەکانی دەق و گەڕاندنەوەی وەرگێڕان <span class="badge" id="chunkBlockBadge">0 بلۆک</span><span class="badge" id="chunkPartBadge">0 بەش</span></h2>
-      <p class="sub">هەر بەشێک کۆپی بکە و بینێرە بۆ وەرگێڕان، پاشان وەرگێڕانەکەی ڕاستەوخۆ لە بۆکسەکەی ژێری خۆیدا دابنێ. نیشانەی <span class="badge" style="margin-inline-start:2px;">&amp;</span> کە لە هێڵێکی تایبەتی خۆیدایە بلۆکەکان لە یەکتری جیادەکاتەوە — لەکاتی وەرگێڕان مەیسڕەوە و ڕیزبەندییەکەی مەگۆڕە. ژمارەی بلۆکەکان دەبێت یەک بگرنەوە، ئەگینا ئەو بەشە بە دەقی سەرەتایی دەمێنێتەوە.</p>
+      <p class="sub">هەر بەشێک کۆپی بکە و وەرگێڕانەکەی لە بۆکسی ژێری دابنێ. <span class="badge" style="margin-inline-start:2px;">&amp;</span> مەسڕەوە، و ژمارەی بلۆکەکان دەبێت یەک بگرنەوە.</p>
 
       <div id="chunkPairsContainer" class="hscroll"></div>
 
@@ -1433,7 +1438,7 @@
       <iframe id="halachnFrame" src="https://halachn.krd" title="halachn.krd" loading="lazy"
         allow="clipboard-read; clipboard-write; fullscreen"
         style="width:100%;height:80vh;min-height:500px;border:1px solid var(--border,#ddd);border-radius:12px;background:#fff;"></iframe>
-      <p class="sub" style="margin-top:8px;">ئەگەر سایتەکە لێرە نەکرایەوە، دوگمەی «کردنەوە لە پەڕەیەکی نوێ» بەکاربهێنە.</p>
+      <p class="sub" style="margin-top:8px;">ئەگەر سایتەکە نەکرایەوە، «کردنەوە لە پەڕەیەکی نوێ» بەکاربهێنە.</p>
     </div>
 
   </section>
@@ -1481,7 +1486,7 @@
 
     <div class="card">
       <h2><span class="step-badge">1</span>هەردوو فایلەکە باربکە</h2>
-      <p class="sub">فایلی یەکەم و دووەم (.srt) باربکە بۆ بەراوردکردنی کاتەکانیان بلۆک بە بلۆک.</p>
+      <p class="sub">فایلی یەکەم و دووەم (.srt) باربکە بۆ بەراوردکردنی کاتەکان.</p>
 
       <div class="cols">
         <div class="drop" id="drop1">
@@ -1533,7 +1538,7 @@
 
     <div class="card" id="deepCard" style="display:none;">
       <h2><span class="step-badge">3</span>پشکنینی قووڵ — بلۆکی ونبوو و تێکەڵبوو</h2>
-      <p class="sub">ئەم پشکنینە هەردوو فایل ڕیزدەکاتەوە، تاکو ئەو بلۆکانە بدۆزێتەوە کە لە یەک فایلدا ونن یان لەگەڵ بلۆکێکی دیکە تێکەڵ بوون — کە دەبنە هۆی ئەوەی هەموو بلۆکەکانی دوایان بە هەڵە بەراورد بکرێن.</p>
+      <p class="sub">هەردوو فایل ڕیزدەکاتەوە بۆ دۆزینەوەی ئەو بلۆکانەی لە یەک فایلدا ونن یان تێکەڵ بوون.</p>
 
       <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);margin:10px 0 4px;cursor:pointer;">
         <input type="checkbox" id="deepBilingualMode" checked style="width:16px;height:16px;">
@@ -1555,7 +1560,7 @@
         <button class="btn btn-primary" id="btnFixA" disabled>⧉ کۆپیکردنی چاککردنەوەی فایلی یەکەم (بەپێی دووەم)</button>
         <button class="btn btn-primary" id="btnFixB" disabled>⧉ کۆپیکردنی چاککردنەوەی فایلی دووەم (بەپێی یەکەم)</button>
       </div>
-      <p class="sub" style="margin-top:10px;">دوای چاککردنەوە، هەردوو فایل هەمان ژمارەی بلۆک و هەمان ڕیزبەندییان دەبێت، بۆیە بلۆکەکانی دوای شوێنی جیاوازییەکە دووبارە بە دروستی بەرامبەر یەکتر دەکەون و کاتەکانیان بە هەڵە بەراورد ناکرێن.</p>
+      <p class="sub" style="margin-top:10px;">دوای چاککردنەوە هەردوو فایل هەمان ژمارە و ڕیزبەندی بلۆکیان دەبێت.</p>
     </div>
 
     <div class="card" id="mergeCard" style="display:none;">
@@ -1567,14 +1572,14 @@
           <input type="radio" name="mergeChoice" value="1to2" checked>
           <div>
             <div class="t">کاتەکان لە فایلی یەکەم + دەق لە فایلی دووەم</div>
-            <div class="d">timestamp ـەکانی فایلی یەکەم دەمێننەوە، دەقی فایلی دووەم دەنووسرێت لەسەریان.</div>
+            <div class="d">timestamp ـەکانی فایلی یەکەم دەمێننەوە.</div>
           </div>
         </label>
         <label class="choice">
           <input type="radio" name="mergeChoice" value="2to1">
           <div>
             <div class="t">کاتەکان لە فایلی دووەم + دەق لە فایلی یەکەم</div>
-            <div class="d">timestamp ـەکانی فایلی دووەم دەمێننەوە، دەقی فایلی یەکەم دەنووسرێت لەسەریان.</div>
+            <div class="d">timestamp ـەکانی فایلی دووەم دەمێننەوە.</div>
           </div>
         </label>
       </div>
@@ -1593,7 +1598,7 @@
 
     <div class="card">
       <h2><span class="step-badge">1</span>زیادکردنی نیشانەی ڕاستەڕێیی نووسین <span class="badge">U+202B</span></h2>
-      <p class="sub">فایلی SRT باربکە — کۆدی U+202B (Right-to-Left Embedding) بۆ سەرەتا و کۆتایی هەر دەقێک زیاد دەکرێت، بۆ ڕێگرتن لە پێچەوانەبوونەوەی خاڵبەندی (وشەی ئینگلیزی، ژمارە، دیاریکردن...هتد). کاتەکان بە تەواوی وەک خۆیان دەمێننەوە.</p>
+      <p class="sub">فایلی SRT باربکە — U+202B بۆ ڕێگرتن لە پێچەوانەبوونەوەی خاڵبەندی زیاد دەکرێت؛ کاتەکان نەگۆڕدراو دەمێننەوە.</p>
 
       <div class="drop" id="dropR" style="max-width:420px;">
         <input type="file" id="fileR" accept=".srt,text/plain">
@@ -1608,7 +1613,7 @@
 
     <div class="card" id="rtlCard" style="display:none;">
       <h2><span class="step-badge">2</span>ئامادەیە <span class="badge" id="rtlBlockBadge">0 بلۆک</span></h2>
-      <p class="sub">کۆدی U+202B لە سەرەتا و کۆتایی هەر هێڵی دەقێک زیادکرا. timestamp ـەکان بەبێ دەستکاری ماونەتەوە.</p>
+      <p class="sub">U+202B زیادکرا؛ کاتەکان نەگۆڕدراون.</p>
 
       <div class="btn-row">
         <button class="btn btn-ghost" id="btnCopyRtl">کۆپیکردنی فایلی نوێ</button>
@@ -1623,7 +1628,7 @@
 
     <div class="card">
       <h2><span class="step-badge">1</span>زانیاری فیلم و دراما</h2>
-      <p class="sub">ناوی فیلم یان دراما بنووسە، زانیارییەکان بە کورتکراوەیی و بە کوردی دەهێنرێن.</p>
+      <p class="sub">ناوی فیلم یان دراما بنووسە، زانیاری بە کوردی دێت.</p>
 
       <div class="field-gap">
         <label class="label-sm">TMDB API Key (کلیلی خۆت)</label>
@@ -1675,7 +1680,7 @@
 
     <div class="card">
       <h2><span class="step-badge">1</span>فایلەکانی SRT باربکە</h2>
-      <p class="sub">دە فایل یان زیاتری SRT هەڵبژێرە — دەتوانیت هەموویان پێکەوە هەڵبژێریت یان بیانفڕێنیتە سەر ئەم بۆکسە. هەموو فایلەکان تەنها لە ناو وێبگەڕەکەت خۆیدا کاریان لەسەر دەکرێت، هیچ شتێک نانێردرێت بۆ سێرڤەرێک.</p>
+      <p class="sub">چەند فایلی SRT هەڵبژێرە یان فڕێیان بدە ئێرە. هیچ شتێک نانێردرێت بۆ سێرڤەر.</p>
 
       <div class="drop" id="dropU" style="max-width:420px;">
         <input type="file" id="fileU" accept=".srt,text/plain" multiple>
@@ -1700,7 +1705,7 @@
 
     <div class="card" id="unifyDetectCard" style="display:none;">
       <h2><span class="step-badge">2</span>دۆزینەوەی ناوەکان</h2>
-      <p class="sub">دوگمەکە بکە تاکو هەموو ئەو ناوانەی <b>لەناو کەوانە ( ) یان تەقەڵە « » " "</b> نووسراون بدۆزرێنەوە.</p>
+      <p class="sub">ناوەکانی ناو <b>( ) یان « » " "</b> دەدۆزرێنەوە.</p>
 
       <div class="btn-row">
         <button class="btn btn-primary" id="btnDetectNames">🔍 دۆزینەوەی ناوەکان</button>
@@ -1711,14 +1716,14 @@
           <h3 style="font-size:14px; margin:0; color:var(--text-dim);">هەموو ناوەکانی دۆزراو <span class="badge" id="allNamesCount">0</span></h3>
           <button class="btn btn-ghost" id="btnClearNameSelection" style="font-size:12px; padding:6px 10px;">پاکردنەوەی دیاریکراو</button>
         </div>
-        <p class="sub" style="margin-top:4px;">بۆ لای ڕاست و چەپ بیلوڵێنە. کرتە لەسەر چەند ناوێک بکە بۆ دیاریکردنیان — هەموویان دەچنە ناو خانەی "شێوازەکان" لە کارتی خوارەوە. دوای کرتەکردن لەسەر "زیادکردن"، هەڵبژاردنەکان خۆیان پاک دەبنەوە بۆ گروپێکی نوێ.</p>
+        <p class="sub" style="margin-top:4px;">کرتە لەسەر ناوەکان بکە بۆ دیاریکردن، پاشان «زیادکردن».</p>
         <div class="names-scroll-strip" id="allNamesStrip"></div>
       </div>
     </div>
 
     <div class="card" id="unifyManualCard" style="display:none;">
       <h2><span class="step-badge">3</span>یاسای دەستی <span class="badge">ئارەزوومەندانە</span></h2>
-      <p class="sub">ئەگەر ناوێک بەشێوەی خۆکار نەدۆزرایەوە، یان دەتەوێت خۆت شێوازەکان دیاری بکەیت، لێرە زیادی بکە. شێوازەکان بە کۆما (,) لێک جیا بکەرەوە.</p>
+      <p class="sub">ئەگەر ناوێک نەدۆزرایەوە، لێرە شێوازەکان زیاد بکە (بە کۆما , جیا بکەرەوە).</p>
 
       <div class="field-gap">
         <label class="label-sm">شێوازەکان (لە → بۆ)</label>
@@ -1735,7 +1740,7 @@
 
     <div class="card" id="unifyApplyCard" style="display:none;">
       <h2><span class="step-badge">4</span>جێبەجێکردن و کۆپیکردن</h2>
-      <p class="sub">کاتێک ئامادەیت، دوگمەکە بکە تاکو یاساکان بەسەر هەموو فایلە بارکراوەکاندا جێبەجێ بکرێن، پاشان هەریەکەیان یان هەموویان پێکەوە کۆپی بکە.</p>
+      <p class="sub">یاساکان بەسەر هەموو فایلەکاندا جێبەجێ دەکرێن، پاشان کۆپییان بکە.</p>
 
       <div class="btn-row">
         <button class="btn btn-primary" id="btnApplyUnify">▶ یەکخستنی هەموو فایلەکان</button>
@@ -1757,7 +1762,7 @@
 
     <div class="card">
       <h2><span class="step-badge">1</span>پاکژکردنی ژێرنووس + گۆڕین بۆ SRT</h2>
-      <p class="sub">فایلی SRT یان VTT باربکە، پاشان هەر تایبەتمەندییەک بەویستی خۆت جێبەجێی بکە — هیچ کام بەخۆکار جێبەجێ ناکرێت.</p>
+      <p class="sub">فایلەکە باربکە، پاشان هەر تایبەتمەندییەک کە دەتەوێت جێبەجێی بکە.</p>
 
       <div class="drop" id="dropC" style="max-width:420px;">
         <input type="file" id="fileC" accept=".srt,.vtt,text/plain">
@@ -1772,7 +1777,7 @@
 
     <div class="card" id="cleanCard" style="display:none;">
       <h2><span class="step-badge">2</span>تایبەتمەندییەکان <span class="badge" id="cleanBlockBadge">0 بلۆک</span></h2>
-      <p class="sub">هەر تایبەتمەندییەک بە دوگمەی «جێبەجێکردن» و «هەڵوەشاندنەوە»ی خۆیەوە — بەجیا و بە هەر ڕیزبەندییەک کە دەتەوێت.</p>
+      <p class="sub">هەر یەکەیان بەجیا جێبەجێ دەکرێت و هەڵدەوەشێتەوە.</p>
 
       <div id="cleanRowsList"></div>
 
@@ -1798,7 +1803,7 @@
 
     <div class="card">
       <h2><span class="step-badge">1</span>لینکەکانم <span class="badge" id="lkCountBadge">0 لینک</span></h2>
-      <p class="sub">بۆ گۆڕینی ڕیزبەندی ⠿ بگرە و ڕایبکێشە، یان دوگمەکانی ▲ ▼ بەکاربهێنە. کرتە لەسەر ناوی لینکەکە دەیکاتەوە لە پەنجەرەیەکی نوێدا.</p>
+      <p class="sub">بۆ ڕیزبەندی ⠿ ڕابکێشە یان ▲ ▼ بەکاربهێنە.</p>
       <div class="lk-tools">
         <input type="text" id="lkSearch" class="text-input" placeholder="گەڕان لە ناو و لینکەکان…">
         <button class="btn btn-ghost" id="btnLkFav" type="button">★ دڵخوازەکان</button>
@@ -1808,7 +1813,7 @@
 
     <div class="card">
       <h2><span class="step-badge">2</span>لینکێکی نوێ زیاد بکە</h2>
-      <p class="sub">ناوێک و ناونیشانی ماڵپەڕەکە بنووسە. ئەگەر <span class="ltr">https://</span> نەنووسیت، خۆی زیادی دەکات.</p>
+      <p class="sub">ناو و ناونیشانی ماڵپەڕەکە بنووسە (<span class="ltr">https://</span> خۆی زیاد دەبێت).</p>
       <div class="lk-add">
         <div class="field-gap">
           <label class="label-sm">ناو</label>
@@ -1825,7 +1830,7 @@
 
     <div class="card">
       <h2><span class="step-badge">3</span>کۆپی، هێنان و باکئەپ</h2>
-      <p class="sub">لینکەکان تەنها لەم وێبگەڕە و لەسەر ئەم ناونیشانەی ماڵپەڕەوە هەڵدەگیرێن. بۆ پاراستن یان گواستنەوەیان بۆ مۆبایل یان ناونیشانێکی تر، کۆپییان بکە و لە شوێنی تر «هێنان» بکە.</p>
+      <p class="sub">لینکەکان تەنها لەم وێبگەڕەدا هەڵدەگیرێن؛ بۆ گواستنەوە کۆپییان بکە و «هێنان» بکە.</p>
       <div class="btn-row">
         <button class="btn btn-ghost" id="btnLkCopyAll" type="button">⧉ کۆپیکردنی هەموو لینکەکان</button>
         <button class="btn btn-ghost" id="btnLkRestore" type="button">↺ گەڕاندنەوەی لینکە بنەڕەتییەکان</button>
@@ -1869,7 +1874,7 @@
 
       <div class="pl-custom-only">
         <input id="plCustomUrl" class="text-input ltr" aria-label="ئادرەس" placeholder="https://…  یان کۆدی &lt;iframe src=&quot;https://…&quot;&gt;">
-        <p class="pl-help">ئادرەسی https یان کۆدی embed دابنێ؛ ئەگەر شاشەکە بەتاڵ مایەوە، ماڵپەڕەکە ڕێگە نادات لێرە بکرێتەوە، بۆیە «تابی نوێ» بەکاربهێنە.</p>
+        <p class="pl-help">ئادرەسی https یان کۆدی embed دابنێ؛ ئەگەر شاشەکە بەتاڵ بوو «تابی نوێ» بەکاربهێنە.</p>
       </div>
 
       <div class="pl-tmdb-only">
@@ -1903,18 +1908,24 @@
           <label class="label-sm" for="plTvTpl">ئادرەسی زنجیرە</label>
           <input id="plTvTpl" class="text-input ltr" value="https://framextv.xyz/embed/tv/{id}/{s}/{e}?autoplay=1&amp;muted=0">
         </div>
-        <p class="pl-help">{id} و {s} و {e} بەکاربهێنە. شێوازی زنجیرە تاقینەکراوەتەوە؛ ئەگەر کارینەکرد، شێوازە دروستەکە لە بەڵگەنامەکەی ماڵپەڕەکەدا بدۆزەرەوە. گەڕان بە ناو هەمان کلیلی TMDB بەکاردێنێت کە لە تابی «زانیاری فیلم» داتناوە.</p>
+        <p class="pl-help">{id} و {s} و {e} بەکاربهێنە. گەڕان بە ناو هەمان کلیلی TMDB بەکاردێنێت.</p>
         <p class="pl-help">ژمارەکە لە <a href="https://www.themoviedb.org" target="_blank" rel="noopener noreferrer">themoviedb.org</a> لە کۆتایی ئادرەسی پەڕەکەدا دەبینیت (بۆ نموونە <bdi dir="ltr">/movie/550</bdi>).</p>
       </details>
 
-      <p class="pl-help">ئەم بەشە تەنها ڤیدیۆی ماڵپەڕێکی دەرەکی پیشان دەدات. ناوەڕۆکەکە لەوانەیە مافی بڵاوکردنەوەی نەبێت، بۆیە تەنها بۆ بەکارهێنانی کەسی بەکاری بهێنە.</p>
+      <p class="pl-help">تەنها ڤیدیۆی ماڵپەڕێکی دەرەکی پیشان دەدات؛ بۆ بەکارهێنانی کەسی بەکاری بهێنە.</p>
     </div>
   </section>
 
   </div>
   </div>
 
-  <footer>فایلەکانت لە ناو وێبگەڕەکەت دەمێننەوە — هیچ شتێک ناردرێت بۆ هیچ سێرڤەرێک.</footer>
+  <footer>
+    <div>هیچ شتێک نانێردرێت بۆ سێرڤەر.</div>
+    <a class="credit" href="https://t.me/kqrmand" target="_blank" rel="noopener noreferrer" dir="ltr">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M21.9 4.3c.3-1.1-.8-2-1.8-1.6L2.7 9.4c-1.2.5-1.1 2.2.1 2.6l4.4 1.4 1.7 5.3c.3.9 1.4 1.2 2.1.5l2.5-2.3 4.5 3.3c.8.6 1.9.1 2.1-.8L21.9 4.3zM9.2 13.3l8.4-5.2c.2-.1.4.2.2.3l-6.9 6.3-.3 3.1-1.4-4.5z"/></svg>
+      <span>@kqrmand</span>
+    </a>
+  </footer>
   <div class="toast" id="toast" role="status"></div>
 
 </div>
@@ -3308,12 +3319,12 @@
   }
 
   const CLEAN_OPS = [
-    { key:'linebreaks', title:'لابردنی هێڵ‌بڕەکان', desc:'هێڵ‌بڕی ناو دەقی هەر بلۆکێک لادەبرێت، جگە لە بلۆکی گفتوگۆی دوو کەس (کە هەردوو دێڕەکەی بە "-" دەستپێدەکەن).', fn:opRemoveLineBreaks },
-    { key:'spaces', title:'لابردنی سپەیسی زیادە', desc:'سپەیسی سەرەتا و کۆتایی دەقی هەر دێڕێک لادەبرێت، و ئەگەر دوو سپەیس یان زیاتر بەسەر یەکەوە هەبوو دەکرێتە یەک سپەیس. هەروەها سپەیسی دوای تەقەڵی کردنەوە و پێش تەقەڵی داخستن، و سپەیسی نێوان تەقەڵی داخستن و «ـ» لادەبرێت. هەروەها لە بلۆکی گفتوگۆی دوو کەس، ئەگەر "-" بە دەقەکەوە نووسرابوو (-سڵاو) جیا دەکرێتەوە (- سڵاو).', fn:opCollapseExtraSpaces },
-    { key:'emptyblocks', title:'سڕینەوەی بلۆکی بەتاڵ', desc:'ئەو بلۆکانەی هیچ دەقێکیان تێدا نییە (بە تەواوی بەتاڵن) بە تەواوی دەسڕدرێنەوە.', fn:opRemoveEmptyBlocks },
-    { key:'tags', title:'لابردنی ئینکۆدەکان', desc:'تاگەکانی وەک <i></i> و <b></b> و هاوشێوەکانیان لادەبرێن. کۆدی ڕەنگ دەست نادرێت.', fn:opStripFormattingTags },
-    { key:'brackets', title:'لابردنی دەقی ناو [ ]', desc:'هەر دەقێکی ناو کەوانەی چوارگۆشە لادەبرێت. ئەگەر بلۆکێک بەم شێوەیە بەتاڵ بێتەوە، بە تەواوی دەسڕدرێتەوە.', fn:opRemoveBrackets },
-    { key:'vtt', title:'گۆڕینی VTT بۆ SRT', desc:'تاگی کاتی وشە بە وشەی VTT (وەک <00:00:12.340>) لادەبرێت کە لە SRT بەکارنایەت.', fn:opStripVttTiming },
+    { key:'linebreaks', title:'لابردنی هێڵ‌بڕەکان', desc:'هێڵ‌بڕی ناو هەر بلۆکێک لادەبرێت، جگە لە گفتوگۆی دوو کەس.', fn:opRemoveLineBreaks },
+    { key:'spaces', title:'لابردنی سپەیسی زیادە', desc:'سپەیسی زیادە لادەبرێت، و لە گفتوگۆی دوو کەس «-» لە دەق جیا دەکرێتەوە.', fn:opCollapseExtraSpaces },
+    { key:'emptyblocks', title:'سڕینەوەی بلۆکی بەتاڵ', desc:'بلۆکە بەتاڵەکان دەسڕدرێنەوە.', fn:opRemoveEmptyBlocks },
+    { key:'tags', title:'لابردنی ئینکۆدەکان', desc:'تاگی وەک <i> و <b> لادەبرێن؛ ڕەنگ دەست نادرێت.', fn:opStripFormattingTags },
+    { key:'brackets', title:'لابردنی دەقی ناو [ ]', desc:'دەقی ناو [ ] لادەبرێت.', fn:opRemoveBrackets },
+    { key:'vtt', title:'گۆڕینی VTT بۆ SRT', desc:'تاگی کاتی وشەی VTT لادەبرێت.', fn:opStripVttTiming },
   ];
 
   function renderCleanStats(){
