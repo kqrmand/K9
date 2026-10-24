@@ -156,36 +156,49 @@
   }
 
   /* ---------- Player tab ---------- */
-  #panel-player .pl-stage{aspect-ratio:16/9;width:100%;background:#000;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border);display:grid;place-items:center;color:#9aa3b8;text-align:center;padding:12px;font-size:13.5px;}
+  #panel-player .pl-stage{position:relative;aspect-ratio:16/9;width:100%;background:#000;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border);display:grid;place-items:center;color:#9aa3b8;text-align:center;padding:12px;font-size:13.5px;}
   #panel-player .pl-stage iframe{width:100%;height:100%;border:0;display:block;}
-  #panel-player .pl-seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--bg);padding:4px;border-radius:12px;margin-bottom:14px;}
-  #panel-player .pl-seg button{background:none;border:0;color:var(--text-dim);font:inherit;font-weight:600;padding:9px;border-radius:9px;cursor:pointer;}
-  #panel-player .pl-seg button[aria-pressed="true"]{background:var(--accent);color:#fff;}
-  #panel-player .pl-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
-  #panel-player .pl-tv-only{display:none;}
-  #panel-player.tv .pl-tv-only{display:grid;}
-  #panel-player .pl-field{margin-top:10px;}
-  #panel-player .pl-nav{display:none;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
-  #panel-player.tv .pl-nav{display:grid;}
-  #panel-player .pl-help{font-size:12.5px;color:var(--text-dim);margin:14px 0 0;}
-  #panel-player .pl-help a{color:var(--accent);}
-  #panel-player .pl-stage{position:relative;}
   #panel-player .pl-stage.pl-full{position:fixed;inset:0;z-index:10000;width:100vw;height:100vh;height:100dvh;aspect-ratio:auto;border-radius:0;border:0;padding:0;}
   #panel-player #plStage:fullscreen{width:100vw;height:100vh;aspect-ratio:auto;border-radius:0;border:0;padding:0;}
   #panel-player #plStage:-webkit-full-screen{width:100vw;height:100vh;aspect-ratio:auto;border-radius:0;border:0;padding:0;}
   #panel-player #plExit{position:absolute;top:10px;left:10px;z-index:2;width:38px;height:38px;border:0;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;font-size:18px;line-height:1;cursor:pointer;}
-  #panel-player .pl-custom-only{display:none;}
-  #panel-player .pl-results{display:flex;flex-direction:column;gap:6px;margin-top:10px;}
+  #panel-player .pl-tools{display:flex;gap:8px;margin-top:10px;}
+  #panel-player .pl-tools .btn{padding:7px 12px;font-size:12.5px;}
+  #panel-player .pl-sep{border:0;border-top:1px solid var(--border-soft);margin:16px 0;}
+  #panel-player .pl-top{display:flex;gap:8px;flex-wrap:wrap;}
+  #panel-player .pl-top .pl-seg{flex:1 1 190px;margin:0;}
+  #panel-player .pl-top select{flex:1 1 160px;width:auto;}
+  #panel-player .pl-seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--bg);padding:4px;border-radius:12px;}
+  #panel-player .pl-seg button{background:none;border:0;color:var(--text-dim);font:inherit;font-weight:600;padding:9px;border-radius:9px;cursor:pointer;}
+  #panel-player .pl-seg button[aria-pressed="true"]{background:var(--accent);color:#fff;}
+  #panel-player .pl-search{display:flex;gap:8px;margin-top:10px;}
+  #panel-player .pl-search input{flex:1 1 auto;min-width:0;}
+  #panel-player .pl-status{font-size:12.5px;color:var(--text-dim);margin-top:6px;}
+  #panel-player .pl-status:empty{display:none;}
+  #panel-player .pl-results{display:flex;flex-direction:column;gap:6px;margin-top:8px;}
   #panel-player .pl-res{display:flex;gap:10px;align-items:center;width:100%;text-align:start;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:6px;cursor:pointer;font:inherit;color:var(--text);}
   #panel-player .pl-res:hover{border-color:var(--accent);background:var(--accent-soft);}
   #panel-player .pl-res img,#panel-player .pl-res .pl-noimg{width:40px;height:60px;object-fit:cover;border-radius:6px;background:var(--bg);flex:none;}
   #panel-player .pl-res .pl-t{font-weight:700;font-size:13.5px;direction:ltr;text-align:left;}
   #panel-player .pl-res .pl-m{font-size:12px;color:var(--text-dim);}
+  #panel-player .pl-fields{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px;}
+  #panel-player.tv .pl-fields{grid-template-columns:2fr 1fr 1fr;}
+  #panel-player .pl-tv-only{display:none;}
+  #panel-player.tv .pl-tv-only{display:block;}
+  #panel-player .pl-actions{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px;}
+  #panel-player.tv .pl-actions{grid-template-columns:1fr 1.5fr 1fr;}
+  #panel-player .pl-actions .btn{width:100%;justify-content:center;}
+  #panel-player.tv .pl-actions .pl-tv-only{display:inline-flex;}
+  #panel-player .pl-custom-only{display:none;}
+  #panel-player .pl-help{font-size:12.5px;color:var(--text-dim);margin:10px 0 0;}
+  #panel-player .pl-help a{color:var(--accent);}
   #panel-player details{margin-top:14px;color:var(--text-dim);font-size:13px;}
-  #panel-player summary{cursor:pointer;}
-  #panel-player.custom .pl-custom-only{display:block;}
-  #panel-player.custom .pl-tmdb-only{display:none;}
-  #panel-player.custom .pl-nav{display:none;}
+  #panel-player summary{cursor:pointer;font-weight:600;}
+  #panel-player .pl-field{margin-top:10px;}
+  #panel-player.custom .pl-custom-only{display:block;margin-top:10px;}
+  #panel-player.custom .pl-tmdb-only,#panel-player.custom .pl-tv-only{display:none;}
+  #panel-player.custom .pl-actions{grid-template-columns:1fr;}
+  #panel-player.custom .pl-actions .pl-tv-only{display:none;}
   .panel{display:none;}
   .panel.active{display:block;animation:fade .2s ease;}
   @keyframes fade{from{opacity:0;transform:translateY(3px);}to{opacity:1;transform:translateY(0);}}
@@ -1106,10 +1119,10 @@
     <button class="tab-btn" data-tab="compare">⇄&nbsp; بەراورد</button>
     <button class="tab-btn" data-tab="rtlfix">⇋&nbsp; (U+202B)</button>
     <button class="tab-btn" data-tab="movie">🎬&nbsp; زانیاری فیلم</button>
+    <button class="tab-btn" data-tab="player">▶&nbsp; پلەیەر</button>
     <button class="tab-btn" data-tab="unify">🧩&nbsp;  ناو (فرە فایل)</button>
     <button class="tab-btn" data-tab="clean">✦&nbsp; بژار</button>
     <button class="tab-btn" data-tab="links">🔗&nbsp; لینکەکان</button>
-    <button class="tab-btn" data-tab="player">▶&nbsp; پلەیەر</button>
   </nav>
 
   <div class="content">
@@ -1602,79 +1615,57 @@
 
   <!-- ===================== TAB: PLAYER ===================== -->
   <section class="panel" id="panel-player">
-
     <div class="card">
-      <h2><span class="step-badge">1</span>پلەیەری فیلم و زنجیرە</h2>
-      <div class="pl-stage" id="plStage">ژمارەی TMDB بنووسە و دوگمەی «پەخش بکە» دابگرە</div>
-      <div class="btn-row">
+      <h2><span class="step-badge">▶</span>پلەیەری فیلم و زنجیرە</h2>
+
+      <div class="pl-stage" id="plStage">ناوی فیلمەکە بگەڕێ یان ژمارەی TMDB بنووسە و «پەخش بکە» دابگرە</div>
+      <div class="pl-tools">
         <button class="btn btn-ghost" id="plFull" type="button">⛶ پڕ بە شاشە</button>
-        <button class="btn btn-ghost" id="plOpen" type="button">↗ لە تابی نوێدا بیکەرەوە</button>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2><span class="step-badge">2</span>هەڵبژاردنی ناوەڕۆک</h2>
-      <label class="label-sm" for="plSource">سەرچاوە</label>
-      <select id="plSource" class="text-input ltr" style="margin-bottom:10px;">
-        <option value="framextv">framextv.xyz</option>
-        <option value="vidhive">vidhive.lol</option>
-        <option value="custom">ئادرەسی ڕاستەوخۆ (لینک یان کۆدی embed)</option>
-      </select>
-
-      <div class="pl-custom-only">
-        <label class="label-sm" for="plCustomUrl">ئادرەسی ڤیدیۆ یان کۆدی embed</label>
-        <input id="plCustomUrl" class="text-input ltr" placeholder="https://...  یان  &lt;iframe src=&quot;https://...&quot;&gt;">
-        <p class="pl-help">ئادرەسێکی https یان کۆدی &lt;iframe&gt; لێرە دابنێ، خۆی ئادرەسەکەی لێ دەردەهێنێت. زۆربەی ماڵپەڕەکان ڕێگە نادەن لە ناو ئەپی دیکەدا بکرێنەوە؛ ئەگەر شاشەکە بەتاڵ مایەوە، دوگمەی «لە تابی نوێدا بیکەرەوە» بەکاربهێنە.</p>
+        <button class="btn btn-ghost" id="plOpen" type="button">↗ تابی نوێ</button>
       </div>
 
-      <div class="pl-tmdb-only">
-        <label class="label-sm" for="plQuery">گەڕان بە ناو</label>
-        <div style="display:flex;gap:8px;">
-          <input id="plQuery" class="text-input" placeholder="ناوی فیلم یان دراما (ئینگلیزی باشترە)" style="flex:1 1 auto;min-width:0;">
-          <button class="btn btn-ghost" id="plSearch" type="button">🔍 بگەڕێ</button>
-        </div>
-        <div class="pl-help" id="plSearchStatus" style="margin:6px 0 0;"></div>
-        <div class="pl-results" id="plResults"></div>
-        <div style="height:14px;"></div>
+      <hr class="pl-sep">
 
-        <div class="pl-seg" role="group" aria-label="جۆر">
+      <div class="pl-top">
+        <div class="pl-seg pl-tmdb-only" role="group" aria-label="جۆر">
           <button type="button" id="plBMovie" aria-pressed="true">فیلم</button>
           <button type="button" id="plBTv" aria-pressed="false">زنجیرە / دراما</button>
         </div>
+        <select id="plSource" class="text-input ltr" aria-label="سەرچاوە">
+          <option value="framextv">framextv.xyz</option>
+          <option value="vidhive">vidhive.lol</option>
+          <option value="custom">ئادرەسی ڕاستەوخۆ</option>
+        </select>
+      </div>
 
-        <label class="label-sm" for="plTmdb">ژمارەی TMDB</label>
-        <input id="plTmdb" class="text-input ltr" inputmode="numeric" placeholder="ژمارەی TMDB">
+      <div class="pl-custom-only">
+        <input id="plCustomUrl" class="text-input ltr" aria-label="ئادرەس" placeholder="https://…  یان کۆدی &lt;iframe src=&quot;https://…&quot;&gt;">
+        <p class="pl-help">ئادرەسی https یان کۆدی embed دابنێ؛ ئەگەر شاشەکە بەتاڵ مایەوە، ماڵپەڕەکە ڕێگە نادات لێرە بکرێتەوە، بۆیە «تابی نوێ» بەکاربهێنە.</p>
+      </div>
 
-        <div class="pl-row pl-tv-only">
-          <div>
-            <label class="label-sm" for="plSeason">وەرز (Season)</label>
-            <input id="plSeason" class="text-input ltr" inputmode="numeric" value="1">
-          </div>
-          <div>
-            <label class="label-sm" for="plEpisode">ئەڵقە (Episode)</label>
-            <input id="plEpisode" class="text-input ltr" inputmode="numeric" value="1">
-          </div>
+      <div class="pl-tmdb-only">
+        <div class="pl-search">
+          <input id="plQuery" class="text-input" aria-label="گەڕان بە ناو" placeholder="🔍 گەڕان بە ناوی فیلم یان دراما (ئینگلیزی باشترە)">
+          <button class="btn btn-ghost" id="plSearch" type="button">بگەڕێ</button>
         </div>
+        <div class="pl-status" id="plSearchStatus"></div>
+        <div class="pl-results" id="plResults"></div>
       </div>
 
-      <div class="btn-row">
+      <div class="pl-fields pl-tmdb-only">
+        <input id="plTmdb" class="text-input ltr" inputmode="numeric" aria-label="ژمارەی TMDB" placeholder="ژمارەی TMDB">
+        <input id="plSeason" class="text-input ltr pl-tv-only" inputmode="numeric" aria-label="وەرز" placeholder="وەرز" value="1">
+        <input id="plEpisode" class="text-input ltr pl-tv-only" inputmode="numeric" aria-label="ئەڵقە" placeholder="ئەڵقە" value="1">
+      </div>
+
+      <div class="pl-actions">
+        <button class="btn btn-ghost pl-tv-only" type="button" id="plPrev">‹ پێشوو</button>
         <button class="btn btn-primary" id="plPlay" type="button">▶ پەخش بکە</button>
+        <button class="btn btn-ghost pl-tv-only" type="button" id="plNext">دواتر ›</button>
       </div>
-
-      <div class="pl-nav">
-        <button class="btn btn-ghost" type="button" id="plPrev">ئەڵقەی پێشوو</button>
-        <button class="btn btn-ghost" type="button" id="plNext">ئەڵقەی دواتر</button>
-      </div>
-
-      <p class="pl-help">
-        ژمارەکە لە
-        <a href="https://www.themoviedb.org" target="_blank" rel="noopener noreferrer">themoviedb.org</a>
-        بدۆزەرەوە: ناوی فیلمەکە بگەڕێ و ژمارەکە لە کۆتایی ئادرەسی پەڕەکەدا دەبینیت
-        (بۆ نموونە <bdi dir="ltr">/movie/550</bdi>).
-      </p>
 
       <details>
-        <summary>ڕێکخستنی پێشکەوتوو</summary>
+        <summary>ڕێکخستن و ڕێنمایی</summary>
         <div class="pl-field">
           <label class="label-sm" for="plMovieTpl">ئادرەسی فیلم</label>
           <input id="plMovieTpl" class="text-input ltr" value="https://framextv.xyz/embed/{id}?autoplay=1&amp;muted=0">
@@ -1683,12 +1674,12 @@
           <label class="label-sm" for="plTvTpl">ئادرەسی زنجیرە</label>
           <input id="plTvTpl" class="text-input ltr" value="https://framextv.xyz/embed/tv/{id}/{s}/{e}?autoplay=1&amp;muted=0">
         </div>
-        <p class="pl-help">ئادرەسی فیلم لە بەڵگەنامەکەی ماڵپەڕەکە وەرگیراوە. شێوازی زنجیرە تاقینەکراوەتەوە؛ ئەگەر کارینەکرد، شێوازە دروستەکە لە بەشی بەڵگەنامەکەدا بدۆزەرەوە و لێرە بیگۆڕە ({id} و {s} و {e} بەکاربهێنە).</p>
+        <p class="pl-help">{id} و {s} و {e} بەکاربهێنە. شێوازی زنجیرە تاقینەکراوەتەوە؛ ئەگەر کارینەکرد، شێوازە دروستەکە لە بەڵگەنامەکەی ماڵپەڕەکەدا بدۆزەرەوە. گەڕان بە ناو هەمان کلیلی TMDB بەکاردێنێت کە لە تابی «زانیاری فیلم» داتناوە.</p>
+        <p class="pl-help">ژمارەکە لە <a href="https://www.themoviedb.org" target="_blank" rel="noopener noreferrer">themoviedb.org</a> لە کۆتایی ئادرەسی پەڕەکەدا دەبینیت (بۆ نموونە <bdi dir="ltr">/movie/550</bdi>).</p>
       </details>
 
       <p class="pl-help">ئەم بەشە تەنها ڤیدیۆی ماڵپەڕێکی دەرەکی پیشان دەدات. ناوەڕۆکەکە لەوانەیە مافی بڵاوکردنەوەی نەبێت، بۆیە تەنها بۆ بەکارهێنانی کەسی بەکاری بهێنە.</p>
     </div>
-
   </section>
 
   </div>
@@ -4002,6 +3993,7 @@ ${text}`;
   const LK_KEY = 'preTranslate_links_v1';
   const LK_DEFAULTS = [
     {name:'Kaito Vault',   url:'https://beta.kaitovault.com/'},
+    {name:'NovaHD',        url:'https://novahd.cc/'},
     {name:'SubSource',     url:'https://subsource.net/recent?type=movie&lang=english'},
     {name:'5TV',           url:'https://5tv.asia/'},
     {name:'Fasel HD',      url:'https://www.fasel-hd.co/main'},
@@ -4073,10 +4065,10 @@ ${text}`;
       } catch(e){ lkItems = []; }
       // Newly added built-in links are offered once; later deletions stay deleted.
       // Existing users who never recorded a "seen" list: only the newest default is offered.
-      if(!seen.length) seen = LK_DEFAULTS.slice(0, -1).map(d => d.url);
-      LK_DEFAULTS.forEach(d => {
+      if(!seen.length) seen = LK_DEFAULTS.filter(d => d.url !== 'https://novahd.cc/').slice(0, -1).map(d => d.url);
+      LK_DEFAULTS.forEach((d, idx) => {
         if(seen.indexOf(d.url) === -1 && !lkHasUrl(d.url)){
-          lkItems.push({id: lkId(), name: d.name, url: d.url, fav: false});
+          lkItems.splice(Math.min(idx, lkItems.length), 0, {id: lkId(), name: d.name, url: d.url, fav: false});
         }
       });
     }
