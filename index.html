@@ -767,7 +767,7 @@
   .hscroll::-webkit-scrollbar-thumb{background:var(--border);border-radius:var(--r-chip);}
   .hscroll::-webkit-scrollbar-track{background:transparent;}
 
-  #extractPairsContainer, #extractPairsContainer2, #chunkPairsContainer, #cleanRowsList{
+  #extractPairsContainer, #chunkPairsContainer, #cleanRowsList{
     display:flex;
     flex-wrap:nowrap;
     align-items:flex-start;
@@ -1392,20 +1392,6 @@
 
       <div class="status" id="statusRebuild"></div>
     </div>
-
-    <div class="card" id="extractCard2" style="display:none;">
-      <h2><span class="step-badge">3</span>گەڕاندنەوەی وەرگێڕان (دووەم) <span class="badge" id="blockCountBadge2">0 بلۆک</span><span class="badge" id="extractPartBadge2">0 بەش</span></h2>
-      <p class="sub">وەشانی دووەمی وەرگێڕانەکە ڕاستەوخۆ لە بۆکسەکەی هەر بەشێکدا دابنێ. نیشانەی <span class="badge" style="margin-inline-start:2px;">&amp;&amp;&amp;</span> بلۆکەکان لە یەکتری جیادەکاتەوە — لەکاتی وەرگێڕان مەیسڕەوە و ڕیزبەندییەکەی مەگۆڕە.</p>
-
-      <div id="extractPairsContainer2" class="hscroll"></div>
-
-      <div class="btn-row">
-        <button class="btn btn-ghost" id="btnCopySrt2">دروستکردن و کۆپیکردنی SRT</button>
-      </div>
-
-      <div class="status" id="statusRebuild2"></div>
-    </div>
-
   </section>
 
   <!-- ===================== TAB: CHUNK (9500 CHARS) ===================== -->
@@ -2612,8 +2598,6 @@
   let extractState = null;
   const statusExtract = document.getElementById('statusExtract');
   const statusRebuild = document.getElementById('statusRebuild');
-  const statusRebuild2 = document.getElementById('statusRebuild2');
-  const extractPairsContainer2 = document.getElementById('extractPairsContainer2');
 
   const PART_MAX_BLOCKS = 350;   // هیچ بەشێک نابێت لەمە زیاتر بێت
   const SPLIT_THRESHOLD = 900;   // تەنها ئەگەر فایلەکە لەمە زیاتر بوو دابەش بکرێت بۆ چەند بەش
@@ -2654,7 +2638,6 @@
     if(blocks.length === 0){
       setStatus(statusExtract, 'error', 'فایلەکە بە دروستی ناخوێنرێتەوە وەک SRT.');
       document.getElementById('extractCard').style.display = 'none';
-      document.getElementById('extractCard2').style.display = 'none';
       extractState = null;
       return;
     }
@@ -2663,7 +2646,6 @@
     if(ne.length === 0){
       setStatus(statusExtract, 'error', 'هەموو بلۆکەکان بەتاڵن، دەقێک نییە بۆ دەرهێنان.');
       document.getElementById('extractCard').style.display = 'none';
-      document.getElementById('extractCard2').style.display = 'none';
       extractState = null;
       return;
     }
@@ -2676,12 +2658,8 @@
     extractState = { blocks, fileName: name, ne, ranges: computePartRanges(ne.length) };
     document.getElementById('blockCountBadge').textContent = blocks.length + ' بلۆک' + (empties ? ' (' + empties + ' بەتاڵ)' : '');
     renderExtractPairs(extractPairsContainer, '', 'extractPartBadge', statusExtract);
-    renderExtractPairs(extractPairsContainer2, '2', 'extractPartBadge2', statusRebuild2, true);
-    document.getElementById('blockCountBadge2').textContent = document.getElementById('blockCountBadge').textContent;
     clearStatus(statusRebuild);
-    clearStatus(statusRebuild2);
     document.getElementById('extractCard').style.display = 'block';
-    document.getElementById('extractCard2').style.display = 'block';
   });
 
   /* -------- هەر بەشێک: بۆکسی دەقی دەرهێنراو لەسەرەوە، بۆکسی گەڕاندنەوەی وەرگێڕان لەژێرەوە -------- */
@@ -2924,26 +2902,9 @@
     document.getElementById('filenameX').textContent = '';
     document.getElementById('fileX').value = '';
     document.getElementById('extractCard').style.display = 'none';
-      document.getElementById('extractCard2').style.display = 'none';
     extractPairsContainer.innerHTML = '';
-    extractPairsContainer2.innerHTML = '';
     clearStatus(statusExtract);
     clearStatus(statusRebuild);
-    clearStatus(statusRebuild2);
-  });
-
-  /* ---- second, independent card: copy all text · build & copy SRT · reset ---- */
-  document.getElementById('btnCopySrt2').addEventListener('click', ()=>{
-    if(!extractState){
-      setStatus(statusRebuild2, 'error', 'سەرەتا فایلی SRT باربکە.');
-      return;
-    }
-    const res = makeExtractResult('2');
-    copyBtnFeedback(document.getElementById('btnCopySrt2'), res.srt, ()=>{
-      reportExtract(res, 'دروستکرا و کۆپیکرا', statusRebuild2);
-    }, ()=>{
-      setStatus(statusRebuild2, 'error', 'کۆپیکردن سەرکەوتوو نەبوو.');
-    });
   });
 
   /* ===================== CHUNK (9500 CHARS) TAB LOGIC ===================== */
