@@ -155,6 +155,22 @@
     }
   }
 
+  /* ---------- Player tab ---------- */
+  #panel-player .pl-stage{aspect-ratio:16/9;width:100%;background:#000;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border);display:grid;place-items:center;color:#9aa3b8;text-align:center;padding:12px;font-size:13.5px;}
+  #panel-player .pl-stage iframe{width:100%;height:100%;border:0;display:block;}
+  #panel-player .pl-seg{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--bg);padding:4px;border-radius:12px;margin-bottom:14px;}
+  #panel-player .pl-seg button{background:none;border:0;color:var(--text-dim);font:inherit;font-weight:600;padding:9px;border-radius:9px;cursor:pointer;}
+  #panel-player .pl-seg button[aria-pressed="true"]{background:var(--accent);color:#fff;}
+  #panel-player .pl-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+  #panel-player .pl-tv-only{display:none;}
+  #panel-player.tv .pl-tv-only{display:grid;}
+  #panel-player .pl-field{margin-top:10px;}
+  #panel-player .pl-nav{display:none;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px;}
+  #panel-player.tv .pl-nav{display:grid;}
+  #panel-player .pl-help{font-size:12.5px;color:var(--text-dim);margin:14px 0 0;}
+  #panel-player .pl-help a{color:var(--accent);}
+  #panel-player details{margin-top:14px;color:var(--text-dim);font-size:13px;}
+  #panel-player summary{cursor:pointer;}
   .panel{display:none;}
   .panel.active{display:block;animation:fade .2s ease;}
   @keyframes fade{from{opacity:0;transform:translateY(3px);}to{opacity:1;transform:translateY(0);}}
@@ -1113,6 +1129,7 @@ body.authed #logoutBtn{display:block;}
     <button class="tab-btn" data-tab="unify">🧩&nbsp;  ناو (فرە فایل)</button>
     <button class="tab-btn" data-tab="clean">✦&nbsp; بژار</button>
     <button class="tab-btn" data-tab="links">🔗&nbsp; لینکەکان</button>
+    <button class="tab-btn" data-tab="player">▶&nbsp; پلەیەر</button>
   </nav>
 
   <div class="content">
@@ -1599,6 +1616,75 @@ body.authed #logoutBtn{display:block;}
         <button class="btn btn-primary" id="btnLkImport" type="button">هێنانی لینکەکان</button>
       </div>
       <div class="status" id="statusLinksIO"></div>
+    </div>
+
+  </section>
+
+  <!-- ===================== TAB: PLAYER ===================== -->
+  <section class="panel" id="panel-player">
+
+    <div class="card">
+      <h2><span class="step-badge">1</span>پلەیەری فیلم و زنجیرە</h2>
+      <div class="pl-stage" id="plStage">ژمارەی TMDB بنووسە و دوگمەی «پەخش بکە» دابگرە</div>
+    </div>
+
+    <div class="card">
+      <h2><span class="step-badge">2</span>هەڵبژاردنی ناوەڕۆک</h2>
+      <div class="pl-seg" role="group" aria-label="جۆر">
+        <button type="button" id="plBMovie" aria-pressed="true">فیلم</button>
+        <button type="button" id="plBTv" aria-pressed="false">زنجیرە / دراما</button>
+      </div>
+
+      <label class="label-sm" for="plSource">سەرچاوە</label>
+      <select id="plSource" class="text-input ltr" style="margin-bottom:10px;">
+        <option value="framextv">framextv.xyz</option>
+        <option value="vidhive">vidhive.lol</option>
+      </select>
+
+      <label class="label-sm" for="plTmdb">ژمارەی TMDB</label>
+      <input id="plTmdb" class="text-input ltr" inputmode="numeric" placeholder="ژمارەی TMDB">
+
+      <div class="pl-row pl-tv-only">
+        <div>
+          <label class="label-sm" for="plSeason">وەرز (Season)</label>
+          <input id="plSeason" class="text-input ltr" inputmode="numeric" value="1">
+        </div>
+        <div>
+          <label class="label-sm" for="plEpisode">ئەڵقە (Episode)</label>
+          <input id="plEpisode" class="text-input ltr" inputmode="numeric" value="1">
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="plPlay" type="button">▶ پەخش بکە</button>
+      </div>
+
+      <div class="pl-nav">
+        <button class="btn btn-ghost" type="button" id="plPrev">ئەڵقەی پێشوو</button>
+        <button class="btn btn-ghost" type="button" id="plNext">ئەڵقەی دواتر</button>
+      </div>
+
+      <p class="pl-help">
+        ژمارەکە لە
+        <a href="https://www.themoviedb.org" target="_blank" rel="noopener noreferrer">themoviedb.org</a>
+        بدۆزەرەوە: ناوی فیلمەکە بگەڕێ و ژمارەکە لە کۆتایی ئادرەسی پەڕەکەدا دەبینیت
+        (بۆ نموونە <bdi dir="ltr">/movie/550</bdi>).
+      </p>
+
+      <details>
+        <summary>ڕێکخستنی پێشکەوتوو</summary>
+        <div class="pl-field">
+          <label class="label-sm" for="plMovieTpl">ئادرەسی فیلم</label>
+          <input id="plMovieTpl" class="text-input ltr" value="https://framextv.xyz/embed/{id}?autoplay=1&amp;muted=0">
+        </div>
+        <div class="pl-field">
+          <label class="label-sm" for="plTvTpl">ئادرەسی زنجیرە</label>
+          <input id="plTvTpl" class="text-input ltr" value="https://framextv.xyz/embed/tv/{id}/{s}/{e}?autoplay=1&amp;muted=0">
+        </div>
+        <p class="pl-help">ئادرەسی فیلم لە بەڵگەنامەکەی ماڵپەڕەکە وەرگیراوە. شێوازی زنجیرە تاقینەکراوەتەوە؛ ئەگەر کارینەکرد، شێوازە دروستەکە لە بەشی بەڵگەنامەکەدا بدۆزەرەوە و لێرە بیگۆڕە ({id} و {s} و {e} بەکاربهێنە).</p>
+      </details>
+
+      <p class="pl-help">ئەم بەشە تەنها ڤیدیۆی ماڵپەڕێکی دەرەکی پیشان دەدات. ناوەڕۆکەکە لەوانەیە مافی بڵاوکردنەوەی نەبێت، بۆیە تەنها بۆ بەکارهێنانی کەسی بەکاری بهێنە.</p>
     </div>
 
   </section>
@@ -3620,44 +3706,44 @@ ${text}`;
 
     /* ---------- word extraction (only inside parentheses / quotation marks) ---------- */
     function extractWords(content){
-      const cleaned = content
-        .replace(/\r/g,'')
-        .split('\n')
-        .filter(line=>{
-          const t = line.trim();
-          if(t === '') return false;
-          if(/^\d+$/.test(t)) return false;
-          if(/-->/.test(t)) return false;
-          return true;
-        })
-        .join(' ')
-        .replace(/<[^>]+>/g,' ')
-        .replace(/\{[^}]+\}/g,' ');
-
-      // Only pull text that sits inside () «» "" '' “” ‘’ ‹› — everything else is ignored.
-      const bracketRe = /\(([^()]*)\)|«([^»]*)»|“([^”]*)”|"([^"]*)"|‹([^›]*)›|'([^']*)'/g;
-      let spans = [];
-      let m;
-      while((m = bracketRe.exec(cleaned)) !== null){
-        const captured = m[1] || m[2] || m[3] || m[4] || m[5] || m[6] || '';
-        if(captured) spans.push(captured);
-      }
-      // A real name-span is short (a name, not a note/sound-effect/instruction sentence)
-      // and has no sentence punctuation. Drop anything longer — that's where verbs,
-      // pronouns, and other non-name words were leaking in.
-      const nameSpans = spans.filter(s=>{
-        const t = s.trim();
-        if(!t) return false;
-        if(/[،؟!.:؛]/.test(t)) return false; // sentence punctuation → not a bare name
-        const wordCount = t.split(/\s+/).filter(Boolean).length;
-        return wordCount >= 1 && wordCount <= 3;
-      });
-      // Keep each bracket/quote span as ONE combined name (e.g. a 3-part name stays
-      // together as a single entry) instead of splitting it into separate words.
+      // Invisible direction marks (RLM/LRM/embedding) are very common in Kurdish SRTs
+      // and used to make otherwise-valid names fail the letter check.
+      const BIDI = /[\u200e\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g;
+      // Each bracket/quote type is scanned on its own, and one subtitle cue at a time,
+      // so a single stray quote or apostrophe can no longer shift the pairing for the whole file.
+      const PAIRS = [
+        /\(([^()]*)\)/g, /«([^«»]*)»/g, /»([^«»]*)«/g,
+        /“([^“”]*)”/g, /”([^“”]*)“/g, /"([^"]*)"/g,
+        /‘([^‘’]*)’/g, /'([^']*)'/g, /‹([^‹›]*)›/g
+      ];
+      const EDGE = /^[\s\-–—.،,:؛;!؟?…]+|[\s\-–—.،,:؛;!؟?…]+$/gu;
       const names = [];
-      nameSpans.forEach(s=>{
-        const t = s.trim().replace(/\s+/g,' ');
-        if(/^[\p{L}\p{M}’ʼ'\s\u200c\u200d\-]{2,}$/u.test(t)) names.push(t);
+      content.replace(/\r/g,'').split(/\n\s*\n/).forEach(block=>{
+        const cue = block.split('\n').filter(line=>{
+          const t = line.trim();
+          return t !== '' && !/^\d+$/.test(t) && !/-->/.test(t);
+        }).join(' ')
+          .replace(BIDI,'')
+          .replace(/<[^>]+>/g,' ')
+          .replace(/\{[^}]+\}/g,' ');
+        PAIRS.forEach(re=>{
+          re.lastIndex = 0;
+          let m;
+          while((m = re.exec(cue)) !== null){
+            const raw = (m[1]||'').replace(/\s+/g,' ').trim();
+            if(!raw) continue;
+            // "A، B" → two separate names
+            raw.split(/\s*[،,]\s*/).forEach(part=>{
+              const t = part.replace(EDGE,'');
+              if(!t || t.length < 2) return;
+              if(/[؟?!:؛;…]/.test(t)) return;                 // sentence punctuation inside → not a name
+              const wc = t.split(/\s+/).length;
+              if(wc < 1 || wc > 5) return;                     // names up to 5 words
+              if(!/\p{L}/u.test(t)) return;                    // must contain a letter
+              if(/^[\p{L}\p{M}\p{N}’ʼ'\u200c\u200d.\-\s]+$/u.test(t)) names.push(t);
+            });
+          }
+        });
       });
       return names;
     }
@@ -4988,6 +5074,91 @@ async function doLogin(){
 $('authBtn').addEventListener('click', doLogin);
 $('authPass').addEventListener('keydown', e => { if(e.key === 'Enter') doLogin(); });
 $('logoutBtn').addEventListener('click', () => signOut(auth));
+</script>
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){return document.getElementById(id)};
+  var panel = $("panel-player");
+  var mode = "movie";
+  var KEY = "presub_player_state";
+  var SOURCES = {
+    framextv:{
+      movie:"https://framextv.xyz/embed/{id}?autoplay=1&muted=0",
+      tv:"https://framextv.xyz/embed/tv/{id}/{s}/{e}?autoplay=1&muted=0"
+    },
+    // movie URL comes from the embed code; the tv pattern is a guess (untested) — edit in advanced settings if needed
+    vidhive:{
+      movie:"https://vidhive.lol/embed/movie/{id}",
+      tv:"https://vidhive.lol/embed/tv/{id}/{s}/{e}"
+    }
+  };
+  function applySource(k){
+    var t = SOURCES[k]; if(!t) return;
+    $("plMovieTpl").value = t.movie;
+    $("plTvTpl").value = t.tv;
+  }
+  $("plSource").addEventListener("change", function(){ applySource(this.value); });
+
+  function setMode(m){
+    mode = m;
+    panel.classList.toggle("tv", m==="tv");
+    $("plBMovie").setAttribute("aria-pressed", String(m==="movie"));
+    $("plBTv").setAttribute("aria-pressed", String(m==="tv"));
+  }
+  $("plBMovie").onclick = function(){setMode("movie")};
+  $("plBTv").onclick = function(){setMode("tv")};
+
+  try{
+    var s = JSON.parse(localStorage.getItem(KEY)||"{}");
+    if(s.id) $("plTmdb").value = s.id;
+    if(s.season) $("plSeason").value = s.season;
+    if(s.episode) $("plEpisode").value = s.episode;
+    if(s.mode) setMode(s.mode);
+    if(s.source && SOURCES[s.source]) $("plSource").value = s.source;
+    if(s.movieTpl) $("plMovieTpl").value = s.movieTpl;
+    if(s.tvTpl) $("plTvTpl").value = s.tvTpl;
+  }catch(e){}
+
+  function num(v){ var n = parseInt(String(v).replace(/\D/g,""),10); return isNaN(n)?null:n; }
+
+  function play(){
+    var stage = $("plStage");
+    var id = num($("plTmdb").value);
+    if(!id){ stage.textContent = "ژمارەیەکی دروست بنووسە."; return; }
+    var tpl = mode==="movie" ? $("plMovieTpl").value : $("plTvTpl").value;
+    var se = num($("plSeason").value)||1, ep = num($("plEpisode").value)||1;
+    var url = tpl.replace("{id}",id).replace("{s}",se).replace("{e}",ep);
+    if(!/^https:\/\//i.test(url)){ stage.textContent = "ئادرەسەکە دەبێت بە https دەست پێبکات."; return; }
+
+    var f = document.createElement("iframe");
+    f.src = url;
+    f.allowFullscreen = true;
+    f.setAttribute("allow","autoplay; fullscreen; picture-in-picture; encrypted-media");
+    f.setAttribute("referrerpolicy","no-referrer");
+    stage.textContent = "";
+    stage.appendChild(f);
+
+    try{
+      localStorage.setItem(KEY, JSON.stringify({
+        id:id, season:se, episode:ep, mode:mode, source:$("plSource").value,
+        movieTpl:$("plMovieTpl").value, tvTpl:$("plTvTpl").value
+      }));
+    }catch(e){}
+  }
+
+  $("plPlay").onclick = play;
+  $("plTmdb").addEventListener("keydown", function(e){ if(e.key==="Enter") play(); });
+
+  function step(d){
+    var e = (num($("plEpisode").value)||1) + d;
+    if(e<1) e=1;
+    $("plEpisode").value = e;
+    play();
+  }
+  $("plNext").onclick = function(){step(1)};
+  $("plPrev").onclick = function(){step(-1)};
+})();
 </script>
 </body>
 </html>
