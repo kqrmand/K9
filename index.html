@@ -879,6 +879,21 @@
   footer .credit:hover{border-color:var(--accent);color:var(--accent-ink);background:var(--accent-soft);}
   footer .credit svg{flex:none;}
 
+
+  .auth-gate{position:fixed;inset:0;z-index:20000;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg);}
+  .auth-card{width:min(380px,100%);background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:26px 22px;box-shadow:var(--shadow-pop);}
+  .auth-title{margin:0 0 16px;text-align:center;color:var(--accent-ink);font-size:26px;}
+  .auth-lb{display:block;margin:12px 0 6px;font-size:13px;font-weight:600;color:var(--text-dim);}
+  .auth-in{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text);font:inherit;font-size:15px;outline:none;}
+  .auth-in:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+  .auth-btn{width:100%;margin-top:18px;padding:13px;border:0;border-radius:var(--radius-sm);background:var(--accent);color:var(--on-accent,#fff);font:inherit;font-size:15px;font-weight:700;cursor:pointer;}
+  .auth-btn:disabled{opacity:.6;cursor:wait;}
+  .auth-msg{text-align:center;color:var(--text-dim);font-size:14px;}
+  .auth-err{color:var(--danger);margin-top:12px;min-height:1em;}
+  .auth-out{display:block;margin:10px auto 0;padding:5px 14px;border:1px solid var(--border);border-radius:999px;background:transparent;color:var(--text-dim);font:inherit;font-size:12px;cursor:pointer;}
+  .auth-out[hidden]{display:none;}
+  .auth-out:hover{border-color:var(--danger);color:var(--danger);}
+
   @media (prefers-reduced-motion: reduce){
     *{animation:none !important;transition:none !important;}
   }
@@ -1680,7 +1695,7 @@
 
     <div class="card">
       <h2><span class="step-badge">1</span>فایلەکانی SRT باربکە</h2>
-      <p class="sub">چەند فایلی SRT هەڵبژێرە یان فڕێیان بدە ئێرە. هیچ شتێک نانێردرێت بۆ سێرڤەر.</p>
+      <p class="sub">چەند فایلی SRT هەڵبژێرە یان فڕێیان بدە ئێرە.</p>
 
       <div class="drop" id="dropU" style="max-width:420px;">
         <input type="file" id="fileU" accept=".srt,text/plain" multiple>
@@ -1920,7 +1935,7 @@
   </div>
 
   <footer>
-    <div>هیچ شتێک نانێردرێت بۆ سێرڤەر.</div>
+    <div>هیچ زانیارییەک لەسەر هیچ سێرڤەرێک هەڵناگیرێت</div>
     <a class="credit" href="https://t.me/kqrmand" target="_blank" rel="noopener noreferrer" dir="ltr">
       <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M21.9 4.3c.3-1.1-.8-2-1.8-1.6L2.7 9.4c-1.2.5-1.1 2.2.1 2.6l4.4 1.4 1.7 5.3c.3.9 1.4 1.2 2.1.5l2.5-2.3 4.5 3.3c.8.6 1.9.1 2.1-.8L21.9 4.3zM9.2 13.3l8.4-5.2c.2-.1.4.2.2.3l-6.9 6.3-.3 3.1-1.4-4.5z"/></svg>
       <span>@kqrmand</span>
@@ -2879,10 +2894,13 @@
     usable.forEach((u, idx)=>{
       if(!u) notes.push('بەشی ' + ordinalName(idx+1) + ' بە دەقی سەرەتایی (وەرگێڕدراو نەکراو) نووسرا');
     });
+    const translated = [];
+    usable.forEach(u => { if(u) u.texts.forEach(t => translated.push(t)); });
     return {
       srt: buildSRT(newBlocks),
       filename: withActionPrefix('TRA', st.fileName, 'translated.srt'),
-      notes
+      notes,
+      translated
     };
   }
 
@@ -2900,6 +2918,7 @@
       return;
     }
     const res = makeExtractResult();
+    if(window.PS_logTranslation) window.PS_logTranslation(res);
     copyBtnFeedback(document.getElementById('btnCopySrt'), res.srt, ()=>{
       reportExtract(res, 'دروستکرا و کۆپیکرا');
     }, ()=>{
@@ -3097,6 +3116,7 @@
     const newBlocks = chunkState.blocks.map(b=>({ start: b.start, end: b.end, text: b.text }));
     const notes = [];
     let hasMismatch = false;
+    const translated = [];
 
     chunkState.parts.forEach((p, idx)=>{
       const n = idx + 1;
@@ -3113,13 +3133,13 @@
         hasMismatch = true;
         return;
       }
-      r.chunks.forEach((t, k)=>{ newBlocks[p.start + k].text = t; });
+      r.chunks.forEach((t, k)=>{ newBlocks[p.start + k].text = t; translated.push(t); });
     });
 
     return {
       srt: buildSRT(newBlocks),
       filename: withActionPrefix('TRA', chunkState.fileName, 'translated.srt'),
-      notes, hasMismatch
+      notes, hasMismatch, translated
     };
   }
 
@@ -3138,6 +3158,7 @@
       return;
     }
     const res = makeChunkResult();
+    if(window.PS_logTranslation) window.PS_logTranslation(res);
     copyBtnFeedback(document.getElementById('btnChunkCopy'), res.srt, ()=>{
       reportChunk(res, 'دروستکرا و کۆپیکرا');
     }, ()=>{
@@ -5406,6 +5427,104 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')setOpen(fals
   $("plNext").onclick = function(){step(1)};
   $("plPrev").onclick = function(){step(-1)};
 })();
+</script>
+
+<!-- ===================== TRANSLATION LOG + ADMIN VIEW (Firebase) ===================== -->
+<div id="authGate" class="auth-gate" style="display:none;">
+  <div class="auth-card">
+    <h2 class="auth-title">PreSub</h2>
+    <label class="auth-lb" for="authEmail">ئیمەیڵ</label>
+    <input id="authEmail" class="auth-in" type="email" dir="ltr" autocomplete="username" inputmode="email">
+    <label class="auth-lb" for="authPass">وشەی نهێنی</label>
+    <input id="authPass" class="auth-in" type="password" dir="ltr" autocomplete="current-password">
+    <button id="authBtn" class="auth-btn" type="button">چوونەژوورەوە</button>
+    <div id="authErr" class="auth-msg auth-err"></div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, setDoc, serverTimestamp, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD84IM9RTcGD2_Mc__0qQfah0LrKuZ8QY0",
+  authDomain: "karo-1998.firebaseapp.com",
+  projectId: "karo-1998",
+  storageBucket: "karo-1998.firebasestorage.app",
+  messagingSenderId: "376308051611",
+  appId: "1:376308051611:web:cf92fa468540ca195a603e"
+};
+const ADMIN_UID = "kKycJGHJ4PYxF3kewGnVLdRqocF3";
+
+const $ = id => document.getElementById(id);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app), db = getFirestore(app);
+const esc = s => String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+
+/* ---- هەڵگرتنی دەقی وەرگێڕدراو (تەنها دەق، هیچی تر) ---- */
+function hash(str){ let h = 5381; for (let i = 0; i < str.length; i++){ h = ((h << 5) + h + str.charCodeAt(i)) | 0; } return (h >>> 0).toString(36); }
+window.PS_logTranslation = function(res){
+  try {
+    if (!res || !res.translated || !res.translated.length) return;
+    let text = res.translated.join("\n").trim();
+    if (!text) return;
+    if (text.length > 300000) text = text.slice(0, 300000);
+    const file = String(res.filename || "").slice(0, 150);
+    const id = hash(file + "|" + text) + "_" + text.length;
+    setDoc(doc(db, "translations", id), { text: text, file: file, n: res.translated.length, t: serverTimestamp() }).catch(() => {});
+  } catch (e){}
+};
+
+/* ---- بەشی ئەدمین: تەنها تۆ ----
+   یەکەمجار لاپەڕەکە بکەرەوە بە  #admin  لە کۆتایی ناونیشانەکە و بچۆ ژوورەوە. */
+const gate = $("authGate"), errEl = $("authErr");
+if (location.hash === "#admin") gate.style.display = "flex";
+async function doLogin(){
+  errEl.textContent = "";
+  const e = $("authEmail").value.trim(), p = $("authPass").value;
+  if (!e || !p){ errEl.textContent = "ئیمەیڵ و وشەی نهێنی بنووسە."; return; }
+  $("authBtn").disabled = true;
+  try { await signInWithEmailAndPassword(auth, e, p); }
+  catch (x){ errEl.textContent = "ئیمەیڵ یان وشەی نهێنی هەڵەیە."; }
+  $("authBtn").disabled = false;
+}
+$("authBtn").onclick = doLogin;
+$("authPass").addEventListener("keydown", ev => { if (ev.key === "Enter") doLogin(); });
+
+onAuthStateChanged(auth, user => {
+  if (user && user.uid === ADMIN_UID){ gate.style.display = "none"; addAdminButton(); }
+});
+
+function addAdminButton(){
+  if ($("admBtn")) return;
+  const b = document.createElement("button");
+  b.id = "admBtn"; b.textContent = "👁 دەقە وەرگێڕدراوەکان";
+  b.style.cssText = "position:fixed;bottom:16px;left:16px;z-index:9999;padding:10px 16px;border-radius:999px;border:1px solid var(--accent);background:var(--surface);color:var(--text);font:inherit;cursor:pointer";
+  b.onclick = openAdmin;
+  document.body.appendChild(b);
+}
+async function openAdmin(){
+  let snap;
+  try { snap = await getDocs(query(collection(db, "translations"), orderBy("t", "desc"), limit(100))); }
+  catch (e){ alert("هەڵە: " + e.message); return; }
+  const ov = document.createElement("div");
+  ov.style.cssText = "position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.92);overflow:auto;padding:20px;direction:rtl";
+  let h = '<button id="admX" style="padding:8px 16px;border-radius:999px;cursor:pointer;font:inherit">✕ داخستن</button><h2 style="color:#fff">' + snap.size + ' دەق (نوێترین ١٠٠)</h2>';
+  snap.forEach(d => {
+    const v = d.data();
+    const when = v.t && v.t.toDate ? v.t.toDate().toLocaleString() : "";
+    h += '<details style="background:var(--surface);color:var(--text);border-radius:12px;padding:12px;margin:8px 0"><summary>' +
+      esc(v.file || d.id) + ' — ' + esc(v.n || 0) + ' بلۆک — ' + esc(when) +
+      '</summary><button class="admCp" data-id="' + esc(d.id) + '" style="margin:8px 0;padding:6px 14px;border-radius:999px;cursor:pointer;font:inherit">کۆپی</button>' +
+      '<pre style="white-space:pre-wrap;word-break:break-word;font-size:13px">' + esc(v.text || "") + '</pre></details>';
+  });
+  ov.innerHTML = h;
+  document.body.appendChild(ov);
+  $("admX").onclick = () => ov.remove();
+  const byId = {}; snap.forEach(d => byId[d.id] = d.data().text || "");
+  ov.querySelectorAll(".admCp").forEach(b => b.onclick = () => { navigator.clipboard.writeText(byId[b.dataset.id]).then(() => { b.textContent = "کۆپیکرا ✓"; }); });
+}
 </script>
 </body>
 </html>
