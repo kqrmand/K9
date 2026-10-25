@@ -5479,9 +5479,16 @@ window.PS_logTranslation = function(res){
 /* ---- بەشی ئەدمین: تەنها تۆ ----
    یەکەمجار لاپەڕەکە بکەرەوە بە  #admin  لە کۆتایی ناونیشانەکە و بچۆ ژوورەوە. */
 const gate = $("authGate"), errEl = $("authErr");
-function checkHash(){ if (location.hash === "#admin" && !$("admBtn")) gate.style.display = "flex"; }
-checkHash();
-window.addEventListener("hashchange", checkHash);
+let isAdminUser = false, authReady = false;
+function renderAdmin(){
+  const onAdminPage = location.hash === "#admin";
+  const b = $("admBtn");
+  if (!onAdminPage){ gate.style.display = "none"; if (b) b.remove(); return; }
+  if (!authReady) return;
+  if (isAdminUser){ gate.style.display = "none"; addAdminButton(); }
+  else { gate.style.display = "flex"; if (b) b.remove(); }
+}
+window.addEventListener("hashchange", renderAdmin);
 async function doLogin(){
   errEl.textContent = "";
   const e = $("authEmail").value.trim(), p = $("authPass").value;
@@ -5495,9 +5502,12 @@ $("authBtn").onclick = doLogin;
 $("authPass").addEventListener("keydown", ev => { if (ev.key === "Enter") doLogin(); });
 
 onAuthStateChanged(auth, user => {
-  if (!user) return;
-  if (user.uid === ADMIN_UID){ gate.style.display = "none"; addAdminButton(); openAdmin(); }
-  else if (gate.style.display === "flex"){ errEl.textContent = "ئەم ئەکاونتە ئەدمین نییە. UID: " + user.uid; }
+  const wasAdmin = isAdminUser;
+  isAdminUser = !!user && user.uid === ADMIN_UID;
+  authReady = true;
+  if (user && !isAdminUser && location.hash === "#admin"){ errEl.textContent = "ئەم ئەکاونتە ئەدمین نییە. UID: " + user.uid; }
+  renderAdmin();
+  if (isAdminUser && !wasAdmin && location.hash === "#admin") openAdmin();
 });
 
 function addAdminButton(){
