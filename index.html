@@ -4858,6 +4858,8 @@ function ensure(){
   const blk=ta.closest('.se-blk');if(!blk)return;
   const top=VV?VV.offsetTop:0,m=12;
   let bottom=top+(VV?VV.height:innerHeight);
+  const kh=vkH();
+  if(kh)bottom=Math.min(bottom,innerHeight-kh);
   if(solo)bottom=Math.min(bottom,nav.getBoundingClientRect().top);
   const h=bottom-top;
   const r=blk.getBoundingClientRect();
@@ -4871,7 +4873,7 @@ function ensure(){
 }
 function kbOn(){
   root.classList.add('se-kb');
-  [0,120,300,600,900].forEach(ms=>setTimeout(ensure,ms));
+  [0,120,300,600,900].forEach(ms=>setTimeout(()=>{placeNav();ensure();},ms));
 }
 let baseH=VV?VV.height:innerHeight,lastH=baseH;
 if(VV){
@@ -4930,13 +4932,33 @@ function showSolo(i,focus){
   $('seNavNext').disabled=i>=S.blocks.length-1;
   sbUpdate();
 }
+function vkH(){
+  const k=navigator.virtualKeyboard;
+  return(k&&k.overlaysContent&&k.boundingRect)?Math.round(k.boundingRect.height):0;
+}
+function inFs(){return fsEl()===root||root.classList.contains('se-pfs');}
 function placeNav(){
   if(!solo)return;
-  const off=VV?Math.max(0,innerHeight-VV.offsetTop-VV.height):0;
-  nav.style.bottom=off+'px';
+  /* bottom edge of what the user can really see: visual viewport, and above the keyboard when it overlays the page (fullscreen) */
+  let bottom=VV?VV.offsetTop+VV.height:innerHeight;
+  const kh=vkH();
+  if(kh)bottom=Math.min(bottom,innerHeight-kh);
+  const h=nav.offsetHeight||64;
+  nav.style.bottom='auto';
+  nav.style.top=Math.max(0,Math.round(bottom-h))+'px';
 }
 if(VV){VV.addEventListener('resize',placeNav);VV.addEventListener('scroll',placeNav);}
 addEventListener('resize',placeNav);
+addEventListener('scroll',placeNav,{passive:true});
+/* fullscreen: browsers report the keyboard late / not at all, so keep re-checking while the nav is shown */
+setInterval(()=>{if(solo&&inFs())placeNav();},250);
+if(navigator.virtualKeyboard){
+  navigator.virtualKeyboard.addEventListener('geometrychange',()=>{
+    const kh=vkH();
+    root.style.paddingBottom=(kh&&inFs())?(kh+8)+'px':'';
+    placeNav();ensure();
+  });
+}
 function enterSolo(i){
   if(!solo){
     soloScroll=list.scrollTop;soloStart=i;solo=true;
@@ -5111,6 +5133,9 @@ $('seFs').onclick=()=>{
 function fsLabel(){
   const on=fsEl()===root||root.classList.contains('se-pfs');
   $('seFs').textContent=on?'✕ دەرچوون':'⛶ شاشەی تەواو';
+  try{if(navigator.virtualKeyboard)navigator.virtualKeyboard.overlaysContent=on;}catch(_){}
+  if(!on)root.style.paddingBottom='';
+  placeNav();
   closeMenu();
 }
 ['fullscreenchange','webkitfullscreenchange'].forEach(v=>document.addEventListener(v,fsLabel));
