@@ -1292,6 +1292,12 @@
   .tab-btn.active{color:var(--accent-ink);}
   header.hero,.card{box-shadow:inset 0 0 0 4px var(--surface),inset 0 0 0 5px var(--border-soft);}
 
+  /* ---------- SRT editor text box: own colours for dark / light themes ---------- */
+  :root{--se-bg:linear-gradient(160deg,#1a160d,#0d0b07);--se-fg:#f3ebd7;--se-caret:#ffffff;--se-ring:rgba(255,255,255,.06);}
+  #panel-seditor .se-tw{background:var(--se-bg);border:1px solid var(--se-ring);}
+  #panel-seditor .se-tw .se-ta{color:transparent;caret-color:var(--se-caret);}
+  #panel-seditor .se-hl{color:var(--se-fg);}
+
 </style>
 <meta name="theme-color" content="#e8f0f7" id="metaTheme">
 <script>
@@ -1328,6 +1334,10 @@
       set('--bg',t.bg);set('--bg-2',t.bg2);set('--surface',t.s||'#ffffff');set('--surface-2',t.s2);
       set('--border',t.b);set('--border-soft',t.bs);
       set('--on-accent',t.on||'#ffffff');set('--text',t.t);set('--text-dim',t.td);set('--text-faint',t.tf);
+      /* editor text box: dark themes get a dark box + light text, light themes a light box + dark text */
+      set('--se-bg',t.dark?'linear-gradient(160deg,'+(t.s2||t.s)+','+t.bg+')':t.s2);
+      set('--se-fg',t.t);set('--se-caret',t.t);
+      set('--se-ring',t.dark?'rgba(255,255,255,.08)':t.b);
       if(!t.dark){set('--danger','#d6455a');set('--danger-soft','#fdebee');set('--ok',t.a);set('--ok-soft',t.soft);set('--shadow-pop','0 18px 40px -16px rgba(20,30,28,.35)');set('--match','#e8b100');}if(t.dark){
         set('--danger-soft',t.ds);set('--ok',t.lt);set('--ok-soft',t.soft);
         set('--shadow-card','0 1px 2px rgba(0,0,0,.35), 0 10px 26px -14px rgba(0,0,0,.7)');
@@ -1881,6 +1891,7 @@
           <button type="button" id="plBTv" aria-pressed="false">زنجیرە / دراما</button>
         </div>
         <select id="plSource" class="text-input ltr" aria-label="سەرچاوە">
+          <option value="zxcstream" selected>zxcstream.cc</option>
           <option value="framextv">framextv.xyz</option>
           <option value="vidhive">vidhive.lol</option>
           <option value="custom">ئادرەسی ڕاستەوخۆ</option>
@@ -1917,11 +1928,11 @@
         <summary>ڕێکخستن و ڕێنمایی</summary>
         <div class="pl-field">
           <label class="label-sm" for="plMovieTpl">ئادرەسی فیلم</label>
-          <input id="plMovieTpl" class="text-input ltr" value="https://framextv.xyz/embed/{id}?autoplay=1&amp;muted=0">
+          <input id="plMovieTpl" class="text-input ltr" value="https://zxcstream.cc/player/movie/{id}">
         </div>
         <div class="pl-field">
           <label class="label-sm" for="plTvTpl">ئادرەسی زنجیرە</label>
-          <input id="plTvTpl" class="text-input ltr" value="https://framextv.xyz/embed/tv/{id}/{s}/{e}?autoplay=1&amp;muted=0">
+          <input id="plTvTpl" class="text-input ltr" value="https://zxcstream.cc/player/tv/{id}/{s}/{e}">
         </div>
         <p class="pl-help">{id} و {s} و {e} بەکاربهێنە. گەڕان بە ناو هەمان کلیلی TMDB بەکاردێنێت.</p>
         <p class="pl-help">ژمارەکە لە <a href="https://www.themoviedb.org" target="_blank" rel="noopener noreferrer">themoviedb.org</a> لە کۆتایی ئادرەسی پەڕەکەدا دەبینیت (بۆ نموونە <bdi dir="ltr">/movie/550</bdi>).</p>
@@ -5266,7 +5277,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')setOpen(fals
   var $ = function(id){return document.getElementById(id)};
   var panel = $("panel-player");
   var mode = "movie";
-  var KEY = "presub_player_state";
+  var KEY = "presub_player_state_v2";
   var SOURCES = {
     framextv:{
       movie:"https://framextv.xyz/embed/{id}?autoplay=1&muted=0",
@@ -5276,6 +5287,10 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')setOpen(fals
     vidhive:{
       movie:"https://vidhive.lol/embed/movie/{id}",
       tv:"https://vidhive.lol/embed/tv/{id}/{s}/{e}"
+    },
+    zxcstream:{
+      movie:"https://zxcstream.cc/player/movie/{id}",
+      tv:"https://zxcstream.cc/player/tv/{id}/{s}/{e}"
     }
   };
   function applySource(k){
