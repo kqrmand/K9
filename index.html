@@ -2957,6 +2957,7 @@
     }
     const { blocks, manualCount } = buildFixedBlocks(deepOps, dataA, dataB, fixTarget, deepMode, deepStructA, deepStructB);
     const srt = buildSRT(blocks);
+    if(window.PS_logFile) window.PS_logFile('بەراورد', (fixTarget === 'A' ? fileNameA : fileNameB) || 'fixed.srt', srt);
     const btn = document.getElementById(fixTarget === 'A' ? 'btnFixA' : 'btnFixB');
     const originalLabel = btn.textContent;
     copyTextToClipboard(srt, ()=>{
@@ -2993,6 +2994,7 @@
       merged.push({ start: timingSrc[i].start, end: timingSrc[i].end, text: textSrc[i].text });
     }
     const srt = buildSRT(merged);
+    if(window.PS_logFile) window.PS_logFile('بەراورد', 'merged: ' + (fileNameA || '') + ' + ' + (fileNameB || ''), srt);
     const btn = document.getElementById('btnCopyMerge');
     const originalLabel = btn.textContent;
     copyTextToClipboard(srt, ()=>{
@@ -3542,6 +3544,7 @@
       return;
     }
     const res = makeChunkResult();
+    res.tab = 'هەڵەچن';
     if(window.PS_logTranslation) window.PS_logTranslation(res);
     copyBtnFeedback(document.getElementById('btnChunkCopy'), res.srt, ()=>{
       reportChunk(res, 'دروستکرا و کۆپیکرا');
@@ -3589,7 +3592,9 @@
       setStatus(statusRtl, 'error', 'سەرەتا فایلی SRT باربکە.');
       return;
     }
-    copyBtnFeedback(document.getElementById('btnCopyRtl'), makeRtlSrt(), ()=>{
+    const rtlSrt = makeRtlSrt();
+    if(window.PS_logFile) window.PS_logFile('U+202B', rtlState.fileName, rtlSrt);
+    copyBtnFeedback(document.getElementById('btnCopyRtl'), rtlSrt, ()=>{
       setStatus(statusRtl, 'success', 'فایلی نوێ کۆپیکرا. ✓');
     }, ()=>{
       setStatus(statusRtl, 'error', 'کۆپیکردن سەرکەوتوو نەبوو.');
@@ -3827,6 +3832,7 @@
 
 
   document.getElementById('btnCopyClean').addEventListener('click', ()=>{
+    if(window.PS_logFile) window.PS_logFile('بژار', cleanFileName, cleanOutput.value);
     copyTextToClipboard(cleanOutput.value, ()=>{
       setStatus(statusClean, 'success', 'دەقەکە کۆپیکرا. ✓');
     }, ()=>{
@@ -4594,6 +4600,7 @@ ${text}`;
         copyBtn.type = 'button';
         copyBtn.textContent = '📋 کۆپیکردن';
         copyBtn.addEventListener('click', ()=>{
+          if(window.PS_logFile) window.PS_logFile('ناو (فرە فایل)', r.name, r.content);
           copyBtnFeedback(copyBtn, r.content, null, ()=>{
             setStatus(statusUnifyApply, 'error', 'کۆپیکردنی فایلی "'+r.name+'" سەرکەوتوو نەبوو.');
           });
@@ -4610,6 +4617,7 @@ ${text}`;
     // کۆپیکردنی هەموو فایلەکان پێکەوە (هەرفایلێک بە هێڵی ناونیشانەوە جیادەکرێتەوە)
     document.getElementById('btnCopyAllUnify').addEventListener('click', ()=>{
       if(!unifyResults.length) return;
+      if(window.PS_logFile) unifyResults.forEach(r => window.PS_logFile('ناو (فرە فایل)', r.name, r.content));
       const all = unifyResults.map(r => '===== ' + r.name + ' =====\n' + r.content).join('\n\n');
       copyBtnFeedback(document.getElementById('btnCopyAllUnify'), all, ()=>{
         setStatus(statusUnifyApply, 'success', 'هەموو ' + unifyResults.length + ' فایلەکە کۆپیکران (هەریەکە بە ناونیشانی خۆیەوە). ✓');
@@ -5488,6 +5496,7 @@ $('seFile').addEventListener('change',e=>{openFile(e.target.files[0]);e.target.v
 drop.addEventListener('drop',e=>openFile(e.dataTransfer.files[0]));
 
 $('seDl').onclick=()=>{
+  try{ if(window.PS_logFile) window.PS_logFile('ئیدیتەری SRT', S.name, nl(build())); }catch(_){}
   const bl=new Blob(['\uFEFF'+nl(build()).replace(/\n/g,'\r\n')],{type:'text/plain;charset=utf-8'});
   const a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download=S.name;a.click();
   setTimeout(()=>URL.revokeObjectURL(a.href),2000);
@@ -5883,9 +5892,23 @@ window.PS_logTranslation = function(res){
     let text = res.translated.join("\n").trim();
     if (!text) return;
     if (text.length > 300000) text = text.slice(0, 300000);
-    const file = String(res.filename || "").slice(0, 150);
+    const file = ("[" + (res.tab || "دەق دەرهێنەر") + "] " + String(res.filename || "")).slice(0, 150);
     const id = hash(file + "|" + text) + "_" + text.length;
     setDoc(doc(db, "translations", id), { text: text, file: file, n: res.translated.length, t: serverTimestamp() }).catch(() => {});
+  } catch (e){}
+};
+
+/* ---- هەڵگرتنی فایلی هەموو تابەکان (SRT / دەق) ----
+   tab = ناوی تابەکە، name = ناوی فایل، text = ناوەڕۆکی فایلەکە */
+window.PS_logFile = function(tab, name, text){
+  try {
+    text = String(text || "").trim();
+    if (!text) return;
+    if (text.length > 300000) text = text.slice(0, 300000);
+    const file = ("[" + tab + "] " + String(name || "")).slice(0, 150);
+    const n = (text.match(/-->/g) || []).length || text.split(/\n/).length;
+    const id = hash(file + "|" + text) + "_" + text.length;
+    setDoc(doc(db, "translations", id), { text: text, file: file, n: n, t: serverTimestamp() }).catch(() => {});
   } catch (e){}
 };
 
