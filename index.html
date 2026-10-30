@@ -1644,7 +1644,7 @@
     color: var(--text-dim); /* the overlay layer draws the inverted text */
   }
 
-  /* The fluid pill: accent glass at rest, deeper + bigger while you hold and drag it */
+  /* The fluid pill: clear liquid glass with a bright white rim line along the bottom */
   .tab-ind {
     position: absolute;
     z-index: 2;
@@ -1656,21 +1656,42 @@
     pointer-events: none;
     will-change: left, top, width, height;
     background:
-      linear-gradient(180deg, rgba(255,255,255,.30), rgba(255,255,255,0) 55%),
-      var(--accent);
+      linear-gradient(180deg, rgba(255,255,255,.42) 0%, rgba(255,255,255,.08) 48%, rgba(255,255,255,.20) 100%),
+      color-mix(in srgb, var(--accent) 22%, transparent);
+    -webkit-backdrop-filter: blur(4px) saturate(1.7);
+    backdrop-filter: blur(4px) saturate(1.7);
     box-shadow:
-      inset 0 1px 0 rgba(255,255,255,.55),
-      0 8px 18px -8px rgba(var(--accent-rgb), .65);
+      inset 0 1.5px 0 rgba(255,255,255,.95),                 /* top glint */
+      inset 0 -2.5px 1px -1px rgba(255,255,255,.98),         /* white glass line underneath */
+      inset 0 -10px 14px -10px rgba(255,255,255,.75),        /* soft glow above that line */
+      inset 0 0 0 1px rgba(255,255,255,.45),                 /* thin rim all round */
+      0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent),
+      0 10px 22px -10px rgba(var(--accent-rgb), .55);
     transition: background .25s ease, box-shadow .25s ease;
+  }
+  html[style*="color-scheme: dark"] .tab-ind {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,.03) 48%, rgba(255,255,255,.10) 100%),
+      color-mix(in srgb, var(--accent) 26%, transparent);
+    box-shadow:
+      inset 0 1.5px 0 rgba(255,255,255,.65),
+      inset 0 -2.5px 1px -1px rgba(255,255,255,.85),
+      inset 0 -10px 14px -10px rgba(255,255,255,.35),
+      inset 0 0 0 1px rgba(255,255,255,.22),
+      0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent),
+      0 10px 22px -10px rgba(0,0,0,.6);
   }
   .tabs.is-dragging .tab-ind {
     background:
-      linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,0) 55%),
-      color-mix(in srgb, var(--accent) 52%, #000);
+      linear-gradient(180deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,.12) 48%, rgba(255,255,255,.28) 100%),
+      color-mix(in srgb, var(--accent) 16%, transparent);
     box-shadow:
-      inset 0 1px 0 rgba(255,255,255,.45),
-      inset 0 -1px 0 rgba(255,255,255,.12),
-      0 14px 26px -10px rgba(0,0,0,.55);
+      inset 0 2px 0 rgba(255,255,255,1),
+      inset 0 -3px 1px -1px #fff,
+      inset 0 -12px 16px -10px rgba(255,255,255,.9),
+      inset 0 0 0 1px rgba(255,255,255,.6),
+      0 0 0 1px color-mix(in srgb, var(--accent) 34%, transparent),
+      0 16px 30px -12px rgba(var(--accent-rgb), .6);
   }
 
   /* Duplicate text layer, clipped to the pill so the text colour inverts exactly under it */
@@ -1690,11 +1711,12 @@
     margin: 0 !important;
     box-sizing: border-box;
     pointer-events: none !important;
-    color: var(--on-accent, #fff) !important;
+    color: var(--text) !important;
     background: transparent !important;
     box-shadow: none !important;
     border-color: transparent !important;
   }
+  html[style*="color-scheme: dark"] .tabs-inverted-layer .tab-btn { color: var(--accent-ink, #fff) !important; }
 
   /* panel content bursts out from the tapped tab and spreads into place */
   .panel.active{animation:none;}
@@ -6252,7 +6274,8 @@ admSearch.addEventListener("input", applyFilter);
     const ratio = clamp(len / base, 0.7, 1.4);
     const sq = Math.max(0.85, 1 - (ratio - 1) * 0.35); // jelly squish across the axis
 
-    const L = len * grow;
+    const PAD = 6; // pill is a little wider than the tab so it reads as a round, wide capsule
+    const L = len * grow + PAD * 2;
     const C = cs * sq * grow;
     const m = (a + b) / 2;
     const cc = c0 + cs / 2;
