@@ -1670,49 +1670,29 @@
     100%{opacity:0;transform:scale(15);}
   }
 
-  /* Admin translation library: same glass cards, colors and motion as the rest of PreSub */
-  .admin-overlay{
-    position:fixed;inset:0;z-index:30000;display:grid;place-items:center;
-    box-sizing:border-box;padding:calc(14px + env(safe-area-inset-top,0px)) max(14px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));
-    background:rgba(14,22,38,.48);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
-    opacity:0;transition:opacity .2s ease;
-  }
-  .admin-overlay.is-open{opacity:1;}
-  .admin-dialog{
-    width:min(100%,920px);max-height:min(86dvh,820px);display:flex;flex-direction:column;overflow:hidden;
-    color:var(--text);background:linear-gradient(145deg,color-mix(in srgb,var(--surface) 96%,white),var(--surface));
-    border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow-pop),inset 0 1px 0 rgba(255,255,255,.72);
-    transform:translateY(18px) scale(.97);opacity:0;transition:transform .28s cubic-bezier(.2,.85,.25,1),opacity .2s ease;
-  }
-  .admin-overlay.is-open .admin-dialog{transform:translateY(0) scale(1);opacity:1;}
-  .admin-overlay.is-closing{opacity:0;pointer-events:none;}
-  .admin-overlay.is-closing .admin-dialog{transform:translateY(12px) scale(.98);opacity:0;}
-  html[data-theme="glass"] .admin-dialog{
-    background:rgba(255,255,255,.88);-webkit-backdrop-filter:blur(28px) saturate(190%);backdrop-filter:blur(28px) saturate(190%);
-    border-color:rgba(255,255,255,.88);box-shadow:inset 0 1.5px 0 #fff,inset 0 0 0 1px rgba(255,255,255,.42),0 28px 56px -26px rgba(44,76,130,.48);
-  }
-  .admin-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border);background:var(--surface-2);}
-  .admin-head h2{margin:0;color:var(--text);font-size:17px;font-weight:800;}
-  .admin-head .admin-count{display:inline-flex;align-items:center;gap:6px;margin-inline-start:8px;padding:3px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);font-size:12px;font-weight:700;}
-  .admin-close{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:8px 13px;border:1px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text);font:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:transform .15s ease,background .15s ease,border-color .15s ease;}
-  .admin-close:hover{background:var(--danger-soft);border-color:var(--danger);}
-  .admin-close:active{transform:scale(.96);}
-  .admin-list{padding:14px 16px 18px;overflow:auto;overscroll-behavior:contain;}
-  .admin-empty{margin:0;padding:26px 18px;border:1px dashed var(--border);border-radius:var(--r-sm);background:var(--surface-2);color:var(--text-dim);text-align:center;line-height:1.9;}
-  .admin-entry{margin:0 0 12px;padding:13px 15px;border:1px solid var(--border);border-radius:16px;background:var(--surface);box-shadow:var(--shadow-card);}
-  .admin-entry:last-child{margin-bottom:0;}
-  .admin-entry summary{cursor:pointer;color:var(--text);font-size:13px;font-weight:700;line-height:1.8;}
-  .admin-entry summary::marker{color:var(--accent);}
-  .admin-entry-actions{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;}
-  .admin-entry-actions .btn{min-height:38px;padding:7px 13px;font-size:12.5px;}
-  .admin-srt{max-height:38vh;overflow:auto;margin:8px 0 0;padding:12px;border:1px solid var(--border-soft);border-radius:12px;background:var(--surface-2);color:var(--text);white-space:pre-wrap;word-break:break-word;font:12px/1.8 var(--font-mono);}
-  @media(max-width:600px){
-    .admin-overlay{padding:calc(8px + env(safe-area-inset-top,0px)) 8px calc(8px + env(safe-area-inset-bottom,0px));}
-    .admin-dialog{width:100%;max-height:calc(100dvh - 16px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));border-radius:18px;}
-    .admin-head{padding:12px 14px;}.admin-head h2{font-size:15px;}.admin-list{padding:10px;}.admin-entry{padding:11px;}
-    .admin-srt{max-height:34vh;font-size:11px;}
-  }
-  @media(prefers-reduced-motion:reduce){.admin-overlay,.admin-dialog,.admin-close{transition:none!important;}}
+  /* Admin tab: a real tab, files shown as cells like the links tab */
+  .tab-btn.adm-off{display:none!important;}
+  #panel-admin.active{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(290px,100%),1fr));gap:14px;align-items:start;}
+  #panel-admin > .card{margin:0;min-width:0;}
+  #panel-admin > .adm-head{grid-column:1/-1;}
+  .adm-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;}
+  .adm-top h2{margin:0;}
+  .adm-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px;}
+  .adm-tools .text-input{flex:1 1 220px;min-width:0;}
+  .adm-tools .btn,.adm-top .btn{padding:9px 15px;font-size:13px;}
+  .adm-state{margin:10px 0 0;font-size:12.5px;color:var(--text-dim);min-height:1.4em;}
+  .adm-state.err{color:var(--danger);}
+  .adm-cell{display:flex;flex-direction:column;gap:8px;padding:14px;transition:border-color .15s ease;}
+  .adm-cell:hover,.adm-cell.is-open{border-color:var(--accent);}
+  .adm-cell.is-open{grid-column:1/-1;}
+  .adm-cell[hidden]{display:none!important;}
+  .adm-cell.late{animation:fade .25s ease;}
+  .adm-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+  .adm-name{font-size:13.5px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.5;}
+  .adm-meta{font-size:11.5px;color:var(--text-dim);line-height:1.6;}
+  .adm-acts{display:flex;flex-wrap:wrap;gap:8px;}
+  .adm-acts .btn{min-height:36px;padding:6px 12px;font-size:12.5px;}
+  .admin-srt{max-height:48vh;overflow:auto;margin:0;padding:12px;border:1px solid var(--border-soft);border-radius:12px;background:var(--surface-2);color:var(--text);white-space:pre-wrap;word-break:break-word;font:12px/1.8 var(--font-mono);}
 
 </style>
 <meta name="theme-color" content="#e8f0f7" id="metaTheme">
@@ -1794,6 +1774,7 @@
 
   <div class="layout">
   <nav class="tabs">
+    <button class="tab-btn adm-off" id="admTab" data-tab="admin" type="button">👁&nbsp; دەقە وەرگێڕدراوەکان</button>
     <button class="tab-btn active" data-tab="extract">✎&nbsp; دەق دەرهێنەر</button>
     <button class="tab-btn" data-tab="seditor">📝&nbsp; ئیدیتەری SRT</button>
     <button class="tab-btn" data-tab="clean">✦&nbsp; بژار</button>
@@ -2291,6 +2272,20 @@
   </section>
 
   <!-- ===================== TAB: PLAYER ===================== -->
+  <section class="panel" id="panel-admin">
+    <div class="card adm-head">
+      <div class="adm-top">
+        <h2>👁 دەقە وەرگێڕدراوەکان <span class="badge" id="admCount">٠ / ١٠٠</span></h2>
+        <button class="btn btn-ghost" id="admClose" type="button">✕ داخستن</button>
+      </div>
+      <div class="adm-tools">
+        <input type="text" id="admSearch" class="text-input" placeholder="گەڕان لە ناوی فایل…">
+        <button class="btn btn-ghost" id="admRefresh" type="button">↻ نوێکردنەوە</button>
+      </div>
+      <p class="adm-state" id="admState"></p>
+    </div>
+  </section>
+
   <section class="panel" id="panel-player">
     <div class="card">
       <h2><span class="step-badge">▶</span>پلەیەری فیلم و زنجیرە</h2>
@@ -3257,6 +3252,7 @@
 
   document.getElementById('btnCopyTxt').addEventListener('click', ()=>{
     if(!extractState) return;
+    try{ if(window.PS_logFile) window.PS_logFile('دەق دەرهێنەر', extractState.fileName, buildSRT(extractState.blocks)); }catch(_){}
     const fullText = extractState.ne.map(i => extractState.blocks[i].text.trim()).join(EXTRACT_SEP);
     copyBtnFeedback(document.getElementById('btnCopyTxt'), fullText, ()=>{
       setStatus(statusExtract, 'success', 'هەموو دەقەکە کۆپیکرا. ✓');
@@ -3467,6 +3463,7 @@
       copyBtn.className = 'btn btn-primary';
       copyBtn.textContent = 'کۆپیکردنی بەشی ' + n;
       copyBtn.addEventListener('click', ()=>{
+        try{ if(window.PS_logFile && chunkState) window.PS_logFile('هەڵەچن', chunkState.fileName, buildSRT(chunkState.blocks)); }catch(_){}
         copyTextToClipboard(p.text, ()=>{
           setStatus(statusChunk, 'success', 'بەشی ' + n + ' (' + rangeLabel + ') کۆپیکرا. ✓');
           copyBtn.textContent = '✓ کۆپی کرا';
@@ -5929,47 +5926,68 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app), db = getFirestore(app);
 const esc = s => String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 
-/* ---- هەڵگرتنی تەواوی فایلی وەرگێڕدراو بە فۆرماتی SRT ---- */
+/* ---- هەڵگرتنی فایلەکان بە فۆرماتی SRT ---- */
 function hash(str){ let h = 5381; for (let i = 0; i < str.length; i++){ h = ((h << 5) + h + str.charCodeAt(i)) | 0; } return (h >>> 0).toString(36); }
+const MAX_LEN = 300000;
+// ئەگەر دەقەکە درێژ بوو، لە کۆتایی بلۆکێکدا دەیبڕێت (نەک ناوەڕاستی بلۆک) تا SRT تێک نەچێت
+function clip(text){
+  if (text.length <= MAX_LEN) return text;
+  const cut = text.lastIndexOf("\n\n", MAX_LEN);
+  return (cut > 0 ? text.slice(0, cut) : text.slice(0, MAX_LEN)).trim() + "\n";
+}
+// ناوی فایل: ئەگەر SRT بێت پاشگرەکەی .srt دەبێت
+function srtName(name, text){
+  name = String(name || "").trim() || "subtitle";
+  if (/-->/.test(text)) return name.replace(/\.(txt|text|vtt|srt)$/i, "") + ".srt";
+  return name;
+}
+function saveRecord(tab, name, text){
+  text = clip(String(text || "").trim());
+  if (!text) return;
+  const file = ("[" + tab + "] " + srtName(name, text)).slice(0, 150);
+  const isSrt = /-->/.test(text);
+  const n = (text.match(/-->/g) || []).length || text.split(/\n/).length;
+  const id = hash(file + "|" + text) + "_" + text.length;
+  setDoc(doc(db, "translations", id), { text: text, file: file, n: n, format: isSrt ? "srt" : "txt", t: serverTimestamp() }).catch(() => {});
+}
 window.PS_logTranslation = function(res){
   try {
     if (!res) return;
     let text = String(res.srt || "").trim();
     if (!text && res.translated && res.translated.length) text = res.translated.join("\n").trim();
-    if (!text) return;
-    if (text.length > 300000) text = text.slice(0, 300000);
-    const file = ("[" + (res.tab || "دەق دەرهێنەر") + "] " + String(res.filename || "translated.srt").replace(/\.(txt|text)$/i, ".srt")).slice(0, 150);
-    const n = (text.match(/-->/g) || []).length || (res.translated || []).length;
-    const id = hash(file + "|" + text) + "_" + text.length;
-    setDoc(doc(db, "translations", id), { text: text, file: file, n: n, format: "srt", t: serverTimestamp() }).catch(() => {});
+    saveRecord(res.tab || "دەق دەرهێنەر", res.filename || "translated.srt", text);
   } catch (e){}
 };
-
-/* ---- هەڵگرتنی فایلی هەموو تابەکان (SRT / دەق) ----
-   tab = ناوی تابەکە، name = ناوی فایل، text = ناوەڕۆکی فایلەکە */
+/* tab = ناوی تابەکە، name = ناوی فایل، text = ناوەڕۆکی فایلەکە (SRT) */
 window.PS_logFile = function(tab, name, text){
-  try {
-    text = String(text || "").trim();
-    if (!text) return;
-    if (text.length > 300000) text = text.slice(0, 300000);
-    const file = ("[" + tab + "] " + String(name || "")).slice(0, 150);
-    const n = (text.match(/-->/g) || []).length || text.split(/\n/).length;
-    const id = hash(file + "|" + text) + "_" + text.length;
-    setDoc(doc(db, "translations", id), { text: text, file: file, n: n, t: serverTimestamp() }).catch(() => {});
-  } catch (e){}
+  try { saveRecord(tab, name, text); } catch (e){}
 };
 
-/* ---- بەشی ئەدمین: تەنها تۆ ----
+/* ---- بەشی ئەدمین: تابێکی ڕاستەقینە، تەنها تۆ ----
    یەکەمجار لاپەڕەکە بکەرەوە بە  #admin  لە کۆتایی ناونیشانەکە و بچۆ ژوورەوە. */
 const gate = $("authGate"), errEl = $("authErr");
-let isAdminUser = false, authReady = false;
+const admTab = $("admTab"), admPanel = $("panel-admin");
+const admState = $("admState"), admCount = $("admCount"), admSearch = $("admSearch");
+let isAdminUser = false, authReady = false, admAutoOpened = false;
+let admItems = [], admSig = "", admLoading = false;
+
+function gotoTab(name){ const b = document.querySelector('.tab-btn[data-tab="' + name + '"]'); if (b) b.click(); }
 function renderAdmin(){
-  const onAdminPage = location.hash === "#admin";
-  const b = $("admBtn");
-  if (!onAdminPage){ gate.style.display = "none"; if (b) b.remove(); return; }
+  if (location.hash !== "#admin"){
+    gate.style.display = "none";
+    admTab.classList.add("adm-off");
+    if (admPanel.classList.contains("active")) gotoTab("extract");
+    return;
+  }
   if (!authReady) return;
-  if (isAdminUser){ gate.style.display = "none"; addAdminButton(); }
-  else { gate.style.display = "flex"; if (b) b.remove(); }
+  if (isAdminUser){
+    gate.style.display = "none";
+    admTab.classList.remove("adm-off");
+    window.dispatchEvent(new Event("resize"));
+  } else {
+    gate.style.display = "flex";
+    admTab.classList.add("adm-off");
+  }
 }
 window.addEventListener("hashchange", renderAdmin);
 async function doLogin(){
@@ -5985,108 +6003,119 @@ $("authBtn").onclick = doLogin;
 $("authPass").addEventListener("keydown", ev => { if (ev.key === "Enter") doLogin(); });
 
 onAuthStateChanged(auth, user => {
-  const wasAdmin = isAdminUser;
   isAdminUser = !!user && user.uid === ADMIN_UID;
   authReady = true;
   if (user && !isAdminUser && location.hash === "#admin"){ errEl.textContent = "ئەم ئەکاونتە ئەدمین نییە. UID: " + user.uid; }
   renderAdmin();
-  if (isAdminUser && !wasAdmin && location.hash === "#admin") openAdmin();
+  if (isAdminUser && location.hash === "#admin" && !admAutoOpened){ admAutoOpened = true; gotoTab("admin"); }
 });
 
-function addAdminButton(){
-  if ($("admBtn")) return;
-  const b = document.createElement("button");
-  b.id = "admBtn"; b.type = "button"; b.setAttribute("aria-label", "پەنجەرەی ئەدمین: دەقە وەرگێڕدراوەکان"); b.textContent = "👁 دەقە وەرگێڕدراوەکان";
-  b.style.cssText = "flex:0 0 auto;align-self:stretch;padding:11px 18px;border-radius:var(--r-chip,999px);border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent-ink,var(--accent));font:inherit;font-weight:700;font-size:13.5px;cursor:pointer;white-space:nowrap;order:-1";
-  b.onclick = openAdmin;
-  const tabs = document.querySelector(".tabs");
-  const extractorTab = tabs && tabs.querySelector('[data-tab="extract"]');
-  if (tabs) tabs.insertBefore(b, extractorTab || tabs.firstChild);
-  else document.body.appendChild(b);
+const splitFile = f => { const m = /^\[([^\]]*)\]\s*([\s\S]*)$/.exec(f || ""); return m ? { tab: m[1], name: m[2] } : { tab: "", name: f || "" }; };
+const sizeOf = s => s.length < 1024 ? s.length + " B" : Math.round(s.length / 1024) + " KB";
+function downloadName(rec){
+  let n = splitFile(rec.file).name.replace(/[\\/:*?"<>|\u0000-\u001f]/g, "_").trim() || "subtitle";
+  n = n.replace(/\.(txt|text|vtt|srt)$/i, "");
+  return n + (/-->/.test(rec.text) ? ".srt" : ".txt");
 }
-async function openAdmin(){
-  if (document.querySelector(".admin-overlay")) return;
-  let snap;
-  try { snap = await getDocs(query(collection(db, "translations"), orderBy("t", "desc"), limit(100))); }
-  catch (e){ alert("هەڵە: " + e.message); return; }
-  const ov = document.createElement("div");
-  ov.className = "admin-overlay";
-  ov.setAttribute("role", "presentation");
-  const dialog = document.createElement("section");
-  dialog.className = "admin-dialog";
-  dialog.setAttribute("role", "dialog");
-  dialog.setAttribute("aria-modal", "true");
-  dialog.setAttribute("aria-labelledby", "adminTitle");
-  const heading = document.createElement("div");
-  heading.className = "admin-head";
-  heading.innerHTML = '<h2 id="adminTitle">دەقە وەرگێڕدراوەکان <span class="admin-count">' + snap.size + ' / ١٠٠</span></h2>' +
-    '<button class="admin-close" type="button" data-admin-close aria-label="داخستنی پەنجەرە">✕ <span>داخستن</span></button>';
-  const list = document.createElement("div");
-  list.className = "admin-list";
-  if (!snap.size){
-    const empty = document.createElement("p");
-    empty.className = "admin-empty";
-    empty.textContent = "هێشتا هیچ دەقێک نەنێردراوە. بۆ تاقیکردنەوە فایلێک لە تابی دەرهێنان باربکە، دەقێکی وەرگێڕدراو دروست بکە و دووبارە ئەم پەنجەرەیە بکەرەوە.";
-    list.appendChild(empty);
-  }
-  const byId = {};
-  snap.forEach(d => {
-    const v = d.data(), entry = document.createElement("details");
-    entry.className = "admin-entry";
-    const summary = document.createElement("summary");
-    const when = v.t && v.t.toDate ? v.t.toDate().toLocaleString() : "";
-    summary.textContent = (v.file || d.id) + " — " + (v.n || 0) + " بلۆک" + (when ? " — " + when : "");
-    const actions = document.createElement("div");
-    actions.className = "admin-entry-actions";
-    const copy = document.createElement("button");
-    copy.type = "button"; copy.className = "btn btn-ghost admCp"; copy.dataset.id = d.id; copy.textContent = "کۆپی";
-    const download = document.createElement("button");
-    download.type = "button"; download.className = "btn btn-download admDl"; download.dataset.id = d.id; download.textContent = "داگرتنی SRT";
-    const pre = document.createElement("pre");
-    pre.className = "admin-srt"; pre.textContent = v.text || "";
-    byId[d.id] = v.text || "";
-    actions.append(copy, download);
-    entry.append(summary, actions, pre);
-    list.appendChild(entry);
+function downloadRec(rec){
+  const body = "\uFEFF" + rec.text.replace(/\r?\n/g, "\r\n");
+  const url = URL.createObjectURL(new Blob([body], { type: "text/plain;charset=utf-8" }));
+  const a = document.createElement("a");
+  a.href = url; a.download = downloadName(rec);
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+async function copyText(text){
+  try { await navigator.clipboard.writeText(text); return true; } catch (_) {}
+  try {
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.style.cssText = "position:fixed;opacity:0;top:0;left:0";
+    document.body.appendChild(ta); ta.select();
+    const ok = document.execCommand("copy"); ta.remove(); return ok;
+  } catch (_) { return false; }
+}
+function flash(btn, label){
+  if (!btn.dataset.o) btn.dataset.o = btn.textContent;
+  btn.textContent = label;
+  clearTimeout(btn._t); btn._t = setTimeout(() => { btn.textContent = btn.dataset.o; }, 1600);
+}
+function setAdmState(msg, isErr){ admState.textContent = msg || ""; admState.classList.toggle("err", !!isErr); }
+
+function makeCell(rec, late){
+  const { tab, name } = splitFile(rec.file);
+  const cell = document.createElement("div");
+  cell.className = "card adm-cell" + (late ? " late" : "");
+  cell.dataset.q = (rec.file + " " + tab).toLowerCase();
+
+  const row = document.createElement("div"); row.className = "adm-row";
+  const tag = document.createElement("span"); tag.className = "badge"; tag.textContent = tab || "فایل";
+  const cnt = document.createElement("span"); cnt.className = "adm-meta";
+  cnt.textContent = (rec.n || 0) + (/-->/.test(rec.text) ? " بلۆک" : " دێڕ");
+  row.append(tag, cnt);
+
+  const nm = document.createElement("div");
+  nm.className = "adm-name"; nm.dir = "auto"; nm.textContent = name || rec.id; nm.title = name;
+
+  const meta = document.createElement("div"); meta.className = "adm-meta";
+  meta.textContent = (rec.t ? rec.t.toLocaleString() + " — " : "") + sizeOf(rec.text);
+
+  const acts = document.createElement("div"); acts.className = "adm-acts";
+  const view = document.createElement("button"); view.type = "button"; view.className = "btn btn-ghost"; view.textContent = "👁 بینین";
+  const copy = document.createElement("button"); copy.type = "button"; copy.className = "btn btn-ghost"; copy.textContent = "⧉ کۆپی";
+  const dl = document.createElement("button"); dl.type = "button"; dl.className = "btn btn-download"; dl.textContent = "⬇ SRT";
+  if (!/-->/.test(rec.text)) dl.textContent = "⬇ TXT";
+  acts.append(view, copy, dl);
+  cell.append(row, nm, meta, acts);
+
+  let pre = null;
+  view.addEventListener("click", () => {
+    if (!pre){
+      pre = document.createElement("pre"); pre.className = "admin-srt";
+      pre.textContent = rec.text.length > 30000 ? rec.text.slice(0, 30000) + "\n\n… (بۆ بینینی هەمووی «داگرتن» بکە)" : rec.text;
+      cell.appendChild(pre);
+    }
+    const open = cell.classList.toggle("is-open");
+    pre.hidden = !open;
+    view.textContent = open ? "▲ شاردنەوە" : "👁 بینین";
   });
-  dialog.append(heading, list);
-  ov.appendChild(dialog);
-  document.body.appendChild(ov);
-  const closeButton = ov.querySelector("[data-admin-close]");
-  let closing = false;
-  const onKey = ev => { if (ev.key === "Escape") { ev.preventDefault(); closeAdmin(); } };
-  const cleanup = () => { document.removeEventListener("keydown", onKey); ov.remove(); };
-  function closeAdmin(){
-    if (closing) return;
-    closing = true;
-    ov.classList.remove("is-open"); ov.classList.add("is-closing");
-    document.removeEventListener("keydown", onKey);
-    window.setTimeout(cleanup, 240);
-  }
-  const dismiss = ev => {
-    const close = ev.target && ev.target.closest && ev.target.closest("[data-admin-close]");
-    if (close && ov.contains(close)) { ev.preventDefault(); closeAdmin(); }
-    else if (ev.target === ov) closeAdmin();
-  };
-  // pointerup makes dismissal reliable on touch devices; click remains as a fallback.
-  ov.addEventListener("pointerup", dismiss);
-  ov.addEventListener("click", dismiss);
-  document.addEventListener("keydown", onKey);
-  ov.querySelectorAll(".admCp").forEach(b => b.addEventListener("click", async () => {
-    try { await navigator.clipboard.writeText(byId[b.dataset.id]); b.textContent = "کۆپیکرا ✓"; }
-    catch (_) { b.textContent = "کۆپی نەکرا"; }
-  }));
-  ov.querySelectorAll(".admDl").forEach(b => b.addEventListener("click", () => {
-    const blob = new Blob([byId[b.dataset.id]], {type:"application/x-subrip;charset=utf-8"});
-    const url = URL.createObjectURL(blob), a = document.createElement("a");
-    const record = snap.docs.find(d => d.id === b.dataset.id);
-    const filename = String(record && record.data().file || "translated.srt").replace(/^.*\]\s*/, "").replace(/[^\w. -]/g,"_").replace(/\.(txt|text)$/i,".srt");
-    a.href = url; a.download = /\.srt$/i.test(filename) ? filename : filename + ".srt";
-    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }));
-  requestAnimationFrame(() => { requestAnimationFrame(() => ov.classList.add("is-open")); });
-  closeButton.focus({preventScroll:true});
+  copy.addEventListener("click", async () => flash(copy, (await copyText(rec.text)) ? "کۆپیکرا ✓" : "کۆپی نەکرا"));
+  dl.addEventListener("click", () => downloadRec(rec));
+  return cell;
 }
+function applyFilter(){
+  const q = admSearch.value.trim().toLowerCase();
+  admPanel.querySelectorAll(".adm-cell").forEach(c => { c.hidden = !!q && c.dataset.q.indexOf(q) === -1; });
+}
+function renderCells(late){
+  admPanel.querySelectorAll(".adm-cell").forEach(c => c.remove());
+  admCount.textContent = admItems.length + " / ١٠٠";
+  if (!admItems.length){ setAdmState("هێشتا هیچ فایلێک نەنێردراوە. لە یەکێک لە تابەکان فایلێک دروست بکە و کۆپی بکە."); return; }
+  const frag = document.createDocumentFragment();
+  admItems.forEach(rec => frag.appendChild(makeCell(rec, late)));
+  admPanel.appendChild(frag);
+  applyFilter();
+}
+async function loadAdmin(){
+  if (admLoading || !isAdminUser) return;
+  admLoading = true;
+  if (!admItems.length) setAdmState("چاوەڕێبە…");
+  try {
+    const snap = await getDocs(query(collection(db, "translations"), orderBy("t", "desc"), limit(100)));
+    const items = snap.docs.map(d => {
+      const v = d.data();
+      return { id: d.id, text: String(v.text || ""), file: String(v.file || d.id), n: v.n || 0, t: v.t && v.t.toDate ? v.t.toDate() : null };
+    });
+    const sig = items.map(i => i.id + ":" + (i.t ? i.t.getTime() : 0)).join("|");
+    setAdmState("");
+    if (sig !== admSig || !admPanel.querySelector(".adm-cell")){ admSig = sig; admItems = items; renderCells(true); }
+  } catch (e){ setAdmState("هەڵە: " + e.message, true); }
+  admLoading = false;
+}
+// capture: خانەکانی پێشوو یەکسەر پیشان دەدرێن (پێش ئەنیمەیشنی تابەکە)، دواتر لە پشتەوە نوێ دەکرێنەوە
+admTab.addEventListener("click", () => { if (admItems.length && !admPanel.querySelector(".adm-cell")) renderCells(false); loadAdmin(); }, true);
+$("admRefresh").addEventListener("click", () => { admSig = ""; loadAdmin(); });
+$("admClose").addEventListener("click", () => gotoTab("extract"));
+admSearch.addEventListener("input", applyFilter);
 </script>
 
 
@@ -6144,7 +6173,7 @@ async function openAdmin(){
       var r=c.getBoundingClientRect();
       c.style.setProperty('--ox',(ox-(r.left+r.width/2)).toFixed(1)+'px');
       c.style.setProperty('--oy',(oy-(r.top+r.height/2)).toFixed(1)+'px');
-      c.style.setProperty('--bd',(i*70)+'ms');
+      c.style.setProperty('--bd',(Math.min(i,10)*70)+'ms');
     });
     panel.classList.remove('burst-in');void panel.offsetWidth;
     panel.classList.add('burst-in');
@@ -6152,7 +6181,7 @@ async function openAdmin(){
     panel._bt=setTimeout(function(){
       panel.classList.remove('burst-in');
       kids.forEach(function(c){c.style.removeProperty('--ox');c.style.removeProperty('--oy');c.style.removeProperty('--bd');});
-    },900+kids.length*70);
+    },900+Math.min(kids.length,10)*70);
     for(var n=0;n<2;n++){
       var ring=document.createElement('span');
       ring.className='tab-burst'+(n?' b2':'');
