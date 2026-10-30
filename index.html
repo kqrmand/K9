@@ -1669,6 +1669,51 @@
     0%{opacity:.95;transform:scale(.3);}
     100%{opacity:0;transform:scale(15);}
   }
+
+  /* Admin translation library: same glass cards, colors and motion as the rest of PreSub */
+  .admin-overlay{
+    position:fixed;inset:0;z-index:30000;display:grid;place-items:center;
+    box-sizing:border-box;padding:calc(14px + env(safe-area-inset-top,0px)) max(14px,env(safe-area-inset-right,0px)) calc(14px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));
+    background:rgba(14,22,38,.48);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+    opacity:0;transition:opacity .2s ease;
+  }
+  .admin-overlay.is-open{opacity:1;}
+  .admin-dialog{
+    width:min(100%,920px);max-height:min(86dvh,820px);display:flex;flex-direction:column;overflow:hidden;
+    color:var(--text);background:linear-gradient(145deg,color-mix(in srgb,var(--surface) 96%,white),var(--surface));
+    border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow-pop),inset 0 1px 0 rgba(255,255,255,.72);
+    transform:translateY(18px) scale(.97);opacity:0;transition:transform .28s cubic-bezier(.2,.85,.25,1),opacity .2s ease;
+  }
+  .admin-overlay.is-open .admin-dialog{transform:translateY(0) scale(1);opacity:1;}
+  .admin-overlay.is-closing{opacity:0;pointer-events:none;}
+  .admin-overlay.is-closing .admin-dialog{transform:translateY(12px) scale(.98);opacity:0;}
+  html[data-theme="glass"] .admin-dialog{
+    background:rgba(255,255,255,.88);-webkit-backdrop-filter:blur(28px) saturate(190%);backdrop-filter:blur(28px) saturate(190%);
+    border-color:rgba(255,255,255,.88);box-shadow:inset 0 1.5px 0 #fff,inset 0 0 0 1px rgba(255,255,255,.42),0 28px 56px -26px rgba(44,76,130,.48);
+  }
+  .admin-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 20px;border-bottom:1px solid var(--border);background:var(--surface-2);}
+  .admin-head h2{margin:0;color:var(--text);font-size:17px;font-weight:800;}
+  .admin-head .admin-count{display:inline-flex;align-items:center;gap:6px;margin-inline-start:8px;padding:3px 10px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);font-size:12px;font-weight:700;}
+  .admin-close{flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:8px 13px;border:1px solid var(--border);border-radius:12px;background:var(--surface);color:var(--text);font:inherit;font-size:13px;font-weight:700;cursor:pointer;transition:transform .15s ease,background .15s ease,border-color .15s ease;}
+  .admin-close:hover{background:var(--danger-soft);border-color:var(--danger);}
+  .admin-close:active{transform:scale(.96);}
+  .admin-list{padding:14px 16px 18px;overflow:auto;overscroll-behavior:contain;}
+  .admin-empty{margin:0;padding:26px 18px;border:1px dashed var(--border);border-radius:var(--r-sm);background:var(--surface-2);color:var(--text-dim);text-align:center;line-height:1.9;}
+  .admin-entry{margin:0 0 12px;padding:13px 15px;border:1px solid var(--border);border-radius:16px;background:var(--surface);box-shadow:var(--shadow-card);}
+  .admin-entry:last-child{margin-bottom:0;}
+  .admin-entry summary{cursor:pointer;color:var(--text);font-size:13px;font-weight:700;line-height:1.8;}
+  .admin-entry summary::marker{color:var(--accent);}
+  .admin-entry-actions{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0;}
+  .admin-entry-actions .btn{min-height:38px;padding:7px 13px;font-size:12.5px;}
+  .admin-srt{max-height:38vh;overflow:auto;margin:8px 0 0;padding:12px;border:1px solid var(--border-soft);border-radius:12px;background:var(--surface-2);color:var(--text);white-space:pre-wrap;word-break:break-word;font:12px/1.8 var(--font-mono);}
+  @media(max-width:600px){
+    .admin-overlay{padding:calc(8px + env(safe-area-inset-top,0px)) 8px calc(8px + env(safe-area-inset-bottom,0px));}
+    .admin-dialog{width:100%;max-height:calc(100dvh - 16px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));border-radius:18px;}
+    .admin-head{padding:12px 14px;}.admin-head h2{font-size:15px;}.admin-list{padding:10px;}.admin-entry{padding:11px;}
+    .admin-srt{max-height:34vh;font-size:11px;}
+  }
+  @media(prefers-reduced-motion:reduce){.admin-overlay,.admin-dialog,.admin-close{transition:none!important;}}
+
 </style>
 <meta name="theme-color" content="#e8f0f7" id="metaTheme">
 <script>
@@ -5960,37 +6005,87 @@ function addAdminButton(){
   else document.body.appendChild(b);
 }
 async function openAdmin(){
+  if (document.querySelector(".admin-overlay")) return;
   let snap;
   try { snap = await getDocs(query(collection(db, "translations"), orderBy("t", "desc"), limit(100))); }
   catch (e){ alert("هەڵە: " + e.message); return; }
   const ov = document.createElement("div");
-  ov.style.cssText = "position:fixed;inset:0;width:100vw;height:100dvh;max-width:100%;box-sizing:border-box;z-index:30000;background:rgba(0,0,0,.92);overflow:auto;overscroll-behavior:contain;padding:calc(12px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));direction:rtl";
-  let h = '<button id="admX" style="padding:8px 16px;border-radius:999px;cursor:pointer;font:inherit">✕ داخستن</button><h2 style="color:#fff">' + snap.size + ' دەق (نوێترین ١٠٠)</h2>';
-  if (!snap.size) h += '<p style="color:#ddd;line-height:1.9">هێشتا هیچ دەقێک نەنێردراوە. بۆ تاقیکردنەوە: فایلێک لە تابی دەرهێنان باربکە، دەقێک لە بۆکسی وەرگێڕان دابنێ و «دروستکردن و کۆپیکردن» بکە.</p>';
+  ov.className = "admin-overlay";
+  ov.setAttribute("role", "presentation");
+  const dialog = document.createElement("section");
+  dialog.className = "admin-dialog";
+  dialog.setAttribute("role", "dialog");
+  dialog.setAttribute("aria-modal", "true");
+  dialog.setAttribute("aria-labelledby", "adminTitle");
+  const heading = document.createElement("div");
+  heading.className = "admin-head";
+  heading.innerHTML = '<h2 id="adminTitle">دەقە وەرگێڕدراوەکان <span class="admin-count">' + snap.size + ' / ١٠٠</span></h2>' +
+    '<button class="admin-close" type="button" data-admin-close aria-label="داخستنی پەنجەرە">✕ <span>داخستن</span></button>';
+  const list = document.createElement("div");
+  list.className = "admin-list";
+  if (!snap.size){
+    const empty = document.createElement("p");
+    empty.className = "admin-empty";
+    empty.textContent = "هێشتا هیچ دەقێک نەنێردراوە. بۆ تاقیکردنەوە فایلێک لە تابی دەرهێنان باربکە، دەقێکی وەرگێڕدراو دروست بکە و دووبارە ئەم پەنجەرەیە بکەرەوە.";
+    list.appendChild(empty);
+  }
+  const byId = {};
   snap.forEach(d => {
-    const v = d.data();
+    const v = d.data(), entry = document.createElement("details");
+    entry.className = "admin-entry";
+    const summary = document.createElement("summary");
     const when = v.t && v.t.toDate ? v.t.toDate().toLocaleString() : "";
-    h += '<details style="background:var(--surface);color:var(--text);border-radius:12px;padding:12px;margin:8px 0"><summary>' +
-      esc(v.file || d.id) + ' — ' + esc(v.n || 0) + ' بلۆک — ' + esc(when) +
-      '</summary><button class="admCp" data-id="' + esc(d.id) + '" style="margin:8px 6px 8px 0;padding:6px 14px;border-radius:999px;cursor:pointer;font:inherit">کۆپی</button>' +
-      '<button class="admDl" data-id="' + esc(d.id) + '" data-name="' + esc(String(v.file || "translated.srt").replace(/^.*\]\s*/, "").replace(/[^\w. -]/g,"_").replace(/\.(txt|text)$/i,".srt")) + '" style="margin:8px 6px;padding:6px 14px;border-radius:999px;cursor:pointer;font:inherit">داگرتنی SRT</button>' +
-      '<pre style="white-space:pre-wrap;word-break:break-word;font-size:13px">' + esc(v.text || "") + '</pre></details>';
+    summary.textContent = (v.file || d.id) + " — " + (v.n || 0) + " بلۆک" + (when ? " — " + when : "");
+    const actions = document.createElement("div");
+    actions.className = "admin-entry-actions";
+    const copy = document.createElement("button");
+    copy.type = "button"; copy.className = "btn btn-ghost admCp"; copy.dataset.id = d.id; copy.textContent = "کۆپی";
+    const download = document.createElement("button");
+    download.type = "button"; download.className = "btn btn-download admDl"; download.dataset.id = d.id; download.textContent = "داگرتنی SRT";
+    const pre = document.createElement("pre");
+    pre.className = "admin-srt"; pre.textContent = v.text || "";
+    byId[d.id] = v.text || "";
+    actions.append(copy, download);
+    entry.append(summary, actions, pre);
+    list.appendChild(entry);
   });
-  ov.innerHTML = h;
+  dialog.append(heading, list);
+  ov.appendChild(dialog);
   document.body.appendChild(ov);
-  const closeAdmin = () => { ov.remove(); };
-  ov.querySelector("#admX").addEventListener("click", ev => { ev.preventDefault(); ev.stopPropagation(); closeAdmin(); });
-  ov.addEventListener("click", ev => { if (ev.target === ov) closeAdmin(); });
-  const onEscape = ev => { if (ev.key === "Escape" && document.body.contains(ov)) { closeAdmin(); document.removeEventListener("keydown", onEscape); } };
-  document.addEventListener("keydown", onEscape);
-  const byId = {}; snap.forEach(d => byId[d.id] = d.data().text || "");
-  ov.querySelectorAll(".admCp").forEach(b => b.onclick = () => { navigator.clipboard.writeText(byId[b.dataset.id]).then(() => { b.textContent = "کۆپیکرا ✓"; }); });
-  ov.querySelectorAll(".admDl").forEach(b => b.onclick = () => {
-    const blob = new Blob([byId[b.dataset.id]], {type:"text/plain;charset=utf-8"});
+  const closeButton = ov.querySelector("[data-admin-close]");
+  let closing = false;
+  const onKey = ev => { if (ev.key === "Escape") { ev.preventDefault(); closeAdmin(); } };
+  const cleanup = () => { document.removeEventListener("keydown", onKey); ov.remove(); };
+  function closeAdmin(){
+    if (closing) return;
+    closing = true;
+    ov.classList.remove("is-open"); ov.classList.add("is-closing");
+    document.removeEventListener("keydown", onKey);
+    window.setTimeout(cleanup, 240);
+  }
+  const dismiss = ev => {
+    const close = ev.target && ev.target.closest && ev.target.closest("[data-admin-close]");
+    if (close && ov.contains(close)) { ev.preventDefault(); closeAdmin(); }
+    else if (ev.target === ov) closeAdmin();
+  };
+  // pointerup makes dismissal reliable on touch devices; click remains as a fallback.
+  ov.addEventListener("pointerup", dismiss);
+  ov.addEventListener("click", dismiss);
+  document.addEventListener("keydown", onKey);
+  ov.querySelectorAll(".admCp").forEach(b => b.addEventListener("click", async () => {
+    try { await navigator.clipboard.writeText(byId[b.dataset.id]); b.textContent = "کۆپیکرا ✓"; }
+    catch (_) { b.textContent = "کۆپی نەکرا"; }
+  }));
+  ov.querySelectorAll(".admDl").forEach(b => b.addEventListener("click", () => {
+    const blob = new Blob([byId[b.dataset.id]], {type:"application/x-subrip;charset=utf-8"});
     const url = URL.createObjectURL(blob), a = document.createElement("a");
-    a.href = url; a.download = (b.dataset.name || "translated.srt").replace(/\.(txt|text)$/i,".srt");
+    const record = snap.docs.find(d => d.id === b.dataset.id);
+    const filename = String(record && record.data().file || "translated.srt").replace(/^.*\]\s*/, "").replace(/[^\w. -]/g,"_").replace(/\.(txt|text)$/i,".srt");
+    a.href = url; a.download = /\.srt$/i.test(filename) ? filename : filename + ".srt";
     document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
-  });
+  }));
+  requestAnimationFrame(() => { requestAnimationFrame(() => ov.classList.add("is-open")); });
+  closeButton.focus({preventScroll:true});
 }
 </script>
 
