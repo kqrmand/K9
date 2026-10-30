@@ -1623,26 +1623,77 @@
   html[style*="color-scheme: dark"] .theme-hint{color:var(--accent-lt);background:rgba(30,30,34,.7);}
 
 
-  /* liquid pill that runs to the tab you tap */
-  .tabs.has-ind .tab-btn{position:relative;z-index:1;}
-  .tabs.has-ind .tab-btn.active,
-  html[style*="color-scheme: dark"] .tabs.has-ind .tab-btn.active{background:transparent;box-shadow:none;}
-  .tab-ind{
-    position:absolute;z-index:0;left:0;top:0;width:0;height:0;border-radius:999px;pointer-events:none;
-    background:
-      linear-gradient(180deg,rgba(255,255,255,.42),rgba(255,255,255,.04) 55%),
-      color-mix(in srgb,var(--accent) 30%,transparent);
-    box-shadow:
-      inset 0 1px 0 rgba(255,255,255,.75),
-      inset 0 -6px 10px -6px rgba(var(--accent-rgb),.45),
-      0 0 0 1px color-mix(in srgb,var(--accent) 38%,transparent),
-      0 8px 18px -8px rgba(var(--accent-rgb),.65);
-    transition:left .38s cubic-bezier(.22,1,.36,1),width .38s cubic-bezier(.22,1,.36,1),top .2s ease,height .2s ease,transform .38s cubic-bezier(.22,1,.36,1);
+  /* ---------- Fluid / Elastic Tab Switcher with Dynamic Inversion ---------- */
+  .tabs {
+    position: relative;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: auto; /* native horizontal scrolling stays; drag-the-pill starts with a press-and-hold */
   }
-  .tab-ind.moving{transform:scaleY(.9);}
-  .tab-ind.snap{transition:none;}
-  html[style*="color-scheme: dark"] .tab-ind{
-    background:linear-gradient(180deg,rgba(255,255,255,.20),rgba(255,255,255,.02) 55%),color-mix(in srgb,var(--accent) 30%,transparent);
+  .tabs.has-ind .tab-btn {
+    position: relative;
+    z-index: 1;
+    transition: color 0.15s ease;
+  }
+  .tabs.has-ind .tab-btn.active,
+  html[style*="color-scheme: dark"] .tabs.has-ind .tab-btn.active {
+    background: transparent;
+    box-shadow: none;
+    color: var(--text-dim); /* the overlay layer draws the inverted text */
+  }
+
+  /* The fluid pill: accent glass at rest, deeper + bigger while you hold and drag it */
+  .tab-ind {
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-radius: 999px;
+    pointer-events: none;
+    will-change: left, top, width, height;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.30), rgba(255,255,255,0) 55%),
+      var(--accent);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.55),
+      0 8px 18px -8px rgba(var(--accent-rgb), .65);
+    transition: background .25s ease, box-shadow .25s ease;
+  }
+  .tabs.is-dragging .tab-ind {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,0) 55%),
+      color-mix(in srgb, var(--accent) 52%, #000);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,.45),
+      inset 0 -1px 0 rgba(255,255,255,.12),
+      0 14px 26px -10px rgba(0,0,0,.55);
+  }
+
+  /* Duplicate text layer, clipped to the pill so the text colour inverts exactly under it */
+  .tabs-inverted-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    z-index: 3;
+    pointer-events: none;
+    clip-path: inset(0 100% 0 0 round 999px);
+    will-change: clip-path;
+  }
+  .tabs-inverted-layer .tab-btn {
+    position: absolute !important;
+    margin: 0 !important;
+    box-sizing: border-box;
+    pointer-events: none !important;
+    color: var(--on-accent, #fff) !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border-color: transparent !important;
   }
 
   /* panel content bursts out from the tapped tab and spreads into place */
@@ -6120,40 +6171,297 @@ admSearch.addEventListener("input", applyFilter);
 
 
 <script>
-/* tab pill: stretches toward the tapped tab, then settles into it like liquid */
-(function(){
+(function () {
   "use strict";
-  var tabs=document.querySelector('.tabs');
-  if(!tabs)return;
-  var ind=document.createElement('span');ind.className='tab-ind';ind.setAttribute('aria-hidden','true');
-  tabs.insertBefore(ind,tabs.firstChild);
-  var cur=null,timer=0;
-  function active(){return tabs.querySelector('.tab-btn.active');}
-  function box(b){return {l:b.offsetLeft,w:b.offsetWidth,t:b.offsetTop,h:b.offsetHeight};}
-  function put(r){ind.style.left=r.l+'px';ind.style.width=r.w+'px';ind.style.top=r.t+'px';ind.style.height=r.h+'px';}
-  function snap(){
-    var b=active();if(!b)return;
-    ind.classList.add('snap');ind.classList.remove('stretch');
-    put(box(b));cur=b;tabs.classList.add('has-ind');
-    void ind.offsetWidth;ind.classList.remove('snap');
+
+  const tabs = document.querySelector(".tabs");
+  if (!tabs) return;
+
+  const ind = document.createElement("span");
+  ind.className = "tab-ind";
+  ind.setAttribute("aria-hidden", "true");
+  tabs.appendChild(ind);
+
+  const layer = document.createElement("div");
+  layer.className = "tabs-inverted-layer";
+  layer.setAttribute("aria-hidden", "true");
+  layer.setAttribute("inert", "");
+  tabs.appendChild(layer);
+
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const realBtns = () => Array.from(tabs.querySelectorAll(":scope > .tab-btn"));
+  const visibleBtns = () => realBtns().filter((b) => b.offsetWidth > 0);
+
+  // axis: horizontal bar on phones, vertical list on wide screens
+  let vertical = false;
+  const mainStart = (el) => (vertical ? el.offsetTop : el.offsetLeft);
+  const mainLen = (el) => (vertical ? el.offsetHeight : el.offsetWidth);
+
+  // overlay-layer geometry
+  let minL = 0, minT = 0, layerW = 0, layerH = 0;
+
+  function layoutLayer() {
+    vertical = getComputedStyle(tabs).flexDirection.indexOf("column") === 0;
+    const btns = visibleBtns();
+    layer.innerHTML = "";
+    if (!btns.length) return;
+    minL = Math.min(...btns.map((b) => b.offsetLeft));
+    minT = Math.min(...btns.map((b) => b.offsetTop));
+    layerW = Math.max(...btns.map((b) => b.offsetLeft + b.offsetWidth)) - minL;
+    layerH = Math.max(...btns.map((b) => b.offsetTop + b.offsetHeight)) - minT;
+    layer.style.left = minL + "px";
+    layer.style.top = minT + "px";
+    layer.style.width = layerW + "px";
+    layer.style.height = layerH + "px";
+    btns.forEach((btn) => {
+      const c = btn.cloneNode(true);
+      c.removeAttribute("id");
+      c.classList.remove("active");
+      c.tabIndex = -1;
+      c.style.left = btn.offsetLeft - minL + "px";
+      c.style.top = btn.offsetTop - minT + "px";
+      c.style.width = btn.offsetWidth + "px";
+      c.style.height = btn.offsetHeight + "px";
+      layer.appendChild(c);
+    });
   }
-  function run(){
-    var b=active();if(!b)return;
-    if(!cur){snap();return;}
-    if(b===cur)return;
-    var to=box(b);
-    clearTimeout(timer);
-    ind.classList.add('moving');
-    put(to);
-    timer=setTimeout(function(){ind.classList.remove('moving');},170);
-    cur=b;
-    try{b.scrollIntoView({block:'nearest',inline:'nearest',behavior:'smooth'});}catch(e){}
+
+  // ---- spring state (edges along the main axis) ----
+  let curA = 0, curB = 0, tgtA = 0, tgtB = 0, vA = 0, vB = 0;
+  let grow = 1;
+  let animId = null;
+  let lastTime = performance.now();
+
+  let dragging = false;     // pill is being dragged
+  let suppressClick = false;
+  let lastX = 0, lastY = 0;
+  let hovBtn = null;
+
+  function getActiveTab() {
+    return tabs.querySelector(":scope > .tab-btn.active") || tabs.querySelector(":scope > .tab-btn");
   }
-  new MutationObserver(run).observe(tabs,{attributes:true,attributeFilter:['class'],subtree:true});
-  window.addEventListener('resize',snap);
-  if(document.fonts&&document.fonts.ready)document.fonts.ready.then(snap);
-  window.addEventListener('load',snap);
-  snap();
+
+  function updateVisuals(a, b) {
+    const act = getActiveTab();
+    if (!act) return;
+    const c0 = vertical ? act.offsetLeft : act.offsetTop;
+    const cs = vertical ? act.offsetWidth : act.offsetHeight;
+    const base = mainLen(act) || 1;
+
+    const len = Math.max(16, b - a);
+    const ratio = clamp(len / base, 0.7, 1.4);
+    const sq = Math.max(0.85, 1 - (ratio - 1) * 0.35); // jelly squish across the axis
+
+    const L = len * grow;
+    const C = cs * sq * grow;
+    const m = (a + b) / 2;
+    const cc = c0 + cs / 2;
+
+    const x = vertical ? cc - C / 2 : m - L / 2;
+    const y = vertical ? m - L / 2 : cc - C / 2;
+    const w = vertical ? C : L;
+    const h = vertical ? L : C;
+
+    ind.style.left = x + "px";
+    ind.style.top = y + "px";
+    ind.style.width = w + "px";
+    ind.style.height = h + "px";
+
+    const top = Math.max(0, y - minT);
+    const left = Math.max(0, x - minL);
+    const right = Math.max(0, layerW - (x + w - minL));
+    const bottom = Math.max(0, layerH - (y + h - minT));
+    layer.style.clipPath = "inset(" + top + "px " + right + "px " + bottom + "px " + left + "px round 999px)";
+  }
+
+  // while dragging: pill chases the finger (clamped to the first/last tab)
+  function dragTarget() {
+    const rect = tabs.getBoundingClientRect();
+    const p = vertical
+      ? lastY - rect.top - tabs.clientTop + tabs.scrollTop
+      : lastX - rect.left - tabs.clientLeft + tabs.scrollLeft;
+    const btns = visibleBtns();
+    if (!btns.length) return;
+    let best = btns[0], bd = Infinity, minC = Infinity, maxC = -Infinity;
+    btns.forEach((btn) => {
+      const c = mainStart(btn) + mainLen(btn) / 2;
+      minC = Math.min(minC, c);
+      maxC = Math.max(maxC, c);
+      const d = Math.abs(p - c);
+      if (d < bd) { bd = d; best = btn; }
+    });
+    hovBtn = best;
+    const size = mainLen(best);
+    const c = clamp(p, minC, maxC);
+    tgtA = c - size / 2;
+    tgtB = c + size / 2;
+
+    // auto-scroll when the finger is near the edge of the bar
+    const vis = vertical ? lastY - rect.top : lastX - rect.left;
+    const ext = vertical ? rect.height : rect.width;
+    const EDGE = 36;
+    let dv = 0;
+    if (vis < EDGE) dv = -(EDGE - vis) * 0.35;
+    else if (vis > ext - EDGE) dv = (vis - (ext - EDGE)) * 0.35;
+    if (dv) { if (vertical) tabs.scrollTop += dv; else tabs.scrollLeft += dv; }
+  }
+
+  function stepPhysics(now) {
+    animId = null;
+    const dt = Math.min((now - lastTime) / 1000, 0.032);
+    lastTime = now;
+
+    if (dragging) dragTarget();
+
+    const k = dragging ? 650 : 280;
+    const c = dragging ? 36 : 22;
+    vA += (-k * (curA - tgtA) - c * vA) * dt;
+    curA += vA * dt;
+    vB += (-k * (curB - tgtB) - c * vB) * dt;
+    curB += vB * dt;
+
+    const gTarget = dragging ? 1.14 : 1;
+    grow += (gTarget - grow) * Math.min(1, dt * 14);
+
+    updateVisuals(curA, curB);
+
+    const settled =
+      !dragging &&
+      Math.abs(vA) < 0.2 && Math.abs(vB) < 0.2 &&
+      Math.abs(curA - tgtA) < 0.3 && Math.abs(curB - tgtB) < 0.3 &&
+      Math.abs(grow - 1) < 0.002;
+
+    if (settled) {
+      curA = tgtA; curB = tgtB; grow = 1;
+      updateVisuals(curA, curB);
+    } else {
+      animId = requestAnimationFrame(stepPhysics);
+    }
+  }
+
+  function startAnimation() {
+    if (animId === null) {
+      lastTime = performance.now();
+      animId = requestAnimationFrame(stepPhysics);
+    }
+  }
+
+  function snapToActive(immediate) {
+    const b = getActiveTab();
+    if (!b) return;
+    if (!tabs.classList.contains("has-ind")) tabs.classList.add("has-ind");
+    if (dragging) return;
+    tgtA = mainStart(b);
+    tgtB = tgtA + mainLen(b);
+    if (immediate) {
+      curA = tgtA; curB = tgtB; vA = vB = 0; grow = 1;
+      updateVisuals(curA, curB);
+    } else {
+      startAnimation();
+    }
+  }
+
+  function relayout() {
+    layoutLayer();
+    snapToActive(true);
+  }
+
+  // ---------------- gestures ----------------
+  // touch: press & hold the bar (~0.17s) to grab the pill; a normal swipe scrolls the tabs natively
+  // mouse: just press and drag
+  let pid = null, holdTimer = 0, pending = false, isTouch = false, startX = 0, startY = 0;
+
+  function beginDrag() {
+    clearTimeout(holdTimer);
+    pending = false;
+    dragging = true;
+    suppressClick = true;
+    tabs.classList.add("is-dragging");
+    try { if (navigator.vibrate) navigator.vibrate(8); } catch (e) {}
+    startAnimation();
+  }
+
+  function onMove(ev) {
+    if (ev.pointerId !== pid) return;
+    lastX = ev.clientX;
+    lastY = ev.clientY;
+    if (dragging || !pending) return;
+    const d = Math.hypot(ev.clientX - startX, ev.clientY - startY);
+    if (isTouch) {
+      if (d > 8) { clearTimeout(holdTimer); pending = false; } // it's a scroll, leave it to the browser
+    } else if (d > 5) {
+      beginDrag();
+    }
+  }
+
+  function onUp(ev) {
+    if (ev && ev.pointerId !== pid) return;
+    window.removeEventListener("pointermove", onMove);
+    window.removeEventListener("pointerup", onUp);
+    window.removeEventListener("pointercancel", onUp);
+    clearTimeout(holdTimer);
+    pending = false;
+    pid = null;
+    if (!dragging) return;
+
+    dragging = false;
+    tabs.classList.remove("is-dragging");
+    setTimeout(() => { suppressClick = false; }, 80);
+
+    const active = getActiveTab();
+    const target = hovBtn || active;
+    if (target && target !== active) target.click();
+    const dest = target || active;
+    tgtA = mainStart(dest);
+    tgtB = tgtA + mainLen(dest);
+    startAnimation();
+  }
+
+  tabs.addEventListener("pointerdown", (e) => {
+    if (e.button !== undefined && e.button !== 0) return;
+    if (!e.target.closest(".tab-btn") && e.target !== tabs) return;
+    pid = e.pointerId;
+    isTouch = e.pointerType === "touch";
+    startX = lastX = e.clientX;
+    startY = lastY = e.clientY;
+    pending = true;
+    if (isTouch) holdTimer = setTimeout(() => { if (pending) beginDrag(); }, 170);
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
+  });
+
+  // once the pill is grabbed, the page/bar must not scroll under the finger
+  tabs.addEventListener("touchmove", (e) => {
+    if (dragging && e.cancelable) e.preventDefault();
+  }, { passive: false });
+
+  tabs.addEventListener("contextmenu", (e) => {
+    if (dragging || pending) e.preventDefault();
+  });
+
+  // the click that follows a drag must not re-select the tab we started on
+  tabs.addEventListener("click", (e) => {
+    if (suppressClick) { e.stopImmediatePropagation(); e.preventDefault(); }
+  }, true);
+
+  // tab switched (tap, drag or code) -> spring to it
+  let lastActive = null;
+  new MutationObserver(() => {
+    if (visibleBtns().length !== layer.children.length) relayout();
+    const now = getActiveTab();
+    if (now !== lastActive) {
+      lastActive = now;
+      snapToActive(false);
+      try { now.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" }); } catch (e) {}
+    }
+  }).observe(tabs, { attributes: true, attributeFilter: ["class"], subtree: true });
+
+  window.addEventListener("resize", relayout);
+  window.addEventListener("load", relayout);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(relayout);
+  relayout();
+  lastActive = getActiveTab();
 })();
 </script>
 
