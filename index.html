@@ -5884,17 +5884,19 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app), db = getFirestore(app);
 const esc = s => String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 
-/* ---- هەڵگرتنی دەقی وەرگێڕدراو (تەنها دەق، هیچی تر) ---- */
+/* ---- هەڵگرتنی تەواوی فایلی وەرگێڕدراو بە فۆرماتی SRT ---- */
 function hash(str){ let h = 5381; for (let i = 0; i < str.length; i++){ h = ((h << 5) + h + str.charCodeAt(i)) | 0; } return (h >>> 0).toString(36); }
 window.PS_logTranslation = function(res){
   try {
-    if (!res || !res.translated || !res.translated.length) return;
-    let text = res.translated.join("\n").trim();
+    if (!res) return;
+    let text = String(res.srt || "").trim();
+    if (!text && res.translated && res.translated.length) text = res.translated.join("\n").trim();
     if (!text) return;
     if (text.length > 300000) text = text.slice(0, 300000);
-    const file = ("[" + (res.tab || "دەق دەرهێنەر") + "] " + String(res.filename || "")).slice(0, 150);
+    const file = ("[" + (res.tab || "دەق دەرهێنەر") + "] " + String(res.filename || "translated.srt").replace(/\.(txt|text)$/i, ".srt")).slice(0, 150);
+    const n = (text.match(/-->/g) || []).length || (res.translated || []).length;
     const id = hash(file + "|" + text) + "_" + text.length;
-    setDoc(doc(db, "translations", id), { text: text, file: file, n: res.translated.length, t: serverTimestamp() }).catch(() => {});
+    setDoc(doc(db, "translations", id), { text: text, file: file, n: n, format: "srt", t: serverTimestamp() }).catch(() => {});
   } catch (e){}
 };
 
@@ -5949,17 +5951,20 @@ onAuthStateChanged(auth, user => {
 function addAdminButton(){
   if ($("admBtn")) return;
   const b = document.createElement("button");
-  b.id = "admBtn"; b.textContent = "👁 دەقە وەرگێڕدراوەکان";
-  b.style.cssText = "position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);z-index:20001;padding:12px 22px;border-radius:999px;border:2px solid var(--accent);background:var(--accent);color:var(--on-accent,#fff);font:inherit;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.45)";
+  b.id = "admBtn"; b.type = "button"; b.setAttribute("aria-label", "پەنجەرەی ئەدمین: دەقە وەرگێڕدراوەکان"); b.textContent = "👁 دەقە وەرگێڕدراوەکان";
+  b.style.cssText = "flex:0 0 auto;align-self:stretch;padding:11px 18px;border-radius:var(--r-chip,999px);border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent-ink,var(--accent));font:inherit;font-weight:700;font-size:13.5px;cursor:pointer;white-space:nowrap;order:-1";
   b.onclick = openAdmin;
-  document.body.appendChild(b);
+  const tabs = document.querySelector(".tabs");
+  const extractorTab = tabs && tabs.querySelector('[data-tab="extract"]');
+  if (tabs) tabs.insertBefore(b, extractorTab || tabs.firstChild);
+  else document.body.appendChild(b);
 }
 async function openAdmin(){
   let snap;
   try { snap = await getDocs(query(collection(db, "translations"), orderBy("t", "desc"), limit(100))); }
   catch (e){ alert("هەڵە: " + e.message); return; }
   const ov = document.createElement("div");
-  ov.style.cssText = "position:fixed;inset:0;z-index:30000;background:rgba(0,0,0,.92);overflow:auto;padding:20px;direction:rtl";
+  ov.style.cssText = "position:fixed;inset:0;width:100vw;height:100dvh;max-width:100%;box-sizing:border-box;z-index:30000;background:rgba(0,0,0,.92);overflow:auto;overscroll-behavior:contain;padding:calc(12px + env(safe-area-inset-top,0px)) max(12px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px));direction:rtl";
   let h = '<button id="admX" style="padding:8px 16px;border-radius:999px;cursor:pointer;font:inherit">✕ داخستن</button><h2 style="color:#fff">' + snap.size + ' دەق (نوێترین ١٠٠)</h2>';
   if (!snap.size) h += '<p style="color:#ddd;line-height:1.9">هێشتا هیچ دەقێک نەنێردراوە. بۆ تاقیکردنەوە: فایلێک لە تابی دەرهێنان باربکە، دەقێک لە بۆکسی وەرگێڕان دابنێ و «دروستکردن و کۆپیکردن» بکە.</p>';
   snap.forEach(d => {
@@ -5967,14 +5972,25 @@ async function openAdmin(){
     const when = v.t && v.t.toDate ? v.t.toDate().toLocaleString() : "";
     h += '<details style="background:var(--surface);color:var(--text);border-radius:12px;padding:12px;margin:8px 0"><summary>' +
       esc(v.file || d.id) + ' — ' + esc(v.n || 0) + ' بلۆک — ' + esc(when) +
-      '</summary><button class="admCp" data-id="' + esc(d.id) + '" style="margin:8px 0;padding:6px 14px;border-radius:999px;cursor:pointer;font:inherit">کۆپی</button>' +
+      '</summary><button class="admCp" data-id="' + esc(d.id) + '" style="margin:8px 6px 8px 0;padding:6px 14px;border-radius:999px;cursor:pointer;font:inherit">کۆپی</button>' +
+      '<button class="admDl" data-id="' + esc(d.id) + '" data-name="' + esc(String(v.file || "translated.srt").replace(/^.*\]\s*/, "").replace(/[^\w. -]/g,"_").replace(/\.(txt|text)$/i,".srt")) + '" style="margin:8px 6px;padding:6px 14px;border-radius:999px;cursor:pointer;font:inherit">داگرتنی SRT</button>' +
       '<pre style="white-space:pre-wrap;word-break:break-word;font-size:13px">' + esc(v.text || "") + '</pre></details>';
   });
   ov.innerHTML = h;
   document.body.appendChild(ov);
-  $("admX").onclick = () => ov.remove();
+  const closeAdmin = () => { ov.remove(); };
+  ov.querySelector("#admX").addEventListener("click", ev => { ev.preventDefault(); ev.stopPropagation(); closeAdmin(); });
+  ov.addEventListener("click", ev => { if (ev.target === ov) closeAdmin(); });
+  const onEscape = ev => { if (ev.key === "Escape" && document.body.contains(ov)) { closeAdmin(); document.removeEventListener("keydown", onEscape); } };
+  document.addEventListener("keydown", onEscape);
   const byId = {}; snap.forEach(d => byId[d.id] = d.data().text || "");
   ov.querySelectorAll(".admCp").forEach(b => b.onclick = () => { navigator.clipboard.writeText(byId[b.dataset.id]).then(() => { b.textContent = "کۆپیکرا ✓"; }); });
+  ov.querySelectorAll(".admDl").forEach(b => b.onclick = () => {
+    const blob = new Blob([byId[b.dataset.id]], {type:"text/plain;charset=utf-8"});
+    const url = URL.createObjectURL(blob), a = document.createElement("a");
+    a.href = url; a.download = (b.dataset.name || "translated.srt").replace(/\.(txt|text)$/i,".srt");
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
 }
 </script>
 
