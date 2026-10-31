@@ -5686,7 +5686,7 @@ $('seNavNext').onclick=()=>soloStep(1);
 $('seNavApply').onclick=exitSolo;
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&solo&&visible())exitSolo();});
 
-/* single tap/click opens the block alone + keyboard; double tap/click selects the whole text */
+/* single tap/click opens the block alone + keyboard; double tap/click selects only the tapped word */
 let lastTap=0,lastTa=null;
 list.addEventListener('click',e=>{
   const bt=e.target.closest('.se-dots');
@@ -5716,8 +5716,17 @@ list.addEventListener('click',e=>{
   }
   if(dbl){
     lastTap=0;
-    const all=()=>{try{ta.setSelectionRange(0,ta.value.length);}catch(_){}};
-    all();requestAnimationFrame(all);setTimeout(all,60);
+    /* select only the word under the pointer (not the whole text) */
+    const v=ta.value,isW=c=>/[\p{L}\p{M}\p{N}_\u200c\u200d\ud800-\udfff]/u.test(c);
+    let p=ta.selectionStart;
+    if(p>=v.length||!isW(v.charAt(p)))p=Math.max(0,p-1);
+    let a0=p,b0=p;
+    if(v.length&&isW(v.charAt(p))){
+      while(a0>0&&isW(v.charAt(a0-1)))a0--;
+      b0=p+1;while(b0<v.length&&isW(v.charAt(b0)))b0++;
+    }
+    const pick=()=>{try{ta.setSelectionRange(a0,b0);}catch(_){}};
+    pick();requestAnimationFrame(pick);setTimeout(pick,60);
   }else{lastTap=t;lastTa=ta;}
 });
 
