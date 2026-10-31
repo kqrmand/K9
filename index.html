@@ -1898,6 +1898,23 @@
   .brand-pv:hover .brand-pv-cam,.brand-pv:focus-visible .brand-pv-cam{opacity:1;}
   .brand-pv-txt{flex:1;min-width:0;}
   .brand-pop .btn-row{margin-top:12px;}
+  /* ---------- ڕوونکردنەوە درێژەکان: یەک هێڵ + نیشانەی ئاو ---------- */
+  .fold{position:relative;padding-inline-end:32px;min-height:26px;}
+  .fold:not(.open){display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:1;line-clamp:1;overflow:hidden;}
+  .fold-btn{
+    position:absolute;top:0;inset-inline-end:0;width:24px;height:24px;padding:0;border-radius:50%;cursor:pointer;
+    display:inline-flex;align-items:center;justify-content:center;color:var(--accent-ink);
+    background:var(--lg-fill);border:1px solid var(--lg-edge);
+    box-shadow:inset 0 1px 0 var(--lg-rim),0 4px 10px -6px var(--lg-shade);
+    transition:background .2s ease,transform .15s ease;-webkit-tap-highlight-color:transparent;
+  }
+  .fold-btn:hover{background:var(--lg-fill-hi);}
+  .fold-btn:active{transform:scale(.9);}
+  .fold-btn:focus-visible{outline:2px solid var(--accent-lt);outline-offset:2px;}
+  .fold:not(.open) .fold-btn{top:50%;margin-top:-12px;}
+  .fold-btn svg{transition:transform .22s ease;}
+  .fold.open .fold-btn svg{transform:rotate(180deg);}
+  html[data-theme="glass"] .fold-btn{color:#0b1b44;}
 </style>
 <meta name="theme-color" content="#e8f0f7" id="metaTheme">
 <script>
@@ -6230,6 +6247,61 @@ img.addEventListener('click',function(){if(pop.classList.contains('show'))openPo
 
 saved=load();
 apply();
+})();
+</script>
+
+<script>
+/* ================= ڕوونکردنەوە درێژەکان: یەک هێڵ + دوگمەی ئاو ================= */
+(function(){
+"use strict";
+var CH='<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
+function btnOf(el){
+  var b=el.querySelector(':scope > .fold-btn');
+  if(b)return b;
+  b=document.createElement('button');
+  b.type='button';b.className='fold-btn';b.setAttribute('aria-label','پیشاندانی هەمووی');b.title='پیشاندانی هەمووی';
+  b.setAttribute('aria-expanded','false');b.innerHTML=CH;
+  b.addEventListener('click',function(e){
+    e.preventDefault();e.stopPropagation();
+    var o=el.classList.toggle('open');
+    b.setAttribute('aria-expanded',o?'true':'false');
+    b.title=b.title=o?'کورتکردنەوە':'پیشاندانی هەمووی';b.setAttribute('aria-label',b.title);
+  });
+  el.appendChild(b);return b;
+}
+function check(el){
+  if(!el.offsetParent&&!el.getClientRects().length)return;
+  if(el.classList.contains('open')){btnOf(el);return;}
+  el.classList.add('fold');
+  var over=el.scrollHeight>el.clientHeight+1;
+  if(over){btnOf(el);}
+  else{
+    var b=el.querySelector(':scope > .fold-btn');if(b)b.remove();
+    el.classList.remove('fold');
+  }
+}
+var els=[].slice.call(document.querySelectorAll('.tagline, p.sub, .theme-pop > p, #seEmpty > p'));
+var w=new WeakMap();
+function run(el){
+  var cw=Math.round(el.getBoundingClientRect().width);
+  if(cw===0)return;
+  if(w.get(el)===cw&&el.querySelector(':scope > .fold-btn')===null&&!el.classList.contains('fold')&&el.dataset.foldChk)return;
+  w.set(el,cw);el.dataset.foldChk='1';check(el);
+}
+if('ResizeObserver' in window){
+  var ro=new ResizeObserver(function(list){list.forEach(function(en){
+    var el=en.target,cw=Math.round(en.contentRect.width);
+    if(w.get(el)===cw&&el.querySelector(':scope > .fold-btn')||(w.get(el)===cw&&!el.classList.contains('fold')&&el.dataset.foldChk))return;
+    w.set(el,cw);el.dataset.foldChk='1';check(el);
+  });});
+  els.forEach(function(el){ro.observe(el);});
+}
+function all(){els.forEach(function(el){delete el.dataset.foldChk;run(el);});}
+window.addEventListener('resize',function(){clearTimeout(all._t);all._t=setTimeout(all,120);});
+window.addEventListener('load',all);
+document.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('.tab-btn'))setTimeout(all,60);},true);
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(all);
+all();
 })();
 </script>
 
