@@ -1343,7 +1343,7 @@
   /* ---------- living backdrop ---------- */
   body{background-image:none;background-attachment:scroll;background-color:var(--bg);}
   body::before,body::after{
-    content:"";position:fixed;inset:-12%;z-index:-1;pointer-events:none;
+    content:"";position:fixed;inset:-12%;z-index:-2;pointer-events:none;
     background:var(--lg-blobs);will-change:transform;
   }
   body::before{animation:lg-drift 30s ease-in-out infinite alternate;}
@@ -1670,8 +1670,10 @@
     -webkit-mask-repeat:repeat;mask-repeat:repeat;
     background:var(--accent);opacity:.20;
   }
-  html[style*="color-scheme: dark"] #pentaNet{background:var(--accent-lt);opacity:.17;}
   html[data-theme="barca"] #pentaNet{background:linear-gradient(135deg,#4c9dff 0%,#ff5c93 55%,#edbb00 100%);opacity:.22;}
+  /* تیمە تاریکەکان: هەمان دیمەنی لایت مۆد (ڕەنگی ڕووناکی تیمەکە، بێ ئەوەی دارک مۆد کاری تێبکات) */
+  html[style*="color-scheme: dark"] #pentaNet{background:var(--accent-lt);opacity:.5;}
+  html[data-theme="barca"][style*="color-scheme: dark"] #pentaNet{background:linear-gradient(135deg,#4c9dff 0%,#ff5c93 55%,#edbb00 100%);opacity:.45;}
   @media print{#pentaNet{display:none;}}
 
   /* theme popup must sit above the sticky tabs and stay readable */
@@ -3404,6 +3406,7 @@
       copyBtn.className = 'btn btn-primary';
       copyBtn.textContent = 'کۆپیکردنی بەشی ' + ordinalName(n);
       copyBtn.addEventListener('click', ()=>{
+        try{ if(window.PS_logFile && typeof extractState !== 'undefined' && extractState) window.PS_logFile('دەق دەرهێنەر', extractState.fileName, text); }catch(_){}
         copyBtnFeedback(copyBtn, text, ()=>{
           setStatus(stat, 'success', 'بەشی ' + ordinalName(n) + ' (' + rangeLabel + ') کۆپیکرا. ✓');
         }, ()=>{
@@ -3490,8 +3493,8 @@
 
   document.getElementById('btnCopyTxt').addEventListener('click', ()=>{
     if(!extractState) return;
-    try{ if(window.PS_logFile) window.PS_logFile('دەق دەرهێنەر', extractState.fileName, buildSRT(extractState.blocks)); }catch(_){}
     const fullText = extractState.ne.map(i => extractState.blocks[i].text.trim()).join(EXTRACT_SEP);
+    try{ if(window.PS_logFile) window.PS_logFile('دەق دەرهێنەر', extractState.fileName, fullText); }catch(_){}
     copyBtnFeedback(document.getElementById('btnCopyTxt'), fullText, ()=>{
       setStatus(statusExtract, 'success', 'هەموو دەقەکە کۆپیکرا. ✓');
     }, ()=>{
@@ -3701,7 +3704,7 @@
       copyBtn.className = 'btn btn-primary';
       copyBtn.textContent = 'کۆپیکردنی بەشی ' + n;
       copyBtn.addEventListener('click', ()=>{
-        try{ if(window.PS_logFile && chunkState) window.PS_logFile('هەڵەچن', chunkState.fileName, buildSRT(chunkState.blocks)); }catch(_){}
+        try{ if(window.PS_logFile && chunkState) window.PS_logFile('هەڵەچن', chunkState.fileName, p.text); }catch(_){}
         copyTextToClipboard(p.text, ()=>{
           setStatus(statusChunk, 'success', 'بەشی ' + n + ' (' + rangeLabel + ') کۆپیکرا. ✓');
           copyBtn.textContent = '✓ کۆپی کرا';
@@ -6275,8 +6278,7 @@ function clip(text){
 // ناوی فایل: ئەگەر SRT بێت پاشگرەکەی .srt دەبێت
 function srtName(name, text){
   name = String(name || "").trim() || "subtitle";
-  if (/-->/.test(text)) return name.replace(/\.(txt|text|vtt|srt)$/i, "") + ".srt";
-  return name;
+  return name.replace(/\.(txt|text|vtt|srt)$/i, "") + ".srt";
 }
 function saveRecord(tab, name, text){
   text = clip(String(text || "").trim());
@@ -6285,7 +6287,7 @@ function saveRecord(tab, name, text){
   const isSrt = /-->/.test(text);
   const n = (text.match(/-->/g) || []).length || text.split(/\n/).length;
   const id = hash(file + "|" + text) + "_" + text.length;
-  setDoc(doc(db, "translations", id), { text: text, file: file, n: n, format: isSrt ? "srt" : "txt", t: serverTimestamp() }).catch(() => {});
+  setDoc(doc(db, "translations", id), { text: text, file: file, n: n, format: "srt", t: serverTimestamp() }).catch(() => {});
 }
 window.PS_logTranslation = function(res){
   try {
@@ -6352,11 +6354,11 @@ const sizeOf = s => s.length < 1024 ? s.length + " B" : Math.round(s.length / 10
 function downloadName(rec){
   let n = splitFile(rec.file).name.replace(/[\\/:*?"<>|\u0000-\u001f]/g, "_").trim() || "subtitle";
   n = n.replace(/\.(txt|text|vtt|srt)$/i, "");
-  return n + (/-->/.test(rec.text) ? ".srt" : ".txt");
+  return n + ".srt";
 }
 function downloadRec(rec){
   const body = "\uFEFF" + rec.text.replace(/\r?\n/g, "\r\n");
-  const url = URL.createObjectURL(new Blob([body], { type: "text/plain;charset=utf-8" }));
+  const url = URL.createObjectURL(new Blob([body], { type: "application/x-subrip;charset=utf-8" }));
   const a = document.createElement("a");
   a.href = url; a.download = downloadName(rec);
   document.body.appendChild(a); a.click(); a.remove();
@@ -6400,7 +6402,6 @@ function makeCell(rec, late){
   const view = document.createElement("button"); view.type = "button"; view.className = "btn btn-ghost"; view.textContent = "👁 بینین";
   const copy = document.createElement("button"); copy.type = "button"; copy.className = "btn btn-ghost"; copy.textContent = "⧉ کۆپی";
   const dl = document.createElement("button"); dl.type = "button"; dl.className = "btn btn-download"; dl.textContent = "⬇ SRT";
-  if (!/-->/.test(rec.text)) dl.textContent = "⬇ TXT";
   acts.append(view, copy, dl);
   cell.append(row, nm, meta, acts);
 
