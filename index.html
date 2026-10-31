@@ -2357,8 +2357,8 @@
       <div id="unifyFileList" style="margin-top:14px;"></div>
 
       <div class="stats" id="unifyStats" style="display:none;">
-        <div class="stat"><div class="n" id="statFileCount">0</div><div class="l">فایل بارکراو</div></div>
-        <div class="stat"><div class="n" id="statWordCount">0</div><div class="l">ناوی جیاواز دۆزراو</div></div>
+        <div class="stat"><div class="n" id="statFileCount">٠</div><div class="l">فایل بارکراو</div></div>
+        <div class="stat"><div class="n" id="statWordCount">٠</div><div class="l">ناوی جیاواز دۆزراو</div></div>
       </div>
 
       <div class="btn-row">
@@ -2378,7 +2378,7 @@
 
       <div id="allNamesSection" style="display:none; margin-top:16px;">
         <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
-          <h3 style="font-size:14px; margin:0; color:var(--text-dim);">هەموو ناوەکانی دۆزراو <span class="badge" id="allNamesCount">0</span></h3>
+          <h3 style="font-size:14px; margin:0; color:var(--text-dim);">هەموو ناوەکانی دۆزراو <span class="badge" id="allNamesCount">٠</span></h3>
           <button class="btn btn-ghost" id="btnClearNameSelection" style="font-size:12px; padding:6px 10px;">پاکردنەوەی دیاریکراو</button>
         </div>
         <p class="sub" style="margin-top:4px;">کرتە لەسەر ناوەکان بکە بۆ دیاریکردن، پاشان «زیادکردن».</p>
@@ -4506,6 +4506,7 @@ ${text}`;
     const unifyStats = document.getElementById('unifyStats');
     const statFileCount = document.getElementById('statFileCount');
     const statWordCount = document.getElementById('statWordCount');
+    const kuNum = n => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
     const btnClearUnifyFiles = document.getElementById('btnClearUnifyFiles');
     const unifyDetectCard = document.getElementById('unifyDetectCard');
     const unifyManualCard = document.getElementById('unifyManualCard');
@@ -4710,21 +4711,21 @@ ${text}`;
       selectedNames = [];
       renderAllNames();
 
-      statFileCount.textContent = unifyFiles.length;
-      statWordCount.textContent = allNames.length;
+      statFileCount.textContent = kuNum(unifyFiles.length);
+      statWordCount.textContent = kuNum(allNames.length);
       unifyStats.style.display = 'grid';
 
       if(allNames.length === 0){
         setStatus(statusUnify, 'success', 'هیچ ناوێک لەناو کەوانە یان تەقەڵدا نەدۆزرایەوە.');
       } else {
-        setStatus(statusUnify, 'success', allNames.length + ' ناوی جیاواز دۆزرایەوە. لە خوارەوە کرتەیان لەسەر بکە بۆ دیاریکردن. ✓');
+        setStatus(statusUnify, 'success', kuNum(allNames.length) + ' ناوی جیاواز دۆزرایەوە. لە خوارەوە کرتەیان لەسەر بکە بۆ دیاریکردن. ✓');
       }
     }
 
     /* ---------- all-names scroll strip ---------- */
     function renderAllNames(){
       allNamesStrip.innerHTML = '';
-      allNamesCount.textContent = allNames.length;
+      allNamesCount.textContent = kuNum(allNames.length);
       allNamesSection.style.display = allNames.length ? 'block' : 'none';
 
       if(allNames.length === 0){
@@ -4802,8 +4803,8 @@ ${text}`;
       // These names are now handled — drop them from the found-names strip
       // so it doesn't keep showing names the user already dealt with.
       allNames = allNames.filter(n=> !from.includes(n.word));
-      allNamesCount.textContent = allNames.length;
-      statWordCount.textContent = allNames.length;
+      allNamesCount.textContent = kuNum(allNames.length);
+      statWordCount.textContent = kuNum(allNames.length);
       renderAllNames();
       renderManualRules();
       clearStatus(statusUnify);
@@ -4876,7 +4877,7 @@ ${text}`;
       });
 
       renderResults();
-      let msg = totalReplacements + ' گۆڕانکاری لەسەر ' + unifyFiles.length + ' فایل جێبەجێکرا. ✓';
+      let msg = kuNum(totalReplacements) + ' گۆڕانکاری لەسەر ' + kuNum(unifyFiles.length) + ' فایل جێبەجێکرا. ✓';
       if(conflicts.length){
         msg += ' ئاگاداری: ' + conflicts.length + ' شێواز لە دوو یاسادا بە ناوی جیاواز هاتبوون (یاسای دواتر بەکارهات): ' + [...new Set(conflicts)].join('، ');
       }
@@ -6334,6 +6335,7 @@ const firebaseConfig = {
 const ADMIN_UID = "kKycJGHJ4PYxF3kewGnVLdRqocF3";
 
 const $ = id => document.getElementById(id);
+const kuNum = n => String(n).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app), db = getFirestore(app);
 const esc = s => String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
@@ -6461,7 +6463,7 @@ function makeCell(rec, late){
   const row = document.createElement("div"); row.className = "adm-row";
   const tag = document.createElement("span"); tag.className = "badge"; tag.textContent = tab || "فایل";
   const cnt = document.createElement("span"); cnt.className = "adm-meta";
-  cnt.textContent = (rec.n || 0) + (/-->/.test(rec.text) ? " بلۆک" : " دێڕ");
+  cnt.textContent = kuNum(rec.n || 0) + (/-->/.test(rec.text) ? " بلۆک" : " دێڕ");
   row.append(tag, cnt);
 
   const nm = document.createElement("div");
@@ -6498,7 +6500,7 @@ function applyFilter(){
 }
 function renderCells(late){
   admPanel.querySelectorAll(".adm-cell").forEach(c => c.remove());
-  admCount.textContent = admItems.length + " / ١٠٠";
+  admCount.textContent = kuNum(admItems.length) + " / " + kuNum(100);
   if (!admItems.length){ setAdmState("هێشتا هیچ فایلێک نەنێردراوە. لە یەکێک لە تابەکان فایلێک دروست بکە و کۆپی بکە."); return; }
   const frag = document.createDocumentFragment();
   admItems.forEach(rec => frag.appendChild(makeCell(rec, late)));
