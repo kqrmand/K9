@@ -5428,22 +5428,35 @@ function dirOf(t){
   const m=t.replace(/<[^>]*>/g,'').match(/[A-Za-z\u00C0-\u024F\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/);
   return m&&!RTL.test(m[0])?'ltr':'rtl';
 }
-function hlt(x){
-  let col=null,out='';
-  for(const p of x.split(/(<[^>]*>)/)){
+function braceMask(d){
+  const br=new Uint8Array(d.length);
+  d.replace(/\{[^{}]*\}/g,(m,o)=>{br.fill(1,o,o+m.length);return m;});
+  return br;
+}
+function hlt(d,c){
+  const br=braceMask(d);
+  let out='',off=0;
+  for(const p of d.split(/(<[^>]*>)/)){
     if(!p)continue;
-    if(p[0]==='<'&&p[p.length-1]==='>'){
-      const m=p.match(/^<font\b[^>]*\bcolor\s*=\s*["']?([#\w]+)["']?[^>]*>$/i);
-      if(m&&/^(#[0-9a-f]{3,8}|[a-z]+)$/i.test(m[1]))col=m[1];
-      else if(/^<\/font\s*>$/i.test(p))col=null;
-      out+='<span class="tg">'+esc(p)+'</span>';
-    }else out+=col?'<span style="color:'+col+'">'+esc(p)+'</span>':esc(p);
+    if(p[0]==='<'&&p[p.length-1]==='>')out+='<span class="tg">'+esc(p)+'</span>';
+    else{
+      const cl=k=>br[off+k]?null:(c[off+k]||null);
+      let k=0;
+      while(k<p.length){
+        const col=cl(k);let j=k+1;
+        while(j<p.length&&cl(j)===col)j++;
+        const t=esc(p.slice(k,j));
+        out+=col?'<span style="color:'+col+'">'+t+'</span>':t;
+        k=j;
+      }
+    }
+    off+=p.length;
   }
   return out;
 }
 function paint(blk){
-  const ta=blk.querySelector('textarea'),h=blk.querySelector('.se-hl'),d=dirOf(ta.value);
-  ta.dir=d;h.dir=d;h.innerHTML=hlt(ta.value);
+  const ta=blk.querySelector('textarea'),h=blk.querySelector('.se-hl'),r=splitColors(S.blocks[+blk.dataset.i].x),dr=dirOf(r.d);
+  ta.dir=dr;h.dir=dr;h.innerHTML=hlt(r.d,r.c);
 }
 const fit=t=>{t.style.height='auto';t.style.height=t.scrollHeight+'px';};
 const fitAll=()=>{if(!FS)list.querySelectorAll('textarea').forEach(fit);};
@@ -5461,7 +5474,7 @@ function render(){
     d.querySelector('b').textContent=b.n;
     {const sp=d.querySelector('span'),tp=b.t.replace(/,/g,'.').split(/\s*-->\s*/);
     for(const v of [tp[0],tp[1]]){if(v==null)continue;const e=document.createElement('i');e.textContent=v;sp.appendChild(e);}}
-    d.querySelector('textarea').value=b.x;
+    d.querySelector('textarea').value=splitColors(b.x).d;
     paint(d);fr.appendChild(d);
   });
   list.appendChild(fr);
@@ -5494,21 +5507,72 @@ function setText(i,v,push){
   v=nl(v);
   S.blocks[i].x=v;
   const blk=list.children[i],ta=blk.querySelector('textarea');
-  ta.value=v;paint(blk);if(!FS)fit(ta);
+  ta.value=splitColors(v).d;paint(blk);if(!FS)fit(ta);
   if(push)snap(i);
   save();
 }
 /* line-aware editing: colour / music note act on the caret's line or the selected lines only */
 /*PURE-START*/
-const STRIP=/<font\b[^>]*>|<\/font\s*>/gi;
-function explode(x){
-  let cur=null;
-  return x.split('\n').map(ln=>{
-    const st=cur;
-    for(const t of ln.match(/<font\b[^>]*>|<\/font\s*>/gi)||[])cur=/^<\/font/i.test(t)?null:t;
-    if(!ln.replace(/<[^>]*>/g,'').trim())return ln;
-    return (st||'')+ln+(cur?'</font>':'');
-  }).join('\n');
+/* the editor shows only the text: <font color> tags are hidden while editing and kept as a per-character colour map, then written back as tags (also on download).
+   {...} override codes such as {\an8} are never put inside a colour. */
+function braceMask(d){
+  const br=new Uint8Array(d.length);
+  d.replace(/\{[^{}]*\}/g,(m,o)=>{br.fill(1,o,o+m.length);return m;});
+  return br;
+}
+function splitColors(x){
+  let d='';const c=[],st=[];
+  const cur=()=>{for(let k=st.length-1;k>=0;k--)if(st[k].col)return st[k].col;return null;};
+  for(const p of x.split(/(<[^>]*>)/)){
+    if(!p)continue;
+    if(p[0]==='<'&&p[p.length-1]==='>'){
+      if(/^<font\b/i.test(p)){
+        const m=p.match(/^<font\s+color\s*=\s*["']?([#\w]+)["']?\s*>$/i);
+        if(m&&/^(#[0-9a-f]{3,8}|[a-z]+)$/i.test(m[1])){st.push({col:m[1]});continue;}
+        st.push({col:null,lit:1});
+      }else if(/^<\/font\s*>$/i.test(p)){
+        if(st.length){const t=st.pop();if(!t.lit)continue;}
+      }
+    }
+    const col=cur();
+    for(let k=0;k<p.length;k++)c.push(col);
+    d+=p;
+  }
+  return {d,c};
+}
+function joinColors(d,c){
+  const br=braceMask(d);
+  let out='',k=0;
+  while(k<d.length){
+    if(d[k]==='\n'||br[k]){out+=d[k];k++;continue;}
+    const col=c[k]||null;
+    let j=k+1;
+    while(j<d.length&&d[j]!=='\n'&&!br[j]&&(c[j]||null)===col)j++;
+    const run=d.slice(k,j);
+    out+=(col&&run.trim())?'<font color="'+col+'">'+run+'</font>':run;
+    k=j;
+  }
+  return out;
+}
+/* the textarea (plain text nd) changed: keep the colours of the untouched characters, new characters take the colour next to them */
+function reconcile(x,nd){
+  const o=splitColors(x),od=o.d,oc=o.c;
+  if(nd===od)return {x,d:od};
+  const m=Math.min(od.length,nd.length);
+  let p=0;while(p<m&&od.charCodeAt(p)===nd.charCodeAt(p))p++;
+  let q=0;while(q<m-p&&od.charCodeAt(od.length-1-q)===nd.charCodeAt(nd.length-1-q))q++;
+  const oe=od.length-q,ne=nd.length-q,br=braceMask(od);
+  const ok=k=>k>=0&&k<od.length&&od[k]!=='\n'&&!br[k];
+  const col=ok(p-1)?oc[p-1]:(ok(oe)?oc[oe]:null);
+  const c=oc.slice(0,p);
+  for(let k=p;k<ne;k++)c.push(col);
+  for(let k=oe;k<od.length;k++)c.push(oc[k]);
+  let nx=joinColors(nd,c);
+  if(/<\/?font/i.test(nd)){ /* font tags typed / pasted: fold them into the colour map */
+    const s=splitColors(nx);
+    if(s.d!==nd)return {x:joinColors(s.d,s.c),d:s.d};
+  }
+  return {x:nx,d:nd};
 }
 function lineInfo(x,s,e){
   if(s==null||e==null){s=e=x.length;}
@@ -5517,26 +5581,32 @@ function lineInfo(x,s,e){
   const e2=(e>s&&x[e-1]==='\n')?e-1:e;
   return {s,e,a:ln(s),b:ln(e2)};
 }
+/* s,e are offsets in the visible text */
 function colorText(x,s,e,color){
-  const i=lineInfo(x,s,e);
+  const {d,c}=splitColors(x),i=lineInfo(d,s,e);
   if(i.s<i.e&&i.a===i.b){
-    const mid=x.slice(i.s,i.e).replace(STRIP,'');
-    return x.slice(0,i.s)+(color?'<font color="'+color+'">'+mid+'</font>':mid)+x.slice(i.e);
+    for(let k=i.s;k<i.e;k++)c[k]=color;
+  }else{
+    let ln=0;
+    for(let k=0;k<d.length;k++){
+      if(d[k]==='\n'){ln++;continue;}
+      if(ln>=i.a&&ln<=i.b)c[k]=color;
+    }
   }
-  const L=explode(x).split('\n');
-  for(let k=i.a;k<=i.b;k++){
-    const t=L[k].replace(STRIP,'');
-    L[k]=color&&t.trim()?'<font color="'+color+'">'+t+'</font>':t;
-  }
-  return L.join('\n');
+  return joinColors(d,c);
+}
+function colorUpTo(x,e,color){
+  const {d,c}=splitColors(x);
+  for(let k=0;k<Math.min(e,d.length);k++)c[k]=color;
+  return joinColors(d,c);
 }
 function noteParts(l){
-  const lead=l.match(/^\s*(?:<[^>]+>\s*)*/)[0],rest=l.slice(lead.length);
+  const lead=l.match(/^\s*(?:(?:<[^>]+>|\{[^}]*\})\s*)*/)[0],rest=l.slice(lead.length);
   const trail=rest.match(/(?:\s*<\/[^>]+>)*\s*$/)[0];
   return {lead,core:rest.slice(0,rest.length-trail.length),trail};
 }
 function noteText(x,s,e){
-  const i=lineInfo(x,s,e),L=x.split('\n');
+  const i=lineInfo(splitColors(x).d,s,e),L=x.split('\n');
   let t=[];for(let k=i.a;k<=i.b;k++)t.push(k);
   const nz=t.filter(k=>L[k].replace(/<[^>]*>/g,'').trim());
   if(nz.length)t=nz;
@@ -5550,40 +5620,17 @@ function noteText(x,s,e){
   }
   return L.join('\n');
 }
-function colorUpTo(x,e,color,keep){
-  const M='\u0001';
-  const lo=x.lastIndexOf('<',e-1),gt=x.lastIndexOf('>',e-1);
-  if(lo>gt){const n=x.indexOf('>',e);e=n<0?x.length:n+1;}
-  if(e<=0)return keep?M+x:x;
-  if(e>=x.length)return colorText(x,0,x.length,color);
-  const b=x.slice(0,e).split('\n').length-1;
-  const L=explode(x.slice(0,e)+M+x.slice(e)).split('\n');
-  for(let k=0;k<b;k++){
-    const t=L[k].replace(STRIP,'');
-    L[k]=color&&t.trim()?'<font color="'+color+'">'+t+'</font>':t;
-  }
-  const ln=L[b],ix=ln.indexOf(M),head=ln.slice(0,ix),tail=ln.slice(ix+1);
-  let st=null;
-  for(const t of head.match(/<font\b[^>]*>|<\/font\s*>/gi)||[])st=/^<\/font/i.test(t)?null:t;
-  const hs=head.replace(STRIP,'');
-  const nh=color&&hs.trim()?'<font color="'+color+'">'+hs+'</font>':hs;
-  const nt=(st&&tail.replace(/<[^>]*>/g,'').trim())?st+tail:tail;
-  L[b]=nh+(keep?M:'')+nt;
-  return L.join('\n');
-}
 /*PURE-END*/
 function applyColor(i,color){
   const ta=list.children[i].querySelector('textarea'),x=S.blocks[i].x;
   const active=document.activeElement===ta&&!ta.readOnly;
   const s=ta.selectionStart,e=ta.selectionEnd;
-  if(active&&s===e){
-    const r=colorUpTo(x,e,color,true),c=r.indexOf('\u0001'),v=r.replace('\u0001','');
-    setText(i,v,true);
-    if(c>=0)try{ta.setSelectionRange(c,c);}catch(_){}
-    return;
-  }
-  if(s!==e&&active)setText(i,colorText(x,s,e,color),true);
-  else setText(i,colorText(x,0,x.length,color),true);
+  let v;
+  if(active&&s===e)v=colorUpTo(x,e,color);
+  else if(active)v=colorText(x,s,e,color);
+  else v=colorText(x,0,splitColors(x).d.length,color);
+  setText(i,v,true);
+  if(active)try{ta.setSelectionRange(s,e);}catch(_){}
 }
 function applyNote(i){
   const ta=list.children[i].querySelector('textarea');
@@ -5634,7 +5681,10 @@ if(VV){
 list.addEventListener('input',e=>{
   const ta=e.target;if(ta.tagName!=='TEXTAREA')return;
   const blk=ta.closest('.se-blk'),i=+blk.dataset.i;
-  S.blocks[i].x=ta.value;paint(blk);if(!FS)fit(ta);
+  {const r=reconcile(S.blocks[i].x,ta.value);
+    S.blocks[i].x=r.x;
+    if(r.d!==ta.value){const cp=ta.selectionStart,sh=ta.value.length-r.d.length;ta.value=r.d;try{const q=Math.max(0,Math.min(r.d.length,cp-sh));ta.setSelectionRange(q,q);}catch(_){}}}
+  paint(blk);if(!FS)fit(ta);
   clearTimeout(snapT[i]);snapT[i]=setTimeout(()=>snap(i),500);
   requestAnimationFrame(ensure);
   save();
