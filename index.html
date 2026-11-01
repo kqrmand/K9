@@ -2572,6 +2572,10 @@
       </div>
       <p class="adm-state" id="admState"></p>
     </div>
+    <div class="card" id="admVis" style="grid-column:1/-1;">
+      <div class="adm-top"><h2>لۆگی سەردانەکان 👥 <span class="badge" id="admVisCount">٠</span></h2></div>
+      <div id="admVisList" class="adm-state" style="margin-top:12px;"></div>
+    </div>
   </section>
 
   <section class="panel" id="panel-player">
@@ -6533,7 +6537,7 @@ all();
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, setDoc, serverTimestamp, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, setDoc, serverTimestamp, collection, getDocs, getCountFromServer, query, orderBy, limit, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD84IM9RTcGD2_Mc__0qQfah0LrKuZ8QY0",
@@ -6631,8 +6635,63 @@ onAuthStateChanged(auth, user => {
   authReady = true;
   if (user && !isAdminUser && location.hash === "#admin"){ errEl.textContent = "ئەم ئەکاونتە ئەدمین نییە. UID: " + user.uid; }
   renderAdmin();
+  if (!visInit){ visInit = true; if (!isAdminUser && location.hash !== "#admin") visLog(); }
+  if (isAdminUser) loadVisitors();
   if (isAdminUser && location.hash === "#admin" && !admAutoOpened){ admAutoOpened = true; gotoTab("admin"); }
 });
+
+/* ---- لۆگی سەردانەکان: هەر کردنەوەیەکی لاپەڕە تۆمار دەکرێت (IP + جۆری ئامێر)، کەس ناپرسرێت ---- */
+function devGuess(ua){
+  let m;
+  if ((m = /iPhone|iPad|iPod/.exec(ua))) return m[0];
+  if ((m = /Android[^;)]*;\s*([^;)]+?)(?:\sBuild|\))/.exec(ua)) && m[1] && m[1] !== "K") return m[1].trim();
+  if (/Android/.test(ua)) return "Android";
+  if (/Windows/.test(ua)) return "Windows";
+  if (/Macintosh|Mac OS X/.test(ua)) return "Mac";
+  if (/Linux/.test(ua)) return "Linux";
+  return "نەناسراو";
+}
+async function visLog(){
+  try {
+    const ua = navigator.userAgent || "";
+    let device = devGuess(ua);
+    try {
+      const h = navigator.userAgentData && await navigator.userAgentData.getHighEntropyValues(["model"]);
+      if (h && h.model) device = h.model;
+    } catch (_) {}
+    let ip = "";
+    try {
+      const c = new AbortController(), t = setTimeout(() => c.abort(), 4000);
+      const r = await fetch("https://api.ipify.org?format=json", { signal: c.signal });
+      clearTimeout(t); ip = String((await r.json()).ip || "").slice(0, 60);
+    } catch (_) {}
+    await addDoc(collection(db, "visits"), { ip: ip, device: String(device).slice(0, 60), mobile: /Mobi|Android|iPhone|iPad/i.test(ua), t: serverTimestamp() });
+  } catch (_) {}
+}
+let visInit = false;
+async function loadVisitors(){
+  if (!isAdminUser) return;
+  const list = $("admVisList");
+  try {
+    const snap = await getDocs(query(collection(db, "visits"), orderBy("t", "desc"), limit(200)));
+    let total = snap.size;
+    try { total = (await getCountFromServer(collection(db, "visits"))).data().count; } catch (_) {}
+    $("admVisCount").textContent = kuNum(total);
+    list.innerHTML = "";
+    if (!snap.size){ list.textContent = "هێشتا هیچ سەردانێک نییە."; return; }
+    const frag = document.createDocumentFragment();
+    snap.docs.forEach(d => {
+      const v = d.data(), row = document.createElement("div");
+      row.className = "adm-row"; row.style.cssText = "padding:6px 0;border-top:1px solid var(--border);";
+      const a = document.createElement("span"); a.className = "adm-name"; a.dir = "ltr";
+      a.textContent = (v.device || "?") + (v.ip ? " — " + v.ip : "");
+      const b = document.createElement("span"); b.className = "adm-meta";
+      b.textContent = v.t && v.t.toDate ? v.t.toDate().toLocaleString() : "";
+      row.append(a, b); frag.appendChild(row);
+    });
+    list.appendChild(frag);
+  } catch (e){ list.textContent = "هەڵە: " + e.message; }
+}
 
 const splitFile = f => { const m = /^\[([^\]]*)\]\s*([\s\S]*)$/.exec(f || ""); return m ? { tab: m[1], name: m[2] } : { tab: "", name: f || "" }; };
 const sizeOf = s => s.length < 1024 ? s.length + " B" : Math.round(s.length / 1024) + " KB";
@@ -6721,6 +6780,7 @@ function renderCells(late){
 async function loadAdmin(){
   if (admLoading || !isAdminUser) return;
   admLoading = true;
+  loadVisitors();
   if (!admItems.length) setAdmState("چاوەڕێبە…");
   try {
     const snap = await getDocs(query(collection(db, "translations"), orderBy("t", "desc"), limit(100)));
