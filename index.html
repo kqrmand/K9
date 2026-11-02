@@ -946,7 +946,7 @@
   .se-bar{flex:none;display:flex;align-items:center;gap:6px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding:2px 2px 10px;}
   .se-bar::-webkit-scrollbar{display:none;}
   .se-bar>*{flex:none;}
-  .se-name{flex:1 1 0!important;min-width:0;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:ltr;text-align:left;}
+  .se-name{flex:1 1 0!important;min-width:0;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;direction:ltr;text-align:right;}
   #seDl{transition:background .25s,transform .25s,box-shadow .25s;}
   #seDl.se-saved{background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft);transform:scale(1.07);}
   #seDl.se-err{background:var(--danger);transform:scale(1.07);}
@@ -990,7 +990,7 @@
   .se-dots{flex:none;align-self:flex-start;width:30px;height:30px;border:1px solid var(--border);background:var(--surface-2);border-radius:var(--r-sm);font-size:16px;line-height:1;color:var(--text-dim);cursor:pointer;transition:.15s;}
   .se-dots:hover,.se-dots:active{background:var(--accent-soft);color:var(--accent);border-color:var(--accent);}
   @media(max-width:560px){
-    .se-blk{display:grid;grid-template-columns:1fr;grid-template-areas:"meta" "tw";gap:6px;padding:6px 8px;border-radius:var(--r-lg);}
+    .se-blk{display:grid;grid-template-columns:1fr auto;grid-template-areas:"meta dots" "tw tw";gap:6px;padding:6px 8px;border-radius:var(--r-lg);}
     .se-meta{grid-area:meta;width:auto;flex-direction:row;align-items:center;gap:6px;}
     .se-meta span{flex-direction:row;width:auto;gap:4px;}
     .se-meta i{padding:1px 4px;font-size:9px;}
@@ -1010,11 +1010,7 @@
   .se-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;}
   .se-chips span{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-chip);padding:5px 12px;font-size:12px;color:var(--text-dim);}
   .se-bar{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--shadow-card);padding:10px 12px;margin-bottom:12px;gap:8px;}
-  /* file name: faint, behind the buttons, from its beginning - never blocks or hides the tools */
-  .se-bar{position:relative;}
-  #panel-seditor .se-bar .se-name{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);flex:none!important;min-width:0;display:block;padding:0 14px;font-size:18px;font-weight:800;line-height:1.4;opacity:.14;color:var(--text);pointer-events:none;z-index:0;direction:ltr;text-align:left;unicode-bidi:plaintext;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;user-select:none;}
-  #panel-seditor .se-bar .se-go{position:relative;z-index:1;margin-inline-start:auto;}
-  #panel-seditor .se-bar .se-tools{position:relative;z-index:1;}
+  .se-name::before{content:"📄 ";}
   #panel-seditor .se-bar .btn{border-radius:var(--r-sm);padding:8px 13px;font-size:13px;font-weight:600;background:var(--surface-2);border:1px solid var(--border);color:var(--text);box-shadow:none;}
   #panel-seditor .se-bar .btn:hover{border-color:var(--accent);color:var(--accent);background:var(--surface-2);}
   #panel-seditor .se-bar .btn:active{transform:scale(.96);}
@@ -1026,7 +1022,7 @@
   #panel-seditor .se-go input{width:58px;padding:8px 4px 8px 8px;font-weight:600;}
   .se-gob{width:34px;font-size:15px;background:linear-gradient(135deg,var(--accent-lt),var(--accent));}
   .se-gob:active{filter:brightness(.9);}
-  .se-list{padding:4px 17px 70vh 4px;}
+  .se-list{padding:4px 28px 70vh 4px;}
   /* ---- solo mode: one block opened alone + nav row underneath ---- */
   .se-nav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:60;gap:8px;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--border);box-shadow:0 -8px 22px -12px rgba(0,0,0,.35);}
   .se-nb{flex:1 1 0;min-width:0;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:var(--r-lg);padding:12px 6px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:var(--shadow-card);-webkit-tap-highlight-color:transparent;transition:.15s;}
@@ -2173,7 +2169,6 @@
             <div class="se-name" id="seName"></div>
             <span class="se-go"><input type="number" id="seGoIn" inputmode="numeric" enterkeyhint="go" min="1" placeholder="بلۆک" aria-label="ژمارەی بلۆک"><button class="se-gob" id="seGoBtn" type="button" aria-label="بڕۆ">↵</button></span>
             <div class="se-tools" id="seTools">
-            <button class="btn btn-ghost se-ic" id="seBm" type="button" title="فرمانەکانی بلۆک" aria-label="فرمانەکانی بلۆک"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M12 8.5v.01M12 12v.01M12 15.5v.01" stroke-width="2.6"/></svg></button>
             <button class="btn btn-ghost se-ic" id="seRp" type="button" title="گۆڕینی وشە (Replace)" aria-label="گۆڕینی وشە"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-3-3m3 3-3 3"/><path d="M20 16H7l3-3m-3 3 3 3"/></svg></button>
             <button class="btn btn-ghost se-ic" id="seSp" type="button" title="لابردنی سپەیسی زیادە" aria-label="لابردنی سپەیسی زیادە"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h6M6.5 9l3 3-3 3"/><path d="M21 12h-6M17.5 9l-3 3 3 3"/></svg></button>
             <button class="btn btn-ghost se-ic" id="seRle" type="button" title="زیادکردنی U+202B (ڕێگری لە تێکچوونی خاڵبەندی)" aria-label="زیادکردنی U+202B"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3v10M11 3v10M15 3H9.5a3.5 3.5 0 0 0 0 7H11"/><path d="M20 18H5M8 15l-3 3 3 3"/></svg></button>
@@ -5492,7 +5487,7 @@ function render(){
   const fr=document.createDocumentFragment();
   S.blocks.forEach((b,i)=>{
     const d=document.createElement('div');d.className='se-blk';d.dataset.i=i;
-    d.innerHTML='<div class="se-meta"><b></b><span></span></div><div class="se-tw"><div class="se-hl" aria-hidden="true"></div><textarea class="se-ta" dir="rtl" spellcheck="false" rows="2" readonly></textarea></div>';
+    d.innerHTML='<div class="se-meta"><b></b><span></span></div><div class="se-tw"><div class="se-hl" aria-hidden="true"></div><textarea class="se-ta" dir="rtl" spellcheck="false" rows="2" readonly></textarea></div><button class="se-dots" type="button" aria-label="menu">⋮</button>';
     d.querySelector('b').textContent=b.n;
     {const sp=d.querySelector('span'),tp=b.t.replace(/,/g,'.').split(/\s*-->\s*/);
     for(const v of [tp[0],tp[1]]){if(v==null)continue;const e=document.createElement('i');e.textContent=v;sp.appendChild(e);}}
@@ -5722,6 +5717,7 @@ list.addEventListener('focusout',e=>{
     if(!(a&&a.tagName==='TEXTAREA'&&list.contains(a)&&!a.readOnly))root.classList.remove('se-kb');},150);
 });
 list.addEventListener('scroll',()=>{closeMenu();if(S&&restored)save(false,true);},{passive:true});
+list.addEventListener('mousedown',e=>{if(e.target.closest('.se-dots'))e.preventDefault();});
 menu.addEventListener('mousedown',e=>e.preventDefault());
 addEventListener('resize',closeMenu);
 
@@ -5807,6 +5803,13 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&solo&&visible())exi
 /* single tap/click opens the block alone + keyboard; double tap/click selects only the tapped word */
 let lastTap=0,lastTa=null;
 list.addEventListener('click',e=>{
+  const bt=e.target.closest('.se-dots');
+  if(bt){
+    e.stopPropagation();
+    const i=+bt.closest('.se-blk').dataset.i;
+    if(menu.classList.contains('open')&&mi===i)closeMenu();else openMenu(i,bt);
+    return;
+  }
   const blk=e.target.closest('.se-blk');if(!blk)return;
   const was=solo;
   if(!was)enterSolo(+blk.dataset.i);
@@ -5870,15 +5873,6 @@ function openMenu(i,btn){
   requestAnimationFrame(()=>menu.classList.add('open'));
 }
 function closeMenu(){menu.classList.remove('open');}
-/* block commands live in the toolbar strip and act on the current block */
-{const bm=$('seBm');
- bm.addEventListener('mousedown',e=>e.preventDefault());
- bm.addEventListener('click',e=>{
-  e.stopPropagation();
-  if(!S||!S.blocks.length)return;
-  const i=Math.min(Math.max(0,S.cur|0),S.blocks.length-1);
-  if(menu.classList.contains('open')&&mi===i)closeMenu();else openMenu(i,bm);
- });}
 document.addEventListener('click',e=>{if(!menu.contains(e.target))closeMenu();});
 async function copy(t){
   try{await navigator.clipboard.writeText(t);}
@@ -6083,15 +6077,8 @@ function addRle(x){
   return x.split('\n').map(l=>{
     l=l.replace(/[\u202B\u202C]/g,'');
     if(!l.trim())return l;
-    /* {\anN} found anywhere in the line (e.g. at the end) is moved to the very start */
-    const an=l.match(/\{\\an\d\}/);
-    if(an)l=l.replace(/\{\\an\d\}/g,'');
-    const lead0=l.match(/^(?:\{[^{}]*\})*/)[0]; /* other leading {..} codes stay first too */
-    const lead=(an?an[0]:'')+lead0;
-    let body=l.slice(lead0.length);
-    if(an)body=body.replace(/\s+$/,'');
-    if(!body.trim())return lead;
-    return lead+RLE+body+PDF;
+    const lead=l.match(/^(?:\{[^{}]*\})*/)[0]; /* {\an8} must stay first */
+    return lead+RLE+l.slice(lead.length)+PDF;
   }).join('\n');
 }
 function bulk(fn){
