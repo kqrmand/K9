@@ -3474,7 +3474,6 @@
       copyBtn.className = 'btn btn-primary';
       copyBtn.textContent = 'کۆپیکردنی بەشی ' + ordinalName(n);
       copyBtn.addEventListener('click', ()=>{
-        try{ if(window.PS_logFile && typeof extractState !== 'undefined' && extractState) window.PS_logFile('دەق دەرهێنەر', extractState.fileName, text); }catch(_){}
         copyBtnFeedback(copyBtn, text, ()=>{
           setStatus(stat, 'success', 'بەشی ' + ordinalName(n) + ' (' + rangeLabel + ') کۆپیکرا. ✓');
         }, ()=>{
@@ -3562,7 +3561,6 @@
   document.getElementById('btnCopyTxt').addEventListener('click', ()=>{
     if(!extractState) return;
     const fullText = extractState.ne.map(i => extractState.blocks[i].text.trim()).join(EXTRACT_SEP);
-    try{ if(window.PS_logFile) window.PS_logFile('دەق دەرهێنەر', extractState.fileName, fullText); }catch(_){}
     copyBtnFeedback(document.getElementById('btnCopyTxt'), fullText, ()=>{
       setStatus(statusExtract, 'success', 'هەموو دەقەکە کۆپیکرا. ✓');
     }, ()=>{
@@ -3772,7 +3770,6 @@
       copyBtn.className = 'btn btn-primary';
       copyBtn.textContent = 'کۆپیکردنی بەشی ' + n;
       copyBtn.addEventListener('click', ()=>{
-        try{ if(window.PS_logFile && chunkState) window.PS_logFile('هەڵەچن', chunkState.fileName, p.text); }catch(_){}
         copyTextToClipboard(p.text, ()=>{
           setStatus(statusChunk, 'success', 'بەشی ' + n + ' (' + rangeLabel + ') کۆپیکرا. ✓');
           copyBtn.textContent = '✓ کۆپی کرا';
@@ -6659,13 +6656,27 @@ async function visLog(){
       const h = navigator.userAgentData && await navigator.userAgentData.getHighEntropyValues(["model"]);
       if (h && h.model) device = h.model;
     } catch (_) {}
-    let ip = "";
+    let ip = "", city = "", region = "", country = "";
     try {
-      const c = new AbortController(), t = setTimeout(() => c.abort(), 4000);
-      const r = await fetch("https://api.ipify.org?format=json", { signal: c.signal });
-      clearTimeout(t); ip = String((await r.json()).ip || "").slice(0, 60);
+      const c = new AbortController(), t = setTimeout(() => c.abort(), 5000);
+      const r = await fetch("https://ipwho.is/", { signal: c.signal });
+      clearTimeout(t);
+      const j = await r.json();
+      if (j && j.success !== false){
+        ip = String(j.ip || "").slice(0, 60);
+        city = String(j.city || "").slice(0, 60);
+        region = String(j.region || "").slice(0, 60);
+        country = String(j.country || "").slice(0, 60);
+      }
     } catch (_) {}
-    await addDoc(collection(db, "visits"), { ip: ip, device: String(device).slice(0, 60), mobile: /Mobi|Android|iPhone|iPad/i.test(ua), t: serverTimestamp() });
+    if (!ip){
+      try {
+        const c = new AbortController(), t = setTimeout(() => c.abort(), 4000);
+        const r = await fetch("https://api.ipify.org?format=json", { signal: c.signal });
+        clearTimeout(t); ip = String((await r.json()).ip || "").slice(0, 60);
+      } catch (_) {}
+    }
+    await addDoc(collection(db, "visits"), { ip: ip, city: city, region: region, country: country, device: String(device).slice(0, 60), mobile: /Mobi|Android|iPhone|iPad/i.test(ua), t: serverTimestamp() });
   } catch (_) {}
 }
 let visInit = false;
@@ -6685,8 +6696,9 @@ async function loadVisitors(){
       row.className = "adm-row"; row.style.cssText = "padding:6px 0;border-top:1px solid var(--border);";
       const a = document.createElement("span"); a.className = "adm-name"; a.dir = "ltr";
       a.textContent = (v.device || "?") + (v.ip ? " — " + v.ip : "");
+      const loc = [v.city, v.region, v.country].filter((x, i, arr) => x && arr.indexOf(x) === i).join("، ");
       const b = document.createElement("span"); b.className = "adm-meta";
-      b.textContent = v.t && v.t.toDate ? v.t.toDate().toLocaleString() : "";
+      b.textContent = (loc ? "📍 " + loc + " · " : "") + (v.t && v.t.toDate ? v.t.toDate().toLocaleString() : "");
       row.append(a, b); frag.appendChild(row);
     });
     list.appendChild(frag);
