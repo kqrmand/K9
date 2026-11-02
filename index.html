@@ -985,6 +985,7 @@
   #panel-seditor .se-tw .se-ta:focus{border:0;box-shadow:none;outline:0;}
   #panel-seditor .se-tw .se-ta::selection{background:rgba(var(--accent-rgb),.45);color:transparent;}
   #panel-seditor .se-hl{position:absolute;inset:0;pointer-events:none;overflow:hidden;color:var(--on-accent);}
+  #panel-seditor .se-tw .se-ta,#panel-seditor .se-hl{direction:rtl;text-align:right;unicode-bidi:isolate;}
   .se-hl .tg{opacity:.4;}
   .se-dots{flex:none;align-self:flex-start;width:30px;height:30px;border:1px solid var(--border);background:var(--surface-2);border-radius:var(--r-sm);font-size:16px;line-height:1;color:var(--text-dim);cursor:pointer;transition:.15s;}
   .se-dots:hover,.se-dots:active{background:var(--accent-soft);color:var(--accent);border-color:var(--accent);}
@@ -5426,8 +5427,8 @@ function save(now,quiet){
 const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const RTL=/[\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/;
 function dirOf(t){
-  const m=t.replace(/<[^>]*>/g,'').match(/[A-Za-z\u00C0-\u024F\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/);
-  return m&&!RTL.test(m[0])?'ltr':'rtl';
+  /* فایلەکان هەموو کوردین: هەمیشە RTL، تا کەوانەکان ( ) هەرگیز پێچەوانە نەبن */
+  return 'rtl';
 }
 function braceMask(d){
   const br=new Uint8Array(d.length);
@@ -5471,7 +5472,7 @@ function render(){
   const fr=document.createDocumentFragment();
   S.blocks.forEach((b,i)=>{
     const d=document.createElement('div');d.className='se-blk';d.dataset.i=i;
-    d.innerHTML='<div class="se-meta"><b></b><span></span></div><div class="se-tw"><div class="se-hl" aria-hidden="true"></div><textarea class="se-ta" spellcheck="false" rows="2" readonly></textarea></div><button class="se-dots" type="button" aria-label="menu">⋮</button>';
+    d.innerHTML='<div class="se-meta"><b></b><span></span></div><div class="se-tw"><div class="se-hl" aria-hidden="true"></div><textarea class="se-ta" dir="rtl" spellcheck="false" rows="2" readonly></textarea></div><button class="se-dots" type="button" aria-label="menu">⋮</button>';
     d.querySelector('b').textContent=b.n;
     {const sp=d.querySelector('span'),tp=b.t.replace(/,/g,'.').split(/\s*-->\s*/);
     for(const v of [tp[0],tp[1]]){if(v==null)continue;const e=document.createElement('i');e.textContent=v;sp.appendChild(e);}}
