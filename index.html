@@ -1058,6 +1058,9 @@
   /* scrollable icon strip */
   #panel-seditor .se-bar .se-name{flex:1 1 44px!important;min-width:44px;}
   #panel-seditor .se-bar .se-tools{flex:0 1 auto;min-width:0;display:flex;align-items:center;gap:8px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;touch-action:pan-x;padding:6px;margin:-6px;}
+  #panel-seditor .se-bar .se-tools .se-go{height:34px;flex:none;}
+  #panel-seditor .se-bar .se-tools .se-go input{height:100%;padding-top:0;padding-bottom:0;box-sizing:border-box;}
+  #panel-seditor .se-bar .se-tools .se-go .se-gob{height:100%;}
   .se-tools::-webkit-scrollbar{display:none;}
   .se-tools>*{flex:none;}
   #seToast{position:absolute;top:70px;left:50%;transform:translate(-50%,-6px);z-index:70;max-width:90%;background:var(--surface);color:var(--text);border:1px solid var(--accent);border-radius:var(--r-lg);box-shadow:var(--shadow-pop);padding:8px 14px;font-size:12.5px;font-weight:600;text-align:center;opacity:0;pointer-events:none;transition:opacity .18s,transform .18s;}
@@ -2174,12 +2177,13 @@
         <div class="se-app se-hide" id="seApp">
           <div class="se-bar">
             <div class="se-name" id="seName"></div>
-            <span class="se-go"><input type="number" id="seGoIn" inputmode="numeric" enterkeyhint="go" min="1" placeholder="بلۆک" aria-label="ژمارەی بلۆک"><button class="se-gob" id="seGoBtn" type="button" aria-label="بڕۆ">↵</button></span>
             <div class="se-tools" id="seTools">
+            <span class="se-go"><input type="number" id="seGoIn" inputmode="numeric" enterkeyhint="go" min="1" placeholder="بلۆک" aria-label="ژمارەی بلۆک"><button class="se-gob" id="seGoBtn" type="button" aria-label="بڕۆ">↵</button></span>
             <button class="btn btn-ghost se-ic" id="seRp" type="button" title="گۆڕینی وشە (Replace)" aria-label="گۆڕینی وشە"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-3-3m3 3-3 3"/><path d="M20 16H7l3-3m-3 3 3 3"/></svg></button>
             <button class="btn btn-ghost se-ic" id="seSp" type="button" title="لابردنی سپەیسی زیادە" aria-label="لابردنی سپەیسی زیادە"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h6M6.5 9l3 3-3 3"/><path d="M21 12h-6M17.5 9l-3 3 3 3"/></svg></button>
             <button class="btn btn-ghost se-ic" id="seRle" type="button" title="زیادکردنی U+202B (ڕێگری لە تێکچوونی خاڵبەندی)" aria-label="زیادکردنی U+202B"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3v10M11 3v10M15 3H9.5a3.5 3.5 0 0 0 0 7H11"/><path d="M20 18H5M8 15l-3 3 3 3"/></svg></button>
             <button class="btn btn-ghost se-ic" id="seFs" type="button" title="شاشەی تەواو" aria-label="شاشەی تەواو"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+            <button class="btn btn-ghost se-ic" id="seCp" type="button" title="کۆپیکردنی فایل" aria-label="کۆپیکردنی فایل"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button>
             <button class="btn btn-download se-ic" id="seDl" type="button" title="دابەزاندن" aria-label="دابەزاندن"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 19h14"/></svg></button>
             <button class="btn btn-ghost se-ic" id="seNew" type="button" title="فایلی نوێ" aria-label="فایلی نوێ"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7z"/><path d="M14 3v4h4M12 11v6m-3-3h6"/></svg></button>
             </div>
@@ -5978,6 +5982,11 @@ $('seDl').onclick=()=>{
   const bl=new Blob(['\uFEFF'+nl(build()).replace(/\n/g,'\r\n')],{type:'text/plain;charset=utf-8'});
   const a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download=S.name;a.click();
   setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+};
+$('seCp').onclick=async()=>{
+  if(!S)return;
+  try{await copy(nl(build()));say('✓ فایلەکە کۆپی کرا');}
+  catch(_){say('کۆپیکردن سەرکەوتوو نەبوو');}
 };
 /* find & replace: list every match, tick the ones to change (text only - times are never touched) */
 const repBox=$('seRep'),rF=$('seRepFind'),rW=$('seRepWith'),rI=$('seRepInfo'),rBtn=$('seRp'),rL=$('seRepList'),rGo=$('seRepGo');
