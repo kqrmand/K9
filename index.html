@@ -1026,7 +1026,10 @@
   #panel-seditor .se-go input{width:58px;padding:8px 4px 8px 8px;font-weight:600;}
   .se-gob{width:34px;font-size:15px;background:linear-gradient(135deg,var(--accent-lt),var(--accent));}
   .se-gob:active{filter:brightness(.9);}
-  .se-list{padding:4px 28px 70vh 4px;}
+  .se-list{padding:4px 14px 70vh 4px;}
+  .se-sb{width:16px;}
+  .se-thumb::before{right:3px;}
+  .se-thumb.drag::before{right:2px;}
   /* ---- solo mode: one block opened alone + nav row underneath ---- */
   .se-nav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:60;gap:8px;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:var(--surface);border-top:1px solid var(--border);box-shadow:0 -8px 22px -12px rgba(0,0,0,.35);}
   .se-nb{flex:1 1 0;min-width:0;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:var(--r-lg);padding:12px 6px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;box-shadow:var(--shadow-card);-webkit-tap-highlight-color:transparent;transition:.15s;}
