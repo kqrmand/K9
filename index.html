@@ -5847,6 +5847,8 @@ function idxAt(blk,x,y){
 function lpSelect(blk,x,y){
   const ta=blk.querySelector('textarea');
   const p0=idxAt(blk,x,y);if(p0<0)return;
+  /* pressing INSIDE an existing selection = the user wants to move the whole selection: leave it untouched */
+  if(document.activeElement===ta&&ta.selectionStart!==ta.selectionEnd&&p0>=ta.selectionStart&&p0<=ta.selectionEnd)return;
   const v=ta.value,isW=c=>/[\p{L}\p{M}\p{N}_\u200c\u200d\ud800-\udfff]/u.test(c);
   let p=p0;
   if(p>=v.length||!isW(v.charAt(p)))p=Math.max(0,p-1);
@@ -6121,31 +6123,51 @@ rF.addEventListener('input',repScan);
 /* toolbar tools: remove extra spaces / add U+202B..U+202C to every line (times are never touched) */
 const toast=$('seToast');let toastT;
 function say(msg){toast.textContent=msg;toast.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>toast.classList.remove('show'),2400);}
-const TRANSP=/(<[^>]*>|\{[^{}]*\}|[\u200E\u200F\u202A-\u202E\u2066-\u2069])/; /* tags, {..} codes and bidi marks are skipped over */
+const TRANSP=/(<[^>]*>|\{[^{}]*\}|[\u200E\u200F\u202A-\u202E\u2066-\u2069\u061C])/; /* tags, {..} codes and bidi marks are skipped over */
+/* every kind of space (normal, NBSP, thin, ideographic ...) is one "space"; zero-width junk is dropped */
+const SPC='[ \\t\\u00A0\\u1680\\u2000-\\u200A\\u202F\\u205F\\u3000]';
+const SPC_RUN=new RegExp(SPC+'+','g');
+const SPC_BEFORE_PUNCT=new RegExp(SPC+'+(?=[?\\u061F!\\u060C,\\u061B;:]|\\.(?!\\.))','g'); /* no gap before ? ؟ ! ، , ؛ ; : . (but "..." is left alone) */
 function squeeze(line){
+  line=line.replace(/[\u200B\uFEFF]/g,'');
   const parts=line.split(TRANSP);
   let prev=true,last=-1;
   for(let k=0;k<parts.length;k+=2){
-    let t=parts[k].replace(/[ \t]+/g,' ');
+    let t=parts[k].replace(SPC_RUN,' ').replace(SPC_BEFORE_PUNCT,'');
     if(prev&&t[0]===' ')t=t.slice(1);
     parts[k]=t;
     if(t){prev=t[t.length-1]===' ';last=k;}
   }
   if(last>=0&&parts[last][parts[last].length-1]===' ')parts[last]=parts[last].slice(0,-1);
-  return parts.join('');
+  /* a space left at the very start of a text piece that follows a tag / code, right before punctuation */
+  let out=parts.join('');
+  out=out.replace(new RegExp(SPC+'+(?=[?\\u061F!\\u060C,\\u061B;:])','g'),'');
+  return out;
 }
-/* no gaps just inside quotes / brackets:  " word "  ->  "word"   ( word )  ->  (word)   (tags and {..} codes are left alone) */
+/* no gaps just inside quotes / brackets:  " word "  ->  "word"   ( word )  ->  (word)
+   Quote marks " “ ” « » are paired by ORDER (1st = opening, 2nd = closing), not by their shape,
+   because in Kurdish/Arabic typing the glyphs often come in either direction.
+   Tags and {..} codes are left alone. */
 function fixQuotes(line){
   if(!/["“”«»()\[\]]/.test(line))return line;
   const keep=[];
   let t=line.replace(/<[^>]*>|\{[^{}]*\}/g,m=>{keep.push(m);return '\uE000'+(keep.length-1)+'\uE001';});
-  const total=(t.match(/"/g)||[]).length;let n=0;
-  t=t.replace(/([ \t\u00A0]*)"([ \t\u00A0]*)/g,(m,a,b)=>{
+  const QRE=new RegExp('('+SPC+'*)(["“”«»])('+SPC+'*)','g');
+  const total=(t.match(/["“”«»]/g)||[]).length;let n=0;
+  const WORD=/[\p{L}\p{N}\p{M}]/u;
+  t=t.replace(QRE,(m,a,q,b,off,str)=>{
     n++;
     if(total%2&&n===total)return m; /* a lone quote (dialogue continues) is not touched */
-    return n%2?a+'"':'"'+b; /* opening: trim after it, closing: trim before it */
+    if(n%2){ /* opening: trim after it; if it is glued to a word before it, put one space there */
+      const before=off>0?str[off-1]:'';
+      return (a===''&&before&&WORD.test(before)?' ':a)+q;
+    }
+    /* closing: trim before it; if it is glued to a word after it, put one space there */
+    const after=str[off+m.length]||'';
+    return q+(b===''&&after&&WORD.test(after)?' ':b);
   });
-  t=t.replace(/([“«(\[])[ \t\u00A0]+/g,'$1').replace(/[ \t\u00A0]+([”»)\]])/g,'$1');
+  /* brackets: "(" always opens and ")" always closes, whatever the text direction */
+  t=t.replace(new RegExp('([(\\[])'+SPC+'+','g'),'$1').replace(new RegExp(SPC+'+([)\\]])','g'),'$1');
   return t.replace(/\uE000(\d+)\uE001/g,(m,i)=>keep[+i]);
 }
 const fixSpaces=x=>x.split('\n').map(l=>fixQuotes(squeeze(l))).filter(l=>l!=='').join('\n');
