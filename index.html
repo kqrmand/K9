@@ -2182,6 +2182,7 @@
             <button class="btn btn-ghost se-ic" id="seRp" type="button" title="گۆڕینی وشە (Replace)" aria-label="گۆڕینی وشە"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-3-3m3 3-3 3"/><path d="M20 16H7l3-3m-3 3 3 3"/></svg></button>
             <button class="btn btn-ghost se-ic" id="seSp" type="button" title="لابردنی سپەیسی زیادە" aria-label="لابردنی سپەیسی زیادە"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h6M6.5 9l3 3-3 3"/><path d="M21 12h-6M17.5 9l-3 3 3 3"/></svg></button>
             <button class="btn btn-ghost se-ic" id="seRle" type="button" title="زیادکردنی U+202B (ڕێگری لە تێکچوونی خاڵبەندی)" aria-label="زیادکردنی U+202B"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3v10M11 3v10M15 3H9.5a3.5 3.5 0 0 0 0 7H11"/><path d="M20 18H5M8 15l-3 3 3 3"/></svg></button>
+            <button class="btn btn-ghost se-ic" id="seAn" type="button" title="ڕێکخستنی هەموو {\an8}ەکان (دێڕی تەنیا + U+202B)" aria-label="ڕێکخستنی {\an8}">8↑</button>
             <button class="btn btn-ghost se-ic" id="seFs" type="button" title="شاشەی تەواو" aria-label="شاشەی تەواو"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
             <button class="btn btn-ghost se-ic" id="seCp" type="button" title="کۆپیکردنی فایل" aria-label="کۆپیکردنی فایل"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button>
             <button class="btn btn-download se-ic" id="seDl" type="button" title="دابەزاندن" aria-label="دابەزاندن"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 19h14"/></svg></button>
@@ -3936,7 +3937,12 @@
   const statusRtl = document.getElementById('statusRtl');
 
   function wrapWithRLE(text){
-    return text.split('\n').map(line => RLE + line.replace(/[\u202B\u202C]/g, '') + PDF).join('\n');
+    return text.split('\n').map(line => {
+      const lead = line.match(/^(?:\{[^{}]*\})*/)[0];
+      const rest = line.slice(lead.length).replace(/[\u202B\u202C]/g, '');
+      if(!rest.trim()) return lead;
+      return lead + RLE + rest + PDF;
+    }).join('\n');
   }
 
   wireDrop(document.getElementById('dropR'), document.getElementById('fileR'), document.getElementById('filenameR'), (content, name)=>{
@@ -5555,7 +5561,7 @@ function splitColors(x){
   for(let p of x.split(/(<[^>]*>)/)){
     if(!p)continue;
     if(p.indexOf('{')>=0){
-      const re=/\{\\an8\}/gi,m=re.exec(p);
+      const re=/\{\\an8\}(?:[\u202B\u202C\u200F]*\n)?/gi,m=re.exec(p);
       if(m){
         if(an<0)an=(d.match(/\n/g)||[]).length+(p.slice(0,m.index).match(/\n/g)||[]).length;
         p=p.replace(re,'');
@@ -5578,6 +5584,28 @@ function splitColors(x){
   c.an=an;
   return {d,c};
 }
+/* when {\an8} is on a line, that line also gets U+202B ... U+202C (invisible) so the punctuation does not flip; if it is already there nothing is added. {\an8} itself is always written first. */
+function ensureRleAn(d,c){
+  if(!(c&&c.an>=0))return {d,c};
+  const L=d.split('\n');
+  let nd='',nc=[],off=0;nc.an=c.an;
+  L.forEach((line,n)=>{
+    const lead=line.match(/^(?:\{[^{}]*\})*/)[0].length;
+    const body=line.slice(lead);
+    let pre='',post='';
+    if(body.replace(/[\u202B\u202C\u200F]/g,'').trim()){
+      if(body[0]!=='\u202B')pre='\u202B';
+      if(body[body.length-1]!=='\u202C')post='\u202C';
+    }
+    if(n){nd+='\n';nc.push(c[off-1]===undefined?null:null);nc.pop();nc.push(null);}
+    const lc=c.slice(off,off+line.length);
+    nd+=line.slice(0,lead)+pre+line.slice(lead)+post;
+    nc.push(...lc.slice(0,lead));if(pre)nc.push(null);nc.push(...lc.slice(lead));if(post)nc.push(null);
+    off+=line.length+1;
+  });
+  nc.an=c.an;
+  return {d:nd,c:nc};
+}
 function joinColors(d,c){
   const br=braceMask(d);
   let out='',k=0;
@@ -5590,7 +5618,7 @@ function joinColors(d,c){
     out+=(col&&run.trim())?'<font color="'+col+'">'+run+'</font>':run;
     k=j;
   }
-  if(c&&c.an>=0){const L=out.split('\n'),q=Math.min(c.an,L.length-1);L[q]='{\\an8}'+L[q];out=L.join('\n');}
+  if(c&&c.an>=0)out='{\\an8}\n'+out; /* {\an8} alone on the first line, the text below it */
   return out;
 }
 /* the textarea (plain text nd) changed: keep the colours of the untouched characters, new characters take the colour next to them */
@@ -5609,7 +5637,8 @@ function reconcile(x,nd){
   let nx=joinColors(nd,c);
   if(/<\/?font|\{\\an8\}/i.test(nd)){ /* font tags / {\an8} typed / pasted: fold them into the colour map */
     const s=splitColors(nx);
-    if(s.d!==nd)return {x:joinColors(s.d,s.c),d:s.d};
+    const f=ensureRleAn(s.d,s.c);
+    if(f.d!==nd)return {x:joinColors(f.d,f.c),d:f.d};
   }
   return {x:nx,d:nd};
 }
@@ -5674,7 +5703,8 @@ function applyColor(i,color){
 function applyTop(i){
   const {d,c}=splitColors(S.blocks[i].x);
   c.an=c.an>=0?-1:0;
-  setText(i,joinColors(d,c),true);
+  const f=ensureRleAn(d,c);
+  setText(i,joinColors(f.d,f.c),true);
 }
 function applyNote(i){
   const ta=list.children[i].querySelector('textarea');
@@ -6177,6 +6207,7 @@ function addRle(x){
     l=l.replace(/[\u202B\u202C]/g,'');
     if(!l.trim())return l;
     const lead=l.match(/^(?:\{[^{}]*\})*/)[0]; /* {\an8} must stay first */
+    if(!l.slice(lead.length).trim())return l; /* a line with only {\an8} gets nothing */
     return lead+RLE+l.slice(lead.length)+PDF;
   }).join('\n');
 }
@@ -6188,6 +6219,12 @@ function bulk(fn){
 }
 $('seSp').onclick=()=>{if(!S)return;const n=bulk(fixSpaces);say(n?('✓ سپەیسی زیادە لابرا لە '+n+' بلۆکدا'):'هیچ سپەیسی زیادە نەدۆزرایەوە');};
 $('seRle').onclick=()=>{if(!S)return;const n=bulk(addRle);say(n?('✓ U+202B زیادکرا لە '+n+' بلۆکدا'):'U+202B پێشتر لە هەموو بلۆکەکان هەیە');};
+$('seAn').onclick=()=>{if(!S)return;
+  const fixAn=x=>{const {d,c}=splitColors(x);if(c.an<0)return x;const f=ensureRleAn(d,c);return joinColors(f.d,f.c);};
+  const total=S.blocks.filter(b=>splitColors(b.x).c.an>=0).length;
+  if(!total){say('هیچ بلۆکێکی {\\an8}دار نییە');return;}
+  const n=bulk(fixAn);
+  say(n?('✓ {\\an8} ڕێکخرا لە '+n+' بلۆکدا'):'هەموو بلۆکەکانی {\\an8}دار پێشتر ڕێکخراون');};
 /* mouse wheel scrolls the icon strip sideways */
 const tools=$('seTools');
 tools.addEventListener('wheel',e=>{
