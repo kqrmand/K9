@@ -6754,7 +6754,7 @@ all();
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, setDoc, serverTimestamp, collection, getDocs, getCountFromServer, query, orderBy, limit, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, doc, setDoc, serverTimestamp, collection, getDocs, getCountFromServer, query, orderBy, limit, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD84IM9RTcGD2_Mc__0qQfah0LrKuZ8QY0",
@@ -6868,6 +6868,83 @@ function devGuess(ua){
   if (/Linux/.test(ua)) return "Linux";
   return "نەناسراو";
 }
+/* ---- گەڕان بۆ شار و وڵات: چەند سەرچاوە بە ڕیز تاقی دەکرێنەوە (ئەگەر یەکێک کاری نەکرد، ئەوی دواتر) ---- */
+const regionName = (() => { try { return new Intl.DisplayNames(["en"], { type: "region" }); } catch (_) { return null; } })();
+const GEO_SOURCES = [
+  { n: "ipwho.is",  u: ip => "https://ipwho.is/" + ip,
+    p: j => j && j.success !== false && j.ip ? { ip: j.ip, city: j.city, region: j.region, country: j.country } : null },
+  { n: "geojs",     u: ip => ip ? "https://get.geojs.io/v1/ip/geo/" + ip + ".json" : "https://get.geojs.io/v1/ip/geo.json",
+    p: j => j && j.ip ? { ip: j.ip, city: j.city, region: j.region, country: j.country } : null },
+  { n: "ipapi.co",  u: ip => "https://ipapi.co/" + (ip ? ip + "/" : "") + "json/",
+    p: j => j && !j.error && j.ip ? { ip: j.ip, city: j.city, region: j.region, country: j.country_name } : null },
+  { n: "freeipapi", u: ip => "https://freeipapi.com/api/json/" + ip,
+    p: j => j && j.ipAddress ? { ip: j.ipAddress, city: j.cityName, region: j.regionName, country: j.countryName } : null },
+  { n: "ipinfo",    u: ip => "https://ipinfo.io/" + (ip ? ip + "/" : "") + "json",
+    p: j => j && j.ip && !j.error ? { ip: j.ip, city: j.city, region: j.region, country: (j.country && regionName && regionName.of(j.country)) || j.country } : null },
+  { n: "ipwhois",   u: ip => "https://ipwhois.app/json/" + ip,
+    p: j => j && j.success !== false && j.ip ? { ip: j.ip, city: j.city, region: j.region, country: j.country } : null },
+  { n: "reallyfreegeoip", u: ip => "https://reallyfreegeoip.org/json/" + ip,
+    p: j => j && j.ip ? { ip: j.ip, city: j.city, region: j.region_name, country: j.country_name } : null },
+  { n: "ipapi.is",  u: ip => "https://api.ipapi.is/" + (ip ? "?q=" + ip : ""),
+    p: j => j && j.ip && !j.error ? { ip: j.ip, city: j.location && j.location.city, region: j.location && j.location.state, country: j.location && j.location.country } : null }
+];
+const IP_RE = /^[0-9a-fA-F:.]{3,45}$/;
+const cleanGeo = g => ({
+  ip: String(g.ip || "").slice(0, 60),
+  city: String(g.city || "").slice(0, 60),
+  region: String(g.region || "").slice(0, 60),
+  country: String(g.country || "").slice(0, 60)
+});
+async function fetchJson(url, ms){
+  const c = new AbortController(), t = setTimeout(() => c.abort(), ms);
+  try {
+    const r = await fetch(url, { signal: c.signal, cache: "no-store" });
+    if (!r.ok) return null;
+    return await r.json();
+  } catch (_) { return null; }
+  finally { clearTimeout(t); }
+}
+/* ip نەدرێت = IPی خودی بەکارهێنەر. ئەنجامی بەتاڵ → null. هەوڵ دەدات شار بدۆزێتەوە، ئەگەر نەیدۆزییەوە لانی کەم وڵات. */
+async function geoLookup(ip, maxMs){
+  ip = ip && IP_RE.test(ip) ? ip : "";
+  const t0 = Date.now();
+  let fallback = null;
+  for (const src of GEO_SOURCES){
+    const left = (maxMs || 10000) - (Date.now() - t0);
+    if (left < 800) break;
+    const j = await fetchJson(src.u(ip), Math.min(3500, left));
+    let g = null;
+    try { g = src.p(j); } catch (_) {}
+    if (!g) continue;
+    g = cleanGeo(g);
+    if (g.city) return g;
+    if (!fallback && (g.country || g.ip)) fallback = g;
+    else if (fallback && !fallback.ip && g.ip) fallback.ip = g.ip;
+  }
+  return fallback;
+}
+async function getMyIp(){
+  const srcs = [
+    ["https://api64.ipify.org?format=json", j => j && j.ip],
+    ["https://api.ipify.org?format=json", j => j && j.ip],
+    ["https://www.cloudflare.com/cdn-cgi/trace", null],
+    ["https://icanhazip.com/", null]
+  ];
+  for (const [u, pick] of srcs){
+    try {
+      const c = new AbortController(), t = setTimeout(() => c.abort(), 3500);
+      const r = await fetch(u, { signal: c.signal, cache: "no-store" });
+      clearTimeout(t);
+      if (!r.ok) continue;
+      let ip = "";
+      if (pick) ip = pick(await r.json());
+      else { const tx = await r.text(); const m = /ip=([^\s]+)/.exec(tx); ip = m ? m[1] : tx.trim(); }
+      ip = String(ip || "").trim();
+      if (IP_RE.test(ip)) return ip;
+    } catch (_) {}
+  }
+  return "";
+}
 async function visLog(){
   try {
     const ua = navigator.userAgent || "";
@@ -6877,29 +6954,33 @@ async function visLog(){
       if (h && h.model) device = h.model;
     } catch (_) {}
     let ip = "", city = "", region = "", country = "";
-    try {
-      const c = new AbortController(), t = setTimeout(() => c.abort(), 5000);
-      const r = await fetch("https://ipwho.is/", { signal: c.signal });
-      clearTimeout(t);
-      const j = await r.json();
-      if (j && j.success !== false){
-        ip = String(j.ip || "").slice(0, 60);
-        city = String(j.city || "").slice(0, 60);
-        region = String(j.region || "").slice(0, 60);
-        country = String(j.country || "").slice(0, 60);
-      }
-    } catch (_) {}
-    if (!ip){
-      try {
-        const c = new AbortController(), t = setTimeout(() => c.abort(), 4000);
-        const r = await fetch("https://api.ipify.org?format=json", { signal: c.signal });
-        clearTimeout(t); ip = String((await r.json()).ip || "").slice(0, 60);
-      } catch (_) {}
+    let g = await geoLookup("", 9000);
+    if (g){ ip = g.ip; city = g.city; region = g.region; country = g.country; }
+    if (!ip) ip = await getMyIp();
+    if (ip && !city){            // IP دۆزرایەوە بەڵام شار نا → بە IP لە سەرچاوەکانی تر بپرسە
+      g = await geoLookup(ip, 9000);
+      if (g){ city = g.city || city; region = g.region || region; country = g.country || country; }
     }
     await addDoc(collection(db, "visits"), { ip: ip, city: city, region: region, country: country, device: String(device).slice(0, 60), mobile: /Mobi|Android|iPhone|iPad/i.test(ua), t: serverTimestamp() });
   } catch (_) {}
 }
 let visInit = false;
+
+/* کاشی ناو وێبگەڕی ئەدمین: ئەو IPانەی پێشتر شارەکەیان دۆزراوەتەوە دووبارە ناپرسرێنەوە */
+const GEO_TTL_NEG = 24 * 3600 * 1000;
+function geoCacheGet(ip){
+  try {
+    const x = JSON.parse(localStorage.getItem("geo:" + ip) || "null");
+    if (!x) return null;
+    if (x.city) return x;
+    return Date.now() - (x.at || 0) < GEO_TTL_NEG ? x : null;   // ئەنجامی بێ شار تەنها ڕۆژێک دەمێنێتەوە
+  } catch (_) { return null; }
+}
+function geoCacheSet(ip, g){
+  try { localStorage.setItem("geo:" + ip, JSON.stringify({ city: g.city || "", region: g.region || "", country: g.country || "", at: Date.now() })); } catch (_) {}
+}
+const locOf = v => [v.city, v.region, v.country].filter((x, i, arr) => x && arr.indexOf(x) === i).join("، ");
+
 async function loadVisitors(){
   if (!isAdminUser) return;
   const list = $("admVisList");
@@ -6911,17 +6992,55 @@ async function loadVisitors(){
     list.innerHTML = "";
     if (!snap.size){ list.textContent = "هێشتا هیچ سەردانێک نییە."; return; }
     const frag = document.createDocumentFragment();
+    const missing = new Map();          // ip -> [{ id, b, v }]
     snap.docs.forEach(d => {
       const v = d.data(), row = document.createElement("div");
       row.className = "adm-row"; row.style.cssText = "padding:6px 0;border-top:1px solid var(--border);";
       const a = document.createElement("span"); a.className = "adm-name"; a.dir = "ltr";
       a.textContent = (v.device || "?") + (v.ip ? " — " + v.ip : "");
-      const loc = [v.city, v.region, v.country].filter((x, i, arr) => x && arr.indexOf(x) === i).join("، ");
       const b = document.createElement("span"); b.className = "adm-meta";
-      b.textContent = (loc ? "📍 " + loc + " · " : "") + (v.t && v.t.toDate ? v.t.toDate().toLocaleString() : "");
+      const when = v.t && v.t.toDate ? v.t.toDate().toLocaleString() : "";
+      const setMeta = loc => { b.textContent = (loc ? "📍 " + loc + " · " : "") + when; };
+      b._set = setMeta;
+      let loc = locOf(v), pending = false;
+      if (!v.city && v.ip && IP_RE.test(v.ip)){
+        const c = geoCacheGet(v.ip);
+        if (c){ if (c.city || c.country) loc = locOf(c); }
+        else {
+          pending = true;
+          if (!missing.has(v.ip)) missing.set(v.ip, []);
+          missing.get(v.ip).push({ id: d.id, b: b });
+        }
+      }
+      setMeta(pending ? "…" : loc);
       row.append(a, b); frag.appendChild(row);
     });
     list.appendChild(frag);
+
+    /* پڕکردنەوەی شاری تۆمارە کۆنەکان (و ئەوانەی کاتی خۆی شاریان نەدۆزرایەوە) */
+    const ips = [...missing.keys()].slice(0, 60);
+    let canWrite = true, idx = 0;
+    const worker = async () => {
+      while (idx < ips.length){
+        const ip = ips[idx++];
+        const g = await geoLookup(ip, 14000);
+        const items = missing.get(ip) || [];
+        if (g && (g.city || g.country)){
+          geoCacheSet(ip, g);
+          items.forEach(it => {
+            it.b._set(locOf(g));
+            if (canWrite && g.city){
+              updateDoc(doc(db, "visits", it.id), { city: g.city, region: g.region, country: g.country })
+                .catch(() => { canWrite = false; });     // ئەگەر یاساکانی Firestore ڕێگە نەدەن، تەنها لە کاش دەمێنێتەوە
+            }
+          });
+        } else {
+          geoCacheSet(ip, {});
+          items.forEach(it => it.b._set(""));
+        }
+      }
+    };
+    await Promise.all([worker(), worker(), worker()]);
   } catch (e){ list.textContent = "هەڵە: " + e.message; }
 }
 
