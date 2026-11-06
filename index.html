@@ -2196,12 +2196,11 @@
             </div>
             <div class="se-rep-row">
               <span id="seRepInfo"></span>
-              <button class="btn btn-ghost se-rep-mini" id="seRepAll" type="button">✓ سیلێکتی هەموو</button>
-              <button class="btn btn-ghost se-rep-mini" id="seRepNone" type="button">لابردنی سیلێکت</button>
             </div>
             <div id="seRepList"></div>
             <div class="se-rep-row">
               <button class="btn btn-download" id="seRepGo" type="button">گۆڕینی سیلێکتکراوەکان</button>
+              <button class="btn btn-ghost" id="seRepUndo" type="button" disabled>↶ پەشیمانبوونەوە</button>
               <button class="btn btn-ghost se-rep-x" id="seRepX" type="button" aria-label="داخستن">✕</button>
             </div>
           </div>
@@ -5857,6 +5856,23 @@ $('seNavNext').onclick=()=>soloStep(1);
 $('seNavApply').onclick=exitSolo;
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&solo&&visible())exitSolo();});
 
+/* stuck zoom fix: browsers zoom into a focused text field (font < 16px) / after a long press and may never zoom back.
+   Briefly cap the viewport scale so the browser resets to 1x, then restore normal pinch-zoom. */
+const vpMeta=document.querySelector('meta[name="viewport"]'),vpOrig=vpMeta?vpMeta.getAttribute('content'):'';
+let unzT=null,zoomGuard=0;
+function unzoom(force){
+  if(!vpMeta||!VV)return;
+  if(!force&&VV.scale<=1.02)return;
+  clearTimeout(unzT);
+  vpMeta.setAttribute('content',vpOrig.replace(/,?\s*maximum-scale=[^,]*/i,'')+', maximum-scale=1');
+  unzT=setTimeout(()=>{vpMeta.setAttribute('content',vpOrig);},400);
+}
+function unzoomSoon(){zoomGuard=Date.now()+2500;[60,250,600,1200].forEach(t=>setTimeout(()=>unzoom(false),t));}
+if(VV)VV.addEventListener('resize',()=>{if(Date.now()<zoomGuard)unzoom(false);});
+list.addEventListener('focusin',unzoomSoon);
+list.addEventListener('focusout',()=>{zoomGuard=Date.now()+1500;setTimeout(()=>unzoom(false),120);setTimeout(()=>unzoom(false),600);});
+['pointerup','pointercancel','touchend'].forEach(v=>list.addEventListener(v,()=>{if(Date.now()-lpAt<2500||Date.now()<zoomGuard)unzoomSoon();},{passive:true}));
+
 /* single tap/click opens the block alone + keyboard; LONG PRESS selects (for copy) only the touched word, never the whole text */
 let lpAt=0,lpT=null,lpX=0,lpY=0;
 const lpStop=()=>{clearTimeout(lpT);lpT=null;};
@@ -5892,6 +5908,7 @@ function lpSelect(blk,x,y){
   const pick=()=>{try{ta.setSelectionRange(a0,b0);}catch(_){}};
   pick();requestAnimationFrame(pick);setTimeout(pick,60);setTimeout(pick,250);
   if(navigator.vibrate)try{navigator.vibrate(15);}catch(_){}
+  unzoomSoon();
 }
 list.addEventListener('pointerdown',e=>{
   lpStop();
@@ -5997,6 +6014,7 @@ function openFile(f){
     const bl=parse(r.result);
     if(!bl.length){alert('ئەم فایلە SRT ی دروست نییە.');return;}
     hist.clear();
+    if(typeof repUndo!=='undefined')repUndo=[];
     S={name:f.name,blocks:bl,scroll:0,cur:0};
     render();save(true);
   };
@@ -6026,7 +6044,7 @@ const isWc=c=>/[\p{L}\p{M}\p{N}_\u200c\u200d\ud800-\udfff]/u.test(c);
 const escRe=t=>t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 const repMode=()=>'any'; /* always: whole words AND words inside compounds */
 const REP_MAX=400;
-let found=[],unchecked=new Set(),doneRows=[],doneTotal=0; /* doneRows: replaced sentences, kept visible until the panel is closed */
+let found=[],unchecked=new Set(),doneRows=[],doneTotal=0,repUndo=[]; /* repUndo: one entry per Replace press, so it can be taken back */ /* doneRows: replaced sentences, kept visible until the panel is closed */
 function findIn(x,f,whole){
   const re=new RegExp(escRe(f),'giu'),out=[];let off=0;
   for(const seg of x.split(/(<[^>]*>)/)){
@@ -6051,6 +6069,7 @@ const clean=(t,side)=>{
   return t.replace(/\s*\n\s*/g,' ↵ ');
 };
 function repCounts(){
+  if(typeof rUndo!=='undefined')repUndoBtn();
   const sel=found.length-unchecked.size;
   rI.textContent=found.length?(found.length+' دۆزرایەوە — '+sel+' سیلێکت کراوە'):(rF.value?'هیچ نەدۆزرایەوە':'');
   rGo.disabled=!sel;
@@ -6110,12 +6129,14 @@ function repAll(){
   const to=rW.value.replace(/[\r\n]+/g,' '),whole=repMode()==='word';
   const blocks=[...new Set(found.map(m=>m.i))];
   let n=0,bl=0;
+  const batch={items:[],rows:doneRows.length,total:doneTotal};
   for(const i of blocks){
     const x=S.blocks[i].x,ms=findIn(x,f,whole).map((m,k)=>({m,k})).filter(o=>!unchecked.has(i+':'+o.k));
     if(!ms.length)continue;
     let v=x;
     for(let q=ms.length-1;q>=0;q--)v=v.slice(0,ms[q].m.s)+to+v.slice(ms[q].m.e);
     if(v!==x){
+      batch.items.push({i,old:x});
       snap(i);setText(i,v,true);n+=ms.length;bl++;
       /* keep the changed sentences on screen (new text, replacement highlighted) */
       const nv=S.blocks[i].x;let shift=0;
@@ -6126,21 +6147,32 @@ function repAll(){
       }
     }
   }
+  if(batch.items.length)repUndo.push(batch);
   save(true);
   repScan();
   rI.textContent=(n?('✓ '+n+' جار گۆڕدرا لە '+bl+' بلۆکدا'):'هیچ سیلێکت نەکرابوو')+(found.length?(' — '+found.length+' ماوە'):'');
 }
+const rUndo=$('seRepUndo');
+function repUndoBtn(){rUndo.disabled=!repUndo.length;}
+function repBack(){
+  if(!S||!repUndo.length)return;
+  const b=repUndo.pop();
+  for(const o of b.items){if(S.blocks[o.i]){snap(o.i);setText(o.i,o.old,true);}}
+  doneRows.length=Math.min(doneRows.length,b.rows);doneTotal=b.total;
+  save(true);
+  repScan();
+  rI.textContent='↶ گۆڕانکارییەکە گەڕایەوە لە '+b.items.length+' بلۆکدا'+(found.length?(' — '+found.length+' دۆزرایەوە'):'');
+}
+rUndo.onclick=repBack;
 function repToggle(show){
   const on=show==null?repBox.classList.contains('se-hide'):show;
   repBox.classList.toggle('se-hide',!on);rBtn.classList.toggle('on',on);
   if(on){repScan();rF.focus();}
-  else{doneRows=[];doneTotal=0;found=[];unchecked.clear();rL.innerHTML='';} /* closing the panel clears the replaced list */
+  else{doneRows=[];doneTotal=0;repUndo=[];found=[];unchecked.clear();rL.innerHTML='';} /* closing the panel clears the replaced list */
 }
 rBtn.onclick=()=>repToggle();
 $('seRepX').onclick=()=>repToggle(false);
 rGo.onclick=repAll;
-$('seRepAll').onclick=()=>{unchecked.clear();repDraw();};
-$('seRepNone').onclick=()=>{found.forEach(m=>unchecked.add(m.key));repDraw();};
 rL.addEventListener('change',e=>{
   const cb=e.target;if(!cb||!cb.dataset||!cb.dataset.k)return;
   if(cb.checked)unchecked.delete(cb.dataset.k);else unchecked.add(cb.dataset.k);
