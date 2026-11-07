@@ -1907,6 +1907,32 @@
   .adm-acts .btn{min-height:36px;padding:6px 12px;font-size:12.5px;}
   .admin-srt{max-height:48vh;overflow:auto;margin:0;padding:12px;border:1px solid var(--border-soft);border-radius:12px;background:var(--surface-2);color:var(--text);white-space:pre-wrap;word-break:break-word;font:12px/1.8 var(--font-mono);}
 
+
+  /* ===== fixes: editor file name row, compare ticks, diff popup ===== */
+  #panel-seditor .se-bar{flex-wrap:wrap;overflow:visible;row-gap:10px;}
+  #panel-seditor .se-bar .se-name{flex:1 1 100%!important;min-width:0;order:-1;font-size:14px;padding:2px 2px 8px;border-bottom:1px solid var(--border);text-align:center;direction:ltr;}
+  #panel-seditor .se-bar .se-tools{flex:1 1 100%;margin:0;padding:2px;}
+  .tick{background:#22a85a!important;opacity:1;box-shadow:0 0 0 1px rgba(255,255,255,.55),0 0 0 2px rgba(0,0,0,.35);margin:1px;}
+  .tick.bad{background:#e5384f!important;}
+  .tick:hover{background:#22a85a!important;filter:brightness(1.3);transform:scaleY(1.2);}
+  .tick.bad:hover{background:#e5384f!important;}
+  .dot.ok{background:#22a85a!important;}
+  .dot.bad{background:#e5384f!important;}
+  .strip{gap:3px;}
+  .diff-popup{position:fixed!important;z-index:100000;}
+
+  /* ===== editor: touch response ===== */
+  .se-nb,#panel-seditor .se-bar .btn,.se-dots{touch-action:manipulation;-webkit-tap-highlight-color:transparent;}
+  .se-nb{transition:none;}
+  .se-nb:active{transform:none;filter:brightness(.92);}
+  .se-lw.solo .se-list{overflow-anchor:none;}
+
+  /* ===== small buttons (extract parts) ===== */
+  .btn.btn-sm{padding:5px 12px;font-size:12px;border-radius:10px;min-height:0;line-height:1.5;gap:4px;box-shadow:none;}
+  .extract-pair .btn-row{gap:6px;margin-top:8px!important;}
+  .btn.btn-sm.on{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
+  /* ===== editor: skip layout/paint of off-screen blocks ===== */
+  .se-list:not(.solo) .se-blk{content-visibility:auto;contain-intrinsic-size:auto 96px;}
 </style>
 <style>
   /* ---------- ناو و وێنەی سەرەکی: دوگمەی قەڵەم ---------- */
@@ -2917,22 +2943,23 @@
         diffPopup.innerHTML = '<div class="dp-title">' + titleText + '</div>'
           + blockHtml('فایلی یەکەم', bA)
           + blockHtml('فایلی دووەم', bB);
+        if(diffPopup.parentNode !== document.body) document.body.appendChild(diffPopup);
+        diffPopup.style.visibility = 'hidden';
         diffPopup.classList.add('show');
         const rect = t.getBoundingClientRect();
-        const popW = 300;
+        const popW = Math.min(300, window.innerWidth - 16);
+        diffPopup.style.width = popW + 'px';
+        diffPopup.style.right = 'auto';
+        diffPopup.style.bottom = 'auto';
+        const popH = diffPopup.offsetHeight;
         let left = rect.left + rect.width/2 - popW/2;
         left = Math.max(8, Math.min(left, window.innerWidth - popW - 8));
-        let top = rect.top - 10;
+        let top = rect.top - popH - 10;
+        if(top < 8) top = rect.bottom + 10;
+        if(top + popH > window.innerHeight - 8) top = Math.max(8, window.innerHeight - popH - 8);
         diffPopup.style.left = left + 'px';
-        diffPopup.style.width = popW + 'px';
-        requestAnimationFrame(()=>{
-          const popH = diffPopup.offsetHeight;
-          if(top - popH < 8){
-            diffPopup.style.top = (rect.bottom + 10) + 'px';
-          } else {
-            diffPopup.style.top = (top - popH) + 'px';
-          }
-        });
+        diffPopup.style.top = top + 'px';
+        diffPopup.style.visibility = '';
       });
       t.addEventListener('mouseleave', ()=>{
         diffPopup.classList.remove('show');
@@ -3341,7 +3368,7 @@
       } else {
         setStatus(statusDeep, 'success', 'دەقی چاککراو بە سەرکەوتوویی کۆپی کرا. ✓');
       }
-      btn.textContent = '✓ کۆپی کرا';
+      btn.textContent = btn.classList.contains('btn-sm') ? '✓' : '✓ کۆپی کرا';
       setTimeout(()=>{ btn.textContent = originalLabel; }, 1800);
     }, ()=>{
       setStatus(statusDeep, 'error', 'کۆپیکردن سەرکەوتوو نەبوو، تکایە دووبارە هەوڵبدەوە.');
@@ -3492,22 +3519,42 @@
       const ta = document.createElement('textarea');
       ta.readOnly = true;
       ta.value = text;
+      let flatOn = false;
+      const getPartText = ()=>{
+        if(!flatOn) return text;
+        return extractState.ne.slice(r.start, r.end)
+          .map(i => extractState.blocks[i].text.trim().replace(/\s*\n+\s*/g, ' ').replace(/ {2,}/g, ' ').trim())
+          .join(EXTRACT_SEP);
+      };
 
       const row = document.createElement('div');
       row.className = 'btn-row';
       row.style.marginTop = '10px';
       const copyBtn = document.createElement('button');
       copyBtn.type = 'button';
-      copyBtn.className = 'btn btn-primary';
-      copyBtn.textContent = 'کۆپیکردنی بەشی ' + ordinalName(n);
+      copyBtn.className = 'btn btn-primary btn-sm';
+      copyBtn.textContent = 'کۆپی';
       copyBtn.addEventListener('click', ()=>{
-        copyBtnFeedback(copyBtn, text, ()=>{
+        copyBtnFeedback(copyBtn, getPartText(), ()=>{
           setStatus(stat, 'success', 'بەشی ' + ordinalName(n) + ' (' + rangeLabel + ') کۆپیکرا. ✓');
         }, ()=>{
           setStatus(stat, 'error', 'کۆپیکردن سەرکەوتوو نەبوو.');
         });
       });
       row.appendChild(copyBtn);
+      const flatBtn = document.createElement('button');
+      flatBtn.type = 'button';
+      flatBtn.className = 'btn btn-ghost btn-sm';
+      flatBtn.textContent = 'ل. هێڵبڕ';
+      flatBtn.title = 'لابردنی هێڵبڕەکان';
+      flatBtn.addEventListener('click', ()=>{
+        flatOn = !flatOn;
+        ta.value = getPartText();
+        ta.scrollTop = 0;
+        flatBtn.title = flatOn ? 'گەڕاندنەوەی هێڵبڕەکان' : 'لابردنی هێڵبڕەکان';
+        flatBtn.classList.toggle('on', flatOn);
+      });
+      row.appendChild(flatBtn);
 
       wrap.appendChild(head); wrap.appendChild(ta); wrap.appendChild(row);
 
@@ -3533,6 +3580,9 @@
       pta.id = 'translatedText' + sfx + idx;
       pta.placeholder = 'وەرگێڕانی بەشی ' + ordinalName(n) + ' لێرە بلکێنە (paste بکە)...';
       pta.addEventListener('input', ()=>refreshPasteCounts(sfx));
+      const toStart = ()=>{ try{ pta.scrollTop = 0; pta.setSelectionRange(0,0); }catch(e){ pta.scrollTop = 0; } };
+      pta.addEventListener('paste', ()=>{ setTimeout(toStart, 0); setTimeout(toStart, 60); });
+      pta.addEventListener('blur', toStart);
 
       field.appendChild(label);
       field.appendChild(pta);
@@ -3806,6 +3856,19 @@
         });
       });
       row.appendChild(copyBtn);
+      const flatBtn = document.createElement('button');
+      flatBtn.type = 'button';
+      flatBtn.className = 'btn btn-ghost btn-sm';
+      flatBtn.textContent = 'ل. هێڵبڕ';
+      flatBtn.title = 'لابردنی هێڵبڕەکان';
+      flatBtn.addEventListener('click', ()=>{
+        flatOn = !flatOn;
+        ta.value = getPartText();
+        ta.scrollTop = 0;
+        flatBtn.title = flatOn ? 'گەڕاندنەوەی هێڵبڕەکان' : 'لابردنی هێڵبڕەکان';
+        flatBtn.classList.toggle('on', flatOn);
+      });
+      row.appendChild(flatBtn);
 
       wrap.appendChild(head); wrap.appendChild(ta); wrap.appendChild(row);
 
@@ -5413,7 +5476,7 @@ const $=id=>document.getElementById(id);
 const root=$('seRoot'),list=$('seList'),menu=$('seMenu'),panel=$('panel-seditor');
 const FS=CSS.supports('field-sizing','content');
 let S=null,mi=-1,restored=false,saveT,fadeT;
-let solo=false,soloScroll=0,soloStart=0;
+let solo=false,soloScroll=0,soloStart=0,soloWinY=0;
 const lw=list.parentNode,nav=$('seNav');
 const hist=new Map(),snapT={};
 
@@ -5493,7 +5556,14 @@ function paint(blk){
   ta.dir=dr;h.dir=dr;h.innerHTML=hlt(r.d,r.c);blk.classList.toggle('an',r.c.an>=0);
 }
 const fit=t=>{t.style.height='auto';t.style.height=t.scrollHeight+'px';};
-const fitAll=()=>{if(!FS)list.querySelectorAll('textarea').forEach(fit);};
+const fitAll=()=>{
+  if(FS)return;
+  const tas=Array.from(list.querySelectorAll('textarea')).filter(t=>t.offsetParent!==null||!list.classList.contains('solo'));
+  /* write all, read all, write all: a single reflow */
+  tas.forEach(t=>{t.style.height='auto';});
+  const hs=tas.map(t=>t.scrollHeight);
+  tas.forEach((t,k)=>{t.style.height=hs[k]+'px';});
+};
 
 /* render */
 function render(){
@@ -5825,6 +5895,8 @@ if(navigator.virtualKeyboard){
 function enterSolo(i){
   if(!solo){
     soloScroll=list.scrollTop;soloStart=i;solo=true;
+    soloWinY=window.scrollY;
+    lw.style.minHeight=lw.offsetHeight+'px';
     list.classList.add('solo');lw.classList.add('solo');
   }
   placeNav();
@@ -5836,13 +5908,18 @@ function exitSolo(){
   if(a&&a.tagName==='TEXTAREA'&&list.contains(a))a.blur();
   clearTimeout(snapT[i]);snap(i);
   solo=false;
+  nav.style.top='';
   list.classList.remove('solo');lw.classList.remove('solo');
   list.querySelectorAll('.sv').forEach(e=>e.classList.remove('sv'));
   fitAll();
   const blk=list.children[i];
   list.scrollTop=(i===soloStart)?soloScroll:Math.max(0,blk.offsetTop-6);
-  markCur();sbUpdate();
-  save(true);
+  lw.style.minHeight='';
+  if(!inFs())window.scrollTo(window.scrollX,soloWinY);
+  markCur();
+  requestAnimationFrame(sbUpdate);
+  /* saving the whole file is heavy: do it after the screen has already updated */
+  save(false);
 }
 function soloStep(d){
   const j=S.cur+d;
