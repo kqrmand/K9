@@ -887,7 +887,7 @@
   .auth-lb{display:block;margin:12px 0 6px;font-size:13px;font-weight:600;color:var(--text-dim);}
   .auth-in{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface-2);color:var(--text);font:inherit;font-size:15px;outline:none;}
   .auth-in:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
-  .auth-btn{width:100%;margin-top:18px;padding:13px;border:0;border-radius:var(--radius-sm);background:var(--accent);color:var(--on-accent,#fff);font:inherit;font-size:15px;font-weight:700;cursor:pointer;}
+  .auth-btn{width:100%;margin-top:18px;padding:13px;border:0;border-radius:999px;background:var(--accent);color:var(--on-accent,#fff);font:inherit;font-size:15px;font-weight:700;cursor:pointer;}
   .auth-btn:disabled{opacity:.6;cursor:wait;}
   .auth-msg{text-align:center;color:var(--text-dim);font-size:14px;}
   .auth-err{color:var(--danger);margin-top:12px;min-height:1em;}
@@ -1738,10 +1738,11 @@
   }
   html[data-theme="glass"] .theme-pop{background:#fff;-webkit-backdrop-filter:none;backdrop-filter:none;}
 
-  /* smaller corner radii: buttons are rounded rectangles so wrapped text never turns them into ovals */
+  /* smaller corner radii; buttons outside the editor toolbar are pills */
   :root{--r-sm:12px;--r-lg:20px;--radius:24px;}
-  .btn,.btn-row .btn,#panel-seditor .se-bar .btn{border-radius:14px;}
-  .btn-row .btn:not(:only-child){padding:11px 8px;line-height:1.4;}
+  .btn,.btn-row .btn{border-radius:999px;}
+  #panel-seditor .se-bar .btn{border-radius:14px;}
+  .btn-row .btn:not(:only-child){padding:11px 16px;line-height:1.4;}
   textarea,.text-input,select,.auth-in{border-radius:14px;}
   .chunk-part,.extract-pair,.cluster-item,.deep-item{border-radius:16px;}
   @media(max-width:700px){
@@ -1929,7 +1930,7 @@
   .se-lw.solo .se-list{overflow-anchor:none;}
 
   /* ===== small buttons (extract parts) ===== */
-  .btn.btn-sm{padding:5px 12px;font-size:12px;border-radius:10px;min-height:0;line-height:1.5;gap:4px;box-shadow:none;}
+  .btn.btn-sm{padding:5px 14px;font-size:12px;border-radius:999px;min-height:0;line-height:1.5;gap:4px;box-shadow:none;}
   .extract-pair .btn-row{gap:6px;margin-top:8px!important;}
   .btn.btn-sm.on{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
   /* ===== editor: skip layout/paint of off-screen blocks ===== */
@@ -3548,13 +3549,13 @@
       const flatBtn = document.createElement('button');
       flatBtn.type = 'button';
       flatBtn.className = 'btn btn-ghost btn-sm';
-      flatBtn.textContent = 'ل. هێڵبڕ';
-      flatBtn.title = 'لابردنی هێڵبڕەکان';
+      flatBtn.textContent = 'لاین برەیک';
+      flatBtn.title = 'لابردنی لاین برەیکەکان';
       flatBtn.addEventListener('click', ()=>{
         flatOn = !flatOn;
         ta.value = getPartText();
         ta.scrollTop = 0;
-        flatBtn.title = flatOn ? 'گەڕاندنەوەی هێڵبڕەکان' : 'لابردنی هێڵبڕەکان';
+        flatBtn.title = flatOn ? 'گەڕاندنەوەی لاین برەیکەکان' : 'لابردنی لاین برەیکەکان';
         flatBtn.classList.toggle('on', flatOn);
       });
       row.appendChild(flatBtn);
@@ -3862,13 +3863,13 @@
       const flatBtn = document.createElement('button');
       flatBtn.type = 'button';
       flatBtn.className = 'btn btn-ghost btn-sm';
-      flatBtn.textContent = 'ل. هێڵبڕ';
-      flatBtn.title = 'لابردنی هێڵبڕەکان';
+      flatBtn.textContent = 'لاین برەیک';
+      flatBtn.title = 'لابردنی لاین برەیکەکان';
       flatBtn.addEventListener('click', ()=>{
         flatOn = !flatOn;
         ta.value = getPartText();
         ta.scrollTop = 0;
-        flatBtn.title = flatOn ? 'گەڕاندنەوەی هێڵبڕەکان' : 'لابردنی هێڵبڕەکان';
+        flatBtn.title = flatOn ? 'گەڕاندنەوەی لاین برەیکەکان' : 'لابردنی لاین برەیکەکان';
         flatBtn.classList.toggle('on', flatOn);
       });
       row.appendChild(flatBtn);
@@ -5811,6 +5812,26 @@ function quoteText(x){
     return [[...lead,...mid,...trail]];
   });
 }
+/* spaces inside "..." / “...” / «...» / (...) that hold 3 words or fewer are protected: the split never cuts there */
+function quoteMask(txt){
+  const m=new Uint8Array(txt.length),spans=[];
+  const kinds=[{set:'"',o:null},{set:'\u201C\u201D',o:null},{set:'\u00AB\u00BB',o:null}],par=[];
+  for(let i=0;i<txt.length;i++){
+    const ch=txt[i];
+    if(ch==='('){par.push(i);continue;}
+    if(ch===')'){if(par.length)spans.push([par.pop(),i]);continue;}
+    for(const k of kinds){
+      if(k.set.indexOf(ch)<0)continue;
+      if(k.o===null)k.o=i;else{spans.push([k.o,i]);k.o=null;}
+      break;
+    }
+  }
+  for(const [a,b] of spans){
+    const words=txt.slice(a+1,b).replace(/\{[^{}]*\}|<[^>]*>/g,'').trim().split(/\s+/).filter(Boolean).length;
+    if(words<=3)for(let q=a;q<=b;q++)m[q]=1;
+  }
+  return m;
+}
 /* split every line longer than max characters at the space nearest to its middle (preferring a space after , . ? ! ...) */
 function splitLong(x,max){
   /* a block that already has two (or more) lines is left alone */
@@ -5819,13 +5840,13 @@ function splitLong(x,max){
     const s=cstr(cells),p=lparts(s),inner=cells.slice(p.a,p.b),txt=cstr(inner);
     const vis=txt.replace(/\{[^{}]*\}|<[^>]*>/g,'').length;
     if(!txt.trim()||vis<=max)return null;
-    const br=braceMask(txt),n=Math.ceil(vis/max),cuts=[];
+    const br=braceMask(txt),qm=quoteMask(txt),n=2,cuts=[]; /* never more than two lines per block */
     let prev=0;
     for(let k=1;k<n;k++){
       const target=Math.round(txt.length*k/n);
       let best=-1,bs=1e9;
       for(let q=prev+3;q<txt.length-3;q++){
-        if(txt[q]!==' '||br[q])continue;
+        if(txt[q]!==' '||br[q]||qm[q])continue;
         let sc=Math.abs(q-target);
         if(/[\u060C,.\u061F?!\u061B;:\u2026]/.test(txt[q-1]))sc-=6;
         if(sc<bs){bs=sc;best=q;}
