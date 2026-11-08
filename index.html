@@ -1054,6 +1054,7 @@
   /* icon-only toolbar buttons */
   #panel-seditor .se-bar .btn.se-ic{width:34px;height:34px;padding:0;justify-content:center;gap:0;flex:none;}
   #panel-seditor .se-bar .btn.se-ic svg{width:18px;height:18px;display:block;pointer-events:none;}
+  #panel-seditor .se-bar .btn.se-ic:disabled{opacity:.35;pointer-events:none;}
   #panel-seditor .se-bar .btn.se-ic.on{border-color:var(--accent);color:var(--accent);}
   /* scrollable icon strip */
   #panel-seditor .se-bar .se-name{flex:1 1 44px!important;min-width:44px;}
@@ -1910,8 +1911,8 @@
 
   /* ===== fixes: editor file name row, compare ticks, diff popup ===== */
   #panel-seditor .se-bar{flex-wrap:wrap;overflow:visible;row-gap:10px;}
-  #panel-seditor .se-bar .se-name{flex:1 1 100%!important;min-width:0;order:-1;font-size:14px;padding:2px 2px 8px;border-bottom:1px solid var(--border);text-align:center;direction:ltr;}
   #panel-seditor .se-bar .se-tools{flex:1 1 100%;margin:0;padding:2px;}
+  #panel-seditor .se-bar .se-tools .se-name{flex:none!important;min-width:0;max-width:150px;order:0;font-size:13px;padding:0 6px;border:0;text-align:center;direction:ltr;}
   .tick{background:#22a85a!important;opacity:1;box-shadow:0 0 0 1px rgba(255,255,255,.55),0 0 0 2px rgba(0,0,0,.35);margin:1px;}
   .tick.bad{background:#e5384f!important;}
   .tick:hover{background:#22a85a!important;filter:brightness(1.3);transform:scaleY(1.2);}
@@ -2202,13 +2203,15 @@
         </div>
         <div class="se-app se-hide" id="seApp">
           <div class="se-bar">
-            <div class="se-name" id="seName"></div>
             <div class="se-tools" id="seTools">
+            <div class="se-name" id="seName"></div>
             <span class="se-go"><input type="number" id="seGoIn" inputmode="numeric" enterkeyhint="go" min="1" placeholder="بلۆک" aria-label="ژمارەی بلۆک"><button class="se-gob" id="seGoBtn" type="button" aria-label="بڕۆ">↵</button></span>
             <button class="btn btn-ghost se-ic" id="seRp" type="button" title="گۆڕینی وشە (Replace)" aria-label="گۆڕینی وشە"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13l-3-3m3 3-3 3"/><path d="M20 16H7l3-3m-3 3 3 3"/></svg></button>
             <button class="btn btn-ghost se-ic" id="seSp" type="button" title="لابردنی سپەیسی زیادە" aria-label="لابردنی سپەیسی زیادە"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h6M6.5 9l3 3-3 3"/><path d="M21 12h-6M17.5 9l-3 3 3 3"/></svg></button>
             <button class="btn btn-ghost se-ic" id="seRle" type="button" title="زیادکردنی U+202B (ڕێگری لە تێکچوونی خاڵبەندی)" aria-label="زیادکردنی U+202B"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3v10M11 3v10M15 3H9.5a3.5 3.5 0 0 0 0 7H11"/><path d="M20 18H5M8 15l-3 3 3 3"/></svg></button>
             <button class="btn btn-ghost se-ic" id="seAn" type="button" title="ڕێکخستنی هەموو {\an8}ەکان (دێڕی تەنیا + U+202B)" aria-label="ڕێکخستنی {\an8}">8↑</button>
+            <button class="btn btn-ghost se-ic" id="seUndoAll" type="button" title="گەڕانەوەی دوایین فرمانی گشتی" aria-label="گەڕانەوەی دوایین فرمانی گشتی" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>
+            <button class="btn btn-ghost se-ic" id="seSplit" type="button" title="لەتکردنی ڕستە درێژەکان" aria-label="لەتکردنی ڕستە درێژەکان"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h10a3 3 0 0 1 0 6H8"/><path d="m10.5 15.5-2.5 2.5 2.5 2.5"/></svg></button>
             <button class="btn btn-ghost se-ic" id="seFs" type="button" title="شاشەی تەواو" aria-label="شاشەی تەواو"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
             <button class="btn btn-ghost se-ic" id="seCp" type="button" title="کۆپیکردنی فایل" aria-label="کۆپیکردنی فایل"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button>
             <button class="btn btn-download se-ic" id="seDl" type="button" title="دابەزاندن" aria-label="دابەزاندن"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 19h14"/></svg></button>
@@ -5568,7 +5571,7 @@ const fitAll=()=>{
 /* render */
 function render(){
   $('seEmpty').classList.add('se-hide');$('seApp').classList.remove('se-hide');
-  $('seName').textContent=S.name;
+  $('seName').textContent=S.name;$('seName').title=S.name;
   solo=false;list.classList.remove('solo');lw.classList.remove('solo');
   list.innerHTML='';
   const fr=document.createDocumentFragment();
@@ -5756,6 +5759,101 @@ function noteText(x,s,e){
     L[k]=p.lead+c+p.trail;
   }
   return L.join('\n');
+}
+
+/* ---- line tools that keep the colour map: quotes at the start/end of every line, and splitting long lines ---- */
+const MK='[\\u200E\\u200F\\u202A-\\u202E\\u2066-\\u2069]';
+const LEADRE=new RegExp('^(?:\\{[^{}]*\\}|'+MK+')*'),TRAILRE=new RegExp(MK+'*$');
+const cstr=cs=>cs.map(q=>q.ch).join('');
+const cmk=(t,col)=>Array.from(t).map(ch=>({ch,col}));
+function lparts(s){const a=s.match(LEADRE)[0].length,t=s.slice(a).match(TRAILRE)[0].length;return {a,b:s.length-t};}
+/* fn(cells) -> array of lines (each an array of cells) or null to keep the line */
+function mapLines(x,fn){
+  const {d,c}=splitColors(x),L=d.split('\n');
+  let nd='',nc=[],off=0,nan=-1,n=0;
+  L.forEach((line,i)=>{
+    const cells=[];for(let k=0;k<line.length;k++)cells.push({ch:line[k],col:c[off+k]||null});
+    off+=line.length+1;
+    if(i===c.an)nan=n;
+    for(const r of (fn(cells)||[cells])){
+      if(n){nd+='\n';nc.push(null);}
+      nd+=cstr(r);r.forEach(q=>nc.push(q.col));n++;
+    }
+  });
+  nc.an=c.an>=0?(nan>=0?nan:c.an):-1;
+  const f=ensureRleAn(nd,nc);
+  return joinColors(f.d,f.c);
+}
+const QOPEN=/^["\u201C\u201D\u00AB\u00BB]/,QCLOSE=/["\u201C\u201D\u00AB\u00BB]$/;
+const isQuoted=t=>t.length>1&&QOPEN.test(t)&&QCLOSE.test(t);
+function coreOf(s){const p=lparts(s);return s.slice(p.a,p.b).trim();}
+function allQuoted(x){
+  const ls=splitColors(x).d.split('\n').map(coreOf).filter(Boolean);
+  return ls.length>0&&ls.every(isQuoted);
+}
+/* add " at the start and end of every line (or remove them when every line already has them) */
+function quoteText(x){
+  const on=!allQuoted(x);
+  return mapLines(x,cells=>{
+    const s=cstr(cells),p=lparts(s);
+    if(!s.slice(p.a,p.b).trim())return null;
+    const lead=cells.slice(0,p.a),trail=cells.slice(p.b);let mid=cells.slice(p.a,p.b);
+    if(on){
+      if(isQuoted(coreOf(s)))return null;
+      return [[...lead,{ch:'"',col:mid[0].col},...mid,{ch:'"',col:mid[mid.length-1].col},...trail]];
+    }
+    let i=0,j=mid.length-1;
+    while(i<=j&&/\s/.test(mid[i].ch))i++;
+    while(j>=i&&/\s/.test(mid[j].ch))j--;
+    mid=mid.slice(i+1,j);
+    while(mid.length&&mid[0].ch===' ')mid.shift();
+    while(mid.length&&mid[mid.length-1].ch===' ')mid.pop();
+    return [[...lead,...mid,...trail]];
+  });
+}
+/* split every line longer than max characters at the space nearest to its middle (preferring a space after , . ? ! ...) */
+function splitLong(x,max){
+  /* a block that already has two (or more) lines is left alone */
+  if(splitColors(x).d.split('\n').filter(l=>l.trim()).length>=2)return x;
+  return mapLines(x,cells=>{
+    const s=cstr(cells),p=lparts(s),inner=cells.slice(p.a,p.b),txt=cstr(inner);
+    const vis=txt.replace(/\{[^{}]*\}|<[^>]*>/g,'').length;
+    if(!txt.trim()||vis<=max)return null;
+    const br=braceMask(txt),n=Math.ceil(vis/max),cuts=[];
+    let prev=0;
+    for(let k=1;k<n;k++){
+      const target=Math.round(txt.length*k/n);
+      let best=-1,bs=1e9;
+      for(let q=prev+3;q<txt.length-3;q++){
+        if(txt[q]!==' '||br[q])continue;
+        let sc=Math.abs(q-target);
+        if(/[\u060C,.\u061F?!\u061B;:\u2026]/.test(txt[q-1]))sc-=6;
+        if(sc<bs){bs=sc;best=q;}
+      }
+      if(best<0)break;
+      cuts.push(best);prev=best;
+    }
+    if(!cuts.length)return null;
+    const segs=[];let st0=0;
+    for(const q of cuts){segs.push(inner.slice(st0,q));st0=q+1;}
+    segs.push(inner.slice(st0));
+    const had=cells.some(q=>q.ch==='\u202B'),leadC=cells.slice(0,p.a),trailC=cells.slice(p.b);
+    let open=[];
+    return segs.map((sg,ix)=>{
+      sg=sg.slice();
+      while(sg.length&&sg[0].ch===' ')sg.shift();
+      while(sg.length&&sg[sg.length-1].ch===' ')sg.pop();
+      /* <i> <b> <u> that stay open across the cut are closed on this line and reopened on the next */
+      const opn=open.map(t=>'<'+t+'>').join('');
+      cstr(sg).replace(/<(\/?)([ibu])>/gi,(m,sl,t)=>{t=t.toLowerCase();if(sl){const k=open.lastIndexOf(t);if(k>=0)open.splice(k,1);}else open.push(t);return m;});
+      const cls=open.slice().reverse().map(t=>'</'+t+'>').join('');
+      const c0=sg.length?sg[0].col:null,c1=sg.length?sg[sg.length-1].col:null;
+      let r=ix===0?leadC.slice():(had?cmk('\u202B',null):[]);
+      r=r.concat(cmk(opn,c0),sg,cmk(cls,c1));
+      r=r.concat(ix===segs.length-1?trailC:(had?cmk('\u202C',null):[]));
+      return r;
+    });
+  });
 }
 /*PURE-END*/
 function applyColor(i,color){
@@ -6036,6 +6134,7 @@ function openMenu(i,btn){
     ['yellow','<span style="color:#e6c800">●</span> ڕەنگی زەرد',0],
     ['top',(splitColors(b.x).c.an>=0?'<span style="display:inline-block;width:14px;height:14px;vertical-align:-2px">'+AN_IC+'</span> لابردنی سەرەوە ':'<span style="display:inline-block;width:14px;height:14px;vertical-align:-2px">'+AN_IC+'</span> سەرەوەی شاشە ')+'<bdi dir="ltr">{\\an8}</bdi>',0],
     ['nocol','✕ لابردنی ڕەنگ',!/<\/?font/i.test(b.x)],
+    ['quote',(allQuoted(b.x)?'✕ لابردنی ':'')+'<bdi dir="ltr">" "</bdi> '+(allQuoted(b.x)?'لە سەرەتا و کۆتایی':'زیادکردن بۆ سەرەتا و کۆتایی ڕستەکان'),!b.x.trim()],
     ['-'],
     ['copy','📋 کۆپی دەق',0],
     ['paste','📥 پەیست',0],
@@ -6070,6 +6169,7 @@ menu.addEventListener('click',async e=>{
     case 'yellow':applyColor(i,'#ffff00');break;
     case 'nocol':applyColor(i,null);break;
     case 'top':applyTop(i);break;
+    case 'quote':setText(i,quoteText(b.x),true);break;
     case 'copy':await copy(b.x);break;
     case 'time':await copy(b.t);break;
     case 'paste':
@@ -6090,7 +6190,7 @@ function openFile(f){
   r.onload=()=>{
     const bl=parse(r.result);
     if(!bl.length){alert('ئەم فایلە SRT ی دروست نییە.');return;}
-    hist.clear();
+    hist.clear();bulkStack=[];if(typeof bulkBtn==='function')bulkBtn();
     if(typeof repUndo!=='undefined')repUndo=[];
     S={name:f.name,blocks:bl,scroll:0,cur:0};
     render();save(true);
@@ -6281,6 +6381,8 @@ function squeeze(line){
   /* a space left at the very start of a text piece that follows a tag / code, right before punctuation */
   let out=parts.join('');
   out=out.replace(new RegExp(SPC+'+(?=[?\\u061F!\\u060C,\\u061B;:])','g'),'');
+  /* no gap between the text and "..." / "…" (a line that starts with ... or a dash / note before it is left alone) */
+  out=out.replace(new RegExp('([^\\s\\-\\u2013\\u2014\\u266A])'+SPC+'+(?=\\.{2,}|\\u2026)','g'),'$1');
   return out;
 }
 /* no gaps just inside quotes / brackets:  " word "  ->  "word"   ( word )  ->  (word)
@@ -6320,12 +6422,24 @@ function addRle(x){
     return lead+RLE+l.slice(lead.length)+PDF;
   }).join('\n');
 }
+let bulkStack=[];
+const bulkBtn=()=>{const b=$('seUndoAll');if(b)b.disabled=!bulkStack.length;};
 function bulk(fn){
-  let n=0;
-  S.blocks.forEach((b,i)=>{const v=fn(b.x);if(v!==b.x){snap(i);setText(i,v,true);n++;}});
-  if(n)save(true);
+  let n=0;const rec=[];
+  S.blocks.forEach((b,i)=>{const v=fn(b.x);if(v!==b.x){rec.push([i,b.x]);snap(i);setText(i,v,true);n++;}});
+  if(n){bulkStack.push(rec);if(bulkStack.length>20)bulkStack.shift();save(true);}
+  bulkBtn();
   return n;
 }
+/* global undo: puts back every block changed by the last whole-file tool (spaces, U+202B, {\an8}, split) */
+$('seUndoAll').onclick=()=>{
+  if(!S||!bulkStack.length)return;
+  const rec=bulkStack.pop();
+  rec.forEach(([i,old])=>{if(S.blocks[i])setText(i,old,true);});
+  save(true);bulkBtn();
+  say('↶ گەڕایەوە لە '+rec.length+' بلۆکدا');
+};
+bulkBtn();
 $('seSp').onclick=()=>{if(!S)return;const n=bulk(fixSpaces);say(n?('✓ سپەیسی زیادە لابرا لە '+n+' بلۆکدا'):'هیچ سپەیسی زیادە نەدۆزرایەوە');};
 $('seRle').onclick=()=>{if(!S)return;const n=bulk(addRle);say(n?('✓ U+202B زیادکرا لە '+n+' بلۆکدا'):'U+202B پێشتر لە هەموو بلۆکەکان هەیە');};
 $('seAn').onclick=()=>{if(!S)return;
@@ -6334,6 +6448,16 @@ $('seAn').onclick=()=>{if(!S)return;
   if(!total){say('هیچ بلۆکێکی {\\an8}دار نییە');return;}
   const n=bulk(fixAn);
   say(n?('✓ {\\an8} ڕێکخرا لە '+n+' بلۆکدا'):'هەموو بلۆکەکانی {\\an8}دار پێشتر ڕێکخراون');};
+$('seSplit').onclick=()=>{if(!S)return;
+  let mx=42;try{mx=+localStorage.getItem('presub_se_splitmax')||42;}catch(_){}
+  const v=prompt('هەر دێڕێک لە '+mx+' پیت درێژتر بێت لەت دەکرێت. زۆرترین پیت لە هەر دێڕێک:',mx);
+  if(v===null)return;
+  const m=parseInt(v,10);
+  if(!(m>=10)){say('ژمارەیەکی دروست بنووسە (10 یان زیاتر)');return;}
+  try{localStorage.setItem('presub_se_splitmax',String(m));}catch(_){}
+  const n=bulk(x=>splitLong(x,m));
+  say(n?('✓ ڕستە درێژەکان لەتکران لە '+n+' بلۆکدا'):('هیچ دێڕێکی درێژتر لە '+m+' پیت نەدۆزرایەوە'));
+};
 /* mouse wheel scrolls the icon strip sideways */
 const tools=$('seTools');
 tools.addEventListener('wheel',e=>{
@@ -6345,7 +6469,7 @@ tools.addEventListener('wheel',e=>{
 $('seNew').onclick=()=>{
   if(!confirm('فایلی ئێستا دادەخرێت و دەسکارییەکان دەسڕێنەوە. بەردەوام بیت؟ (پێشتر «دابەزاندن» بکە)'))return;
   try{localStorage.removeItem(KEY);}catch(_){}
-  S=null;hist.clear();solo=false;list.classList.remove('solo');lw.classList.remove('solo');list.innerHTML='';repToggle(false);rF.value='';rW.value='';
+  S=null;hist.clear();bulkStack=[];bulkBtn();solo=false;list.classList.remove('solo');lw.classList.remove('solo');list.innerHTML='';repToggle(false);rF.value='';rW.value='';
   $('seApp').classList.add('se-hide');$('seEmpty').classList.remove('se-hide');
   exitFs();
 };
