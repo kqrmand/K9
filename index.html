@@ -1935,6 +1935,7 @@
   .btn.btn-sm.on{border-color:var(--accent);color:var(--accent);background:var(--accent-soft);}
   /* ===== editor: skip layout/paint of off-screen blocks ===== */
   .se-list:not(.solo) .se-blk{content-visibility:auto;contain-intrinsic-size:auto 96px;}
+  .se-list.se-cvoff .se-blk{content-visibility:visible!important;}
 </style>
 <style>
   /* ---------- ناو و وێنەی سەرەکی: دوگمەی قەڵەم ---------- */
@@ -5480,7 +5481,7 @@ const $=id=>document.getElementById(id);
 const root=$('seRoot'),list=$('seList'),menu=$('seMenu'),panel=$('panel-seditor');
 const FS=CSS.supports('field-sizing','content');
 let S=null,mi=-1,restored=false,saveT,fadeT;
-let solo=false,soloScroll=0,soloStart=0,soloWinY=0;
+let solo=false,soloScroll=0,soloStart=0,soloWinY=0,soloRel=0,exitTok=0;
 const lw=list.parentNode,nav=$('seNav');
 const hist=new Map(),snapT={};
 
@@ -5680,13 +5681,25 @@ function ensureRleAn(d,c){
   return {d:nd,c:nc};
 }
 function joinColors(d,c){
-  const br=braceMask(d);
+  const br=braceMask(d),n=d.length,MKR=/[\u200E\u200F\u202A-\u202E\u2066-\u2069]/;
+  const eff=new Array(n);
+  for(let k=0;k<n;k++)eff[k]=(br[k]||d[k]==='\n')?null:(c[k]||null);
+  /* a line break (with the invisible U+202B / U+202C marks around it) between two characters of the same colour stays inside that colour,
+     so a two-line block gets ONE <font> tag: opened at the start of line 1, closed at the end of line 2 */
+  for(let k=0;k<n;){
+    if(br[k]||!(d[k]==='\n'||MKR.test(d[k]))){k++;continue;}
+    let e=k;while(e<n&&!br[e]&&(d[e]==='\n'||MKR.test(d[e])))e++;
+    if(k>0&&e<n&&!br[k-1]&&!br[e]&&eff[k-1]&&eff[k-1]===eff[e]&&d.slice(k,e).indexOf('\n')>=0){
+      for(let q=k;q<e;q++)if(!eff[q])eff[q]=eff[k-1];
+    }
+    k=e;
+  }
   let out='',k=0;
-  while(k<d.length){
-    if(d[k]==='\n'||br[k]){out+=d[k];k++;continue;}
-    const col=c[k]||null;
+  while(k<n){
+    if(br[k]){out+=d[k];k++;continue;}
+    const col=eff[k];
     let j=k+1;
-    while(j<d.length&&d[j]!=='\n'&&!br[j]&&(c[j]||null)===col)j++;
+    while(j<n&&!br[j]&&eff[j]===col)j++;
     const run=d.slice(k,j);
     out+=(col&&run.trim())?'<font color="'+col+'">'+run+'</font>':run;
     k=j;
@@ -5747,19 +5760,35 @@ function noteParts(l){
   return {lead,core:rest.slice(0,rest.length-trail.length),trail};
 }
 function noteText(x,s,e){
-  const i=lineInfo(splitColors(x).d,s,e),L=x.split('\n');
+  const sc=splitColors(x),i=lineInfo(sc.d,s,e);
+  const L=x.replace(/\{\\an8\}(?:[\u202B\u202C\u200F]*\n)?/gi,'').split('\n');
   let t=[];for(let k=i.a;k<=i.b;k++)t.push(k);
-  const nz=t.filter(k=>L[k].replace(/<[^>]*>/g,'').trim());
+  const nz=t.filter(k=>L[k]!=null&&L[k].replace(/<[^>]*>/g,'').trim());
   if(nz.length)t=nz;
-  const has=l=>/^♪|♪$/.test(noteParts(l).core);
-  const on=!t.every(k=>has(L[k]));
-  for(const k of t){
-    const p=noteParts(L[k]);let c=p.core;
-    if(on){if(!has(L[k]))c=c?'♪ '+c+' ♪':'♪';}
-    else c=c.replace(/^♪\s*/,'').replace(/\s*♪$/,'');
-    L[k]=p.lead+c+p.trail;
+  t=t.filter(k=>L[k]!=null);
+  if(t.length<2){
+    const has=l=>/^♪|♪$/.test(noteParts(l).core);
+    const on=!t.every(k=>has(L[k]));
+    for(const k of t){
+      const p=noteParts(L[k]);let c=p.core;
+      if(on){if(!has(L[k]))c=c?'♪ '+c+' ♪':'♪';}
+      else c=c.replace(/^♪\s*/,'').replace(/\s*♪$/,'');
+      L[k]=p.lead+c+p.trail;
+    }
+  }else{
+    /* two lines: one ♪ at the start of the first line and one at the end of the last line */
+    const P=t.map(k=>noteParts(L[k])),last=t.length-1;
+    const has=/^♪/.test(P[0].core)&&/♪$/.test(P[last].core);
+    t.forEach((k,n)=>{
+      let c=P[n].core.replace(/^♪\s*/,'').replace(/\s*♪$/,'');
+      if(!has){
+        if(n===0)c=c?'♪ '+c:'♪';
+        if(n===last)c=c?c+' ♪':'♪';
+      }
+      L[k]=P[n].lead+c+P[n].trail;
+    });
   }
-  return L.join('\n');
+  return (sc.c.an>=0?'{\\an8}\n':'')+L.join('\n');
 }
 
 /* ---- line tools that keep the colour map: quotes at the start/end of every line, and splitting long lines ---- */
@@ -5790,26 +5819,41 @@ const isQuoted=t=>t.length>1&&QOPEN.test(t)&&QCLOSE.test(t);
 function coreOf(s){const p=lparts(s);return s.slice(p.a,p.b).trim();}
 function allQuoted(x){
   const ls=splitColors(x).d.split('\n').map(coreOf).filter(Boolean);
-  return ls.length>0&&ls.every(isQuoted);
+  if(!ls.length)return false;
+  if(ls.length===1)return isQuoted(ls[0]);
+  return QOPEN.test(ls[0])&&QCLOSE.test(ls[ls.length-1]);
 }
-/* add " at the start and end of every line (or remove them when every line already has them) */
+/* add \" at the start of the first line and at the end of the last line (or remove them when they are already there) */
 function quoteText(x){
-  const on=!allQuoted(x);
+  const L=splitColors(x).d.split('\n').map(coreOf);
+  const ne=[];L.forEach((v,k)=>{if(v)ne.push(k);});
+  if(!ne.length)return x;
+  const first=ne[0],last=ne[ne.length-1],on=!allQuoted(x);
+  const oldFmt=ne.length>1&&ne.every(k=>isQuoted(L[k])); /* old files: every line has its own pair */
+  let li=-1;
+  const strip=(mid,lead,trail)=>{
+    let i=0,j=mid.length-1;
+    while(i<=j&&/\s/.test(mid[i].ch))i++;
+    while(j>=i&&/\s/.test(mid[j].ch))j--;
+    if(lead&&i<=j&&QOPEN.test(mid[i].ch))i++;
+    if(trail&&j>=i&&QCLOSE.test(mid[j].ch))j--;
+    const r=mid.slice(i,j+1);
+    while(r.length&&r[0].ch===' ')r.shift();
+    while(r.length&&r[r.length-1].ch===' ')r.pop();
+    return r;
+  };
   return mapLines(x,cells=>{
+    li++;
+    if(li<first||li>last||!L[li])return null;
     const s=cstr(cells),p=lparts(s);
     if(!s.slice(p.a,p.b).trim())return null;
     const lead=cells.slice(0,p.a),trail=cells.slice(p.b);let mid=cells.slice(p.a,p.b);
     if(on){
-      if(isQuoted(coreOf(s)))return null;
-      return [[...lead,{ch:'"',col:mid[0].col},...mid,{ch:'"',col:mid[mid.length-1].col},...trail]];
+      if(li===first&&!QOPEN.test(L[li][0]))mid=[{ch:'"',col:mid[0].col},...mid];
+      if(li===last&&!QCLOSE.test(L[li][L[li].length-1]))mid=[...mid,{ch:'"',col:mid[mid.length-1].col}];
+      return [[...lead,...mid,...trail]];
     }
-    let i=0,j=mid.length-1;
-    while(i<=j&&/\s/.test(mid[i].ch))i++;
-    while(j>=i&&/\s/.test(mid[j].ch))j--;
-    mid=mid.slice(i+1,j);
-    while(mid.length&&mid[0].ch===' ')mid.shift();
-    while(mid.length&&mid[mid.length-1].ch===' ')mid.pop();
-    return [[...lead,...mid,...trail]];
+    return [[...lead,...strip(mid,oldFmt||li===first,oldFmt||li===last),...trail]];
   });
 }
 /* spaces inside "..." / “...” / «...» / (...) that hold 3 words or fewer are protected: the split never cuts there */
@@ -5832,8 +5876,12 @@ function quoteMask(txt){
   }
   return m;
 }
-/* split every line longer than max characters at the space nearest to its middle (preferring a space after , . ? ! ...) */
-function splitLong(x,max){
+/* split every line longer than max characters at its punctuation (... … ، , : ؟ ? !).
+   If there are two or more punctuation marks and the gap between the first two is shorter than `gap`
+   visible characters, the cut is made at the second one. A line with no usable punctuation falls back
+   to the space nearest to its middle. */
+function splitLong(x,max,gap){
+  if(gap==null)gap=42;
   /* a block that already has two (or more) lines is left alone */
   if(splitColors(x).d.split('\n').filter(l=>l.trim()).length>=2)return x;
   return mapLines(x,cells=>{
@@ -5841,18 +5889,33 @@ function splitLong(x,max){
     const vis=txt.replace(/\{[^{}]*\}|<[^>]*>/g,'').length;
     if(!txt.trim()||vis<=max)return null;
     const br=braceMask(txt),qm=quoteMask(txt),n=2,cuts=[]; /* never more than two lines per block */
-    let prev=0;
-    for(let k=1;k<n;k++){
-      const target=Math.round(txt.length*k/n);
-      let best=-1,bs=1e9;
-      for(let q=prev+3;q<txt.length-3;q++){
+    /* visible-character prefix counts (tags and {…} codes do not count) */
+    const hid=new Uint8Array(txt.length);
+    txt.replace(/\{[^{}]*\}|<[^>]*>/g,(mm,o)=>{for(let q=o;q<o+mm.length;q++)hid[q]=1;return mm;});
+    const vp=new Int32Array(txt.length+1);
+    for(let q=0;q<txt.length;q++)vp[q+1]=vp[q]+(hid[q]?0:1);
+    /* candidate cuts: the space right after a punctuation mark (optionally followed by closing quote/bracket/tag) */
+    const marks=[],re=/(?:\.{3,}|[\u060C,:\u061F?!\u2026])+(?:[\u00BB\u201D"')\]]|<\/[ibu]>)*(?= )/g;
+    let mt;
+    while((mt=re.exec(txt))){
+      const q=mt.index+mt[0].length;
+      if(q<3||q>=txt.length-3||br[q]||qm[q])continue;
+      marks.push(q);
+    }
+    let best=-1;
+    if(marks.length>=2&&vp[marks[1]]-vp[marks[0]]<gap)best=marks[1];
+    else if(marks.length)best=marks[0];
+    if(best>=0)cuts.push(best);
+    else{
+      /* no punctuation: old behaviour — the space nearest to the middle */
+      const target=Math.round(txt.length/2);
+      let bs=1e9;
+      for(let q=3;q<txt.length-3;q++){
         if(txt[q]!==' '||br[q]||qm[q])continue;
-        let sc=Math.abs(q-target);
-        if(/[\u060C,.\u061F?!\u061B;:\u2026]/.test(txt[q-1]))sc-=6;
+        const sc=Math.abs(q-target);
         if(sc<bs){bs=sc;best=q;}
       }
-      if(best<0)break;
-      cuts.push(best);prev=best;
+      if(best>=0)cuts.push(best);
     }
     if(!cuts.length)return null;
     const segs=[];let st0=0;
@@ -5895,8 +5958,11 @@ function applyTop(i){
   setText(i,joinColors(f.d,f.c),true);
 }
 function applyNote(i){
-  const ta=list.children[i].querySelector('textarea');
-  setText(i,noteText(S.blocks[i].x,ta.selectionStart,ta.selectionEnd),true);
+  const ta=list.children[i].querySelector('textarea'),x=S.blocks[i].x;
+  const active=document.activeElement===ta&&!ta.readOnly;
+  let s=ta.selectionStart,e=ta.selectionEnd;
+  if(!active||s===e){s=0;e=splitColors(x).d.length;} /* no selection: the whole block (both lines) */
+  setText(i,noteText(x,s,e),true);
 }
 
 /* keep the block being edited above the on-screen keyboard */
@@ -6013,7 +6079,9 @@ if(navigator.virtualKeyboard){
 }
 function enterSolo(i){
   if(!solo){
+    exitTok++;list.classList.remove('se-cvoff');
     soloScroll=list.scrollTop;soloStart=i;solo=true;
+    {const b0=list.children[i];soloRel=b0?b0.offsetTop-list.scrollTop:6;}
     soloWinY=window.scrollY;
     lw.style.minHeight=lw.offsetHeight+'px';
     list.classList.add('solo');lw.classList.add('solo');
@@ -6028,18 +6096,40 @@ function exitSolo(){
   clearTimeout(snapT[i]);snap(i);
   solo=false;
   nav.style.top='';
+  /* render every block for real (no content-visibility estimates) while the block is put back where it was on screen */
+  list.classList.add('se-cvoff');
   list.classList.remove('solo');lw.classList.remove('solo');
   list.querySelectorAll('.sv').forEach(e=>e.classList.remove('sv'));
   fitAll();
-  const blk=list.children[i];
-  list.scrollTop=(i===soloStart)?soloScroll:Math.max(0,blk.offsetTop-6);
+  const blk=list.children[i],tok=++exitTok,rel=(i===soloStart)?soloRel:6;
+  const align=()=>{if(tok!==exitTok||solo)return;list.scrollTop=Math.max(0,blk.offsetTop-rel);};
+  align();
   lw.style.minHeight='';
   if(!inFs())window.scrollTo(window.scrollX,soloWinY);
   markCur();
-  requestAnimationFrame(sbUpdate);
+  requestAnimationFrame(()=>{align();sbUpdate();});
+  /* the keyboard closes and the layout settles a moment later: keep the block anchored, then drop the override without moving it */
+  [60,150,300,500].forEach(ms=>setTimeout(align,ms));
+  setTimeout(()=>{
+    if(tok!==exitTok)return;
+    const r=blk.offsetTop-list.scrollTop;
+    list.classList.remove('se-cvoff');
+    list.scrollTop=Math.max(0,blk.offsetTop-r);
+    sbUpdate();
+  },650);
   /* saving the whole file is heavy: do it after the screen has already updated */
   save(false);
 }
+/* the user scrolls by hand: stop re-aligning, keep the current position */
+function cancelExitAlign(){
+  if(!list.classList.contains('se-cvoff')||solo)return;
+  exitTok++;
+  const k=list.children[S.cur];
+  if(k){const r=k.offsetTop-list.scrollTop;list.classList.remove('se-cvoff');list.scrollTop=Math.max(0,k.offsetTop-r);}
+  else list.classList.remove('se-cvoff');
+}
+list.addEventListener('touchstart',cancelExitAlign,{passive:true});
+list.addEventListener('wheel',cancelExitAlign,{passive:true});
 function soloStep(d){
   const j=S.cur+d;
   if(!solo||j<0||j>=S.blocks.length)return;
