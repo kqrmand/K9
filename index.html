@@ -5571,21 +5571,22 @@ const fitAll=()=>{
 };
 
 /* render */
-function render(){
-  $('seEmpty').classList.add('se-hide');$('seApp').classList.remove('se-hide');
-  $('seName').textContent=S.name;$('seName').title=S.name;
-  solo=false;list.classList.remove('solo');lw.classList.remove('solo');
-  list.innerHTML='';
-  const fr=document.createDocumentFragment();
-  S.blocks.forEach((b,i)=>{
+function mkBlk(b,i){
     const d=document.createElement('div');d.className='se-blk';d.dataset.i=i;
     d.innerHTML='<div class="se-meta"><b></b><span></span><em class="se-an" title="{\\an8}">'+AN_IC+'</em></div><div class="se-tw"><div class="se-hl" aria-hidden="true"></div><textarea class="se-ta" dir="rtl" spellcheck="false" rows="2" readonly></textarea></div><button class="se-dots" type="button" aria-label="menu">⋮</button>';
     d.querySelector('b').textContent=b.n;
     {const sp=d.querySelector('span'),tp=b.t.replace(/,/g,'.').split(/\s*-->\s*/);
     for(const v of [tp[0],tp[1]]){if(v==null)continue;const e=document.createElement('i');e.textContent=v;sp.appendChild(e);}}
     d.querySelector('textarea').value=splitColors(b.x).d;
-    paint(d);fr.appendChild(d);
-  });
+    paint(d);return d;
+}
+function render(){
+  $('seEmpty').classList.add('se-hide');$('seApp').classList.remove('se-hide');
+  $('seName').textContent=S.name;$('seName').title=S.name;
+  solo=false;list.classList.remove('solo');lw.classList.remove('solo');
+  list.innerHTML='';
+  const fr=document.createDocumentFragment();
+  S.blocks.forEach((b,i)=>fr.appendChild(mkBlk(b,i)));
   list.appendChild(fr);
   restored=false;
   if(visible())onShow();
@@ -6251,6 +6252,8 @@ function openMenu(i,btn){
     ['nocol','✕ لابردنی ڕەنگ',!/<\/?font/i.test(b.x)],
     ['quote',(allQuoted(b.x)?'✕ لابردنی ':'')+'<bdi dir="ltr">" "</bdi> '+(allQuoted(b.x)?'لە سەرەتا و کۆتایی':'زیادکردن بۆ سەرەتا و کۆتایی ڕستەکان'),!b.x.trim()],
     ['-'],
+    ['addblk','➕ زیادکردنی بلۆک',0],
+    ['-'],
     ['copy','📋 کۆپی دەق',0],
     ['paste','📥 پەیست',0],
     ['undo','↶ گەڕانەوە',h.i<=0],
@@ -6275,6 +6278,35 @@ async function copy(t){
   try{await navigator.clipboard.writeText(t);}
   catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();}
 }
+/* add block: an EMPTY block right under block i, with the same time as block i (times are copied, never changed).
+   Numbers of the blocks after it move on by one; everything remembered by block position (undo, replace) moves with them. */
+function addBlockAfter(i){
+  const b=S.blocks[i];if(!b)return;
+  Object.keys(snapT).forEach(k=>{clearTimeout(snapT[k]);if(S.blocks[k])snap(+k);delete snapT[k];});
+  const j=i+1,bn=parseInt(b.n,10),base=isFinite(bn)?bn:i+1;
+  S.blocks.splice(j,0,{n:String(base+1),t:b.t,o:'',x:''});
+  for(let k=j+1;k<S.blocks.length;k++)S.blocks[k].n=String(base+1+(k-j));
+  const mv=x=>x>i?x+1:x;
+  const nh=new Map();hist.forEach((v,k)=>nh.set(mv(k),v));hist.clear();nh.forEach((v,k)=>hist.set(k,v));
+  bulkStack.forEach(rec=>rec.forEach(p=>{p[0]=mv(p[0]);}));
+  repUndo.forEach(bt=>bt.items.forEach(o=>{o.i=mv(o.i);}));
+  found.forEach(m=>{m.i=mv(m.i);m.key=m.i+':'+m.k;});
+  const un=[...unchecked].map(s=>{const p=s.split(':');return mv(+p[0])+':'+p[1];});unchecked.clear();un.forEach(s=>unchecked.add(s));
+  if(soloStart>i)soloStart++;
+  const el=mkBlk(S.blocks[j],j),ref=list.children[j]||null;
+  list.insertBefore(el,ref);
+  for(let k=j+1;k<list.children.length;k++){const e=list.children[k];e.dataset.i=k;e.querySelector('b').textContent=S.blocks[k].n;}
+  if(!FS)fit(el.querySelector('textarea'));
+  if(!repBox.classList.contains('se-hide'))repDraw();
+  S.cur=j;markCur();
+  if(solo)showSolo(j,true);
+  else{
+    const bot=el.offsetTop+el.offsetHeight;
+    if(bot>list.scrollTop+list.clientHeight)list.scrollTop=bot-list.clientHeight+6;
+  }
+  save(true);
+  say('✓ بلۆکێکی بەتاڵ زیادکرا');
+}
 menu.addEventListener('click',async e=>{
   const a=e.target.closest('button');if(!a||a.disabled)return;
   const i=mi,b=S.blocks[i],h=H(i);closeMenu();
@@ -6285,6 +6317,7 @@ menu.addEventListener('click',async e=>{
     case 'nocol':applyColor(i,null);break;
     case 'top':applyTop(i);break;
     case 'quote':setText(i,quoteText(b.x),true);break;
+    case 'addblk':addBlockAfter(i);break;
     case 'copy':await copy(b.x);break;
     case 'time':await copy(b.t);break;
     case 'paste':
