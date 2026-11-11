@@ -6514,9 +6514,8 @@ function fixQuotes(line){
       const before=off>0?str[off-1]:'';
       return (a===''&&before&&WORD.test(before)?' ':a)+q;
     }
-    /* closing: trim before it; if it is glued to a word after it, put one space there */
-    const after=str[off+m.length]||'';
-    return q+(b===''&&after&&WORD.test(after)?' ':b);
+    /* closing: trim before it. Nothing is added after it, so a suffix glued to the quote ("ئەحمەد"ی) stays glued */
+    return q+b;
   });
   /* brackets: "(" always opens and ")" always closes, whatever the text direction */
   t=t.replace(new RegExp('([(\\[])'+SPC+'+','g'),'$1').replace(new RegExp(SPC+'+([)\\]])','g'),'$1');
