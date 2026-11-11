@@ -5694,16 +5694,20 @@ function joinColors(d,c){
     }
     k=e;
   }
-  let out='',k=0;
+  const parts=[];let tagged=0,loose=0,k=0;
   while(k<n){
-    if(br[k]){out+=d[k];k++;continue;}
+    if(br[k]){parts.push({t:d[k]});k++;continue;}
     const col=eff[k];
     let j=k+1;
     while(j<n&&!br[j]&&eff[j]===col)j++;
     const run=d.slice(k,j);
-    out+=(col&&run.trim())?'<font color="'+col+'">'+run+'</font>':run;
+    if(col&&run.trim()){parts.push({t:'<font color="'+col+'">'+run,close:1});tagged++;}
+    else{parts.push({t:run});if(run.replace(/[\s\u200E\u200F\u202A-\u202E\u2066-\u2069\u061C]/g,''))loose++;}
     k=j;
   }
+  /* ONE colour over the whole text of the block: the <font> tag is left open, no closing </font> is added */
+  const whole=tagged===1&&!loose;
+  let out=parts.map(q=>q.close&&!whole?q.t+'</font>':q.t).join('');
   if(c&&c.an>=0)out='{\\an8}\n'+out; /* {\an8} alone on the first line, the text below it */
   return out;
 }
