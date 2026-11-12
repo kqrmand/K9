@@ -7134,7 +7134,7 @@ all();
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, setDoc, serverTimestamp, collection, getDocs, getCountFromServer, query, orderBy, limit, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { initializeFirestore, doc, setDoc, serverTimestamp, collection, getDocs, getCountFromServer, query, orderBy, limit, addDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD84IM9RTcGD2_Mc__0qQfah0LrKuZ8QY0",
@@ -7149,7 +7149,8 @@ const ADMIN_UID = "kKycJGHJ4PYxF3kewGnVLdRqocF3";
 const $ = id => document.getElementById(id);
 const kuNum = n => String(n).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app), db = getFirestore(app);
+const auth = getAuth(app);
+const db = initializeFirestore(app, { experimentalAutoDetectLongPolling: true });
 const esc = s => String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
 
 /* ---- هەڵگرتنی فایلەکان بە فۆرماتی SRT ---- */
@@ -7195,12 +7196,15 @@ const admTab = $("admTab"), admPanel = $("panel-admin");
 const admState = $("admState"), admCount = $("admCount"), admSearch = $("admSearch");
 let isAdminUser = false, authReady = false, admAutoOpened = false;
 let admItems = [], admSig = "", admLoading = false;
+const admSeen = new Set(), admOpen = new Set();
+let liveOn = false, liveUnsubs = [], pollTimer = null, gotFiles = false;
 
 function gotoTab(name){ const b = document.querySelector('.tab-btn[data-tab="' + name + '"]'); if (b) b.click(); }
 function renderAdmin(){
   if (location.hash !== "#admin"){
     gate.style.display = "none";
     admTab.classList.add("adm-off");
+    stopLive();
     if (admPanel.classList.contains("active")) gotoTab("extract");
     return;
   }
@@ -7209,9 +7213,11 @@ function renderAdmin(){
     gate.style.display = "none";
     admTab.classList.remove("adm-off");
     window.dispatchEvent(new Event("resize"));
+    startLive();
   } else {
     gate.style.display = "flex";
     admTab.classList.add("adm-off");
+    stopLive();
   }
 }
 window.addEventListener("hashchange", renderAdmin);
@@ -7233,7 +7239,6 @@ onAuthStateChanged(auth, user => {
   if (user && !isAdminUser && location.hash === "#admin"){ errEl.textContent = "ئەم ئەکاونتە ئەدمین نییە. UID: " + user.uid; }
   renderAdmin();
   if (!visInit){ visInit = true; if (!isAdminUser && location.hash !== "#admin") visLog(); }
-  if (isAdminUser) loadVisitors();
   if (isAdminUser && location.hash === "#admin" && !admAutoOpened){ admAutoOpened = true; gotoTab("admin"); }
 });
 
@@ -7312,7 +7317,7 @@ async function getMyIp(){
   ];
   for (const [u, pick] of srcs){
     try {
-      const c = new AbortController(), t = setTimeout(() => c.abort(), 3500);
+      const c = new AbortController(), t = setTimeout(() => c.abort(), 2500);
       const r = await fetch(u, { signal: c.signal, cache: "no-store" });
       clearTimeout(t);
       if (!r.ok) continue;
@@ -7334,13 +7339,10 @@ async function visLog(){
       if (h && h.model) device = h.model;
     } catch (_) {}
     let ip = "", city = "", region = "", country = "";
-    let g = await geoLookup("", 9000);
+    const g = await geoLookup("", 5000);
     if (g){ ip = g.ip; city = g.city; region = g.region; country = g.country; }
     if (!ip) ip = await getMyIp();
-    if (ip && !city){            // IP دۆزرایەوە بەڵام شار نا → بە IP لە سەرچاوەکانی تر بپرسە
-      g = await geoLookup(ip, 9000);
-      if (g){ city = g.city || city; region = g.region || region; country = g.country || country; }
-    }
+    // یەکسەر تۆمار دەکرێت (بێ چاوەڕێی زۆر)؛ ئەگەر شار نەبوو، ئەدمین دواتر خۆی دەیدۆزێتەوە
     await addDoc(collection(db, "visits"), { ip: ip, city: city, region: region, country: country, device: String(device).slice(0, 60), mobile: /Mobi|Android|iPhone|iPad/i.test(ua), t: serverTimestamp() });
   } catch (_) {}
 }
@@ -7361,67 +7363,79 @@ function geoCacheSet(ip, g){
 }
 const locOf = v => [v.city, v.region, v.country].filter((x, i, arr) => x && arr.indexOf(x) === i).join("، ");
 
-async function loadVisitors(){
-  if (!isAdminUser) return;
-  const list = $("admVisList");
-  try {
-    const snap = await getDocs(query(collection(db, "visits"), orderBy("t", "desc"), limit(200)));
-    let total = snap.size;
-    try { total = (await getCountFromServer(collection(db, "visits"))).data().count; } catch (_) {}
-    $("admVisCount").textContent = kuNum(total);
-    list.innerHTML = "";
-    if (!snap.size){ list.textContent = "هێشتا هیچ سەردانێک نییە."; return; }
-    const frag = document.createDocumentFragment();
-    const missing = new Map();          // ip -> [{ id, b, v }]
-    snap.docs.forEach(d => {
-      const v = d.data(), row = document.createElement("div");
-      row.className = "adm-row"; row.style.cssText = "padding:6px 0;border-top:1px solid var(--border);";
-      const a = document.createElement("span"); a.className = "adm-name"; a.dir = "ltr";
-      a.textContent = (v.device || "?") + (v.ip ? " — " + v.ip : "");
-      const b = document.createElement("span"); b.className = "adm-meta";
-      const when = v.t && v.t.toDate ? v.t.toDate().toLocaleString() : "";
-      const setMeta = loc => { b.textContent = (loc ? "📍 " + loc + " · " : "") + when; };
-      b._set = setMeta;
-      let loc = locOf(v), pending = false;
-      if (!v.city && v.ip && IP_RE.test(v.ip)){
-        const c = geoCacheGet(v.ip);
-        if (c){ if (c.city || c.country) loc = locOf(c); }
-        else {
-          pending = true;
-          if (!missing.has(v.ip)) missing.set(v.ip, []);
-          missing.get(v.ip).push({ id: d.id, b: b });
-        }
-      }
-      setMeta(pending ? "…" : loc);
-      row.append(a, b); frag.appendChild(row);
-    });
-    list.appendChild(frag);
+const visQuery = () => query(collection(db, "visits"), orderBy("t", "desc"), limit(200));
+const withTimeout = (p, ms) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error("کاتەکە تەواو بوو، ئینتەرنێتەکەت بپشکنە")), ms))]);
 
-    /* پڕکردنەوەی شاری تۆمارە کۆنەکان (و ئەوانەی کاتی خۆی شاریان نەدۆزرایەوە) */
-    const ips = [...missing.keys()].slice(0, 60);
-    let canWrite = true, idx = 0;
-    const worker = async () => {
-      while (idx < ips.length){
-        const ip = ips[idx++];
-        const g = await geoLookup(ip, 14000);
-        const items = missing.get(ip) || [];
-        if (g && (g.city || g.country)){
-          geoCacheSet(ip, g);
-          items.forEach(it => {
-            it.b._set(locOf(g));
-            if (canWrite && g.city){
-              updateDoc(doc(db, "visits", it.id), { city: g.city, region: g.region, country: g.country })
-                .catch(() => { canWrite = false; });     // ئەگەر یاساکانی Firestore ڕێگە نەدەن، تەنها لە کاش دەمێنێتەوە
-            }
-          });
-        } else {
-          geoCacheSet(ip, {});
-          items.forEach(it => it.b._set(""));
-        }
+/* گەڕان بۆ شاری IPەکان: یەک ڕیزی هاوبەش، بۆ ئەوەی لەگەڵ هەر نوێکردنەوەیەک دووبارە نەپرسرێنەوە */
+const geoWait = new Map();          // ip -> [{ id, b }]
+const geoQueue = [];
+let geoActive = 0, geoCanWrite = true;
+function geoPump(){
+  while (geoActive < 3 && geoQueue.length){
+    const ip = geoQueue.shift(); geoActive++;
+    geoLookup(ip, 14000).then(g => {
+      const items = geoWait.get(ip) || []; geoWait.delete(ip);
+      if (g && (g.city || g.country)){
+        geoCacheSet(ip, g);
+        items.forEach(it => {
+          it.b._set(locOf(g));
+          if (geoCanWrite && g.city){
+            updateDoc(doc(db, "visits", it.id), { city: g.city, region: g.region, country: g.country })
+              .catch(() => { geoCanWrite = false; });     // ئەگەر یاساکانی Firestore ڕێگە نەدەن، تەنها لە کاش دەمێنێتەوە
+          }
+        });
+      } else {
+        geoCacheSet(ip, {});
+        items.forEach(it => it.b._set(""));
       }
-    };
-    await Promise.all([worker(), worker(), worker()]);
-  } catch (e){ list.textContent = "هەڵە: " + e.message; }
+    }).catch(() => {
+      (geoWait.get(ip) || []).forEach(it => it.b._set("")); geoWait.delete(ip);
+    }).finally(() => { geoActive--; geoPump(); });
+  }
+}
+function geoRequest(ip, item){
+  if (geoWait.has(ip)){ geoWait.get(ip).push(item); return true; }
+  if (geoWait.size >= 60) return false;
+  geoWait.set(ip, [item]); geoQueue.push(ip); geoPump();
+  return true;
+}
+
+async function updateVisCount(shown){
+  const el = $("admVisCount");
+  el.textContent = kuNum(shown);
+  if (shown < 200) return;           // کەمتر لە سنوور = هەموو سەردانەکان لێرەن
+  try { el.textContent = kuNum((await getCountFromServer(collection(db, "visits"))).data().count); } catch (_) {}
+}
+function renderVisitors(snap){
+  const list = $("admVisList");
+  updateVisCount(snap.size);
+  list.innerHTML = "";
+  if (!snap.size){ list.textContent = "هێشتا هیچ سەردانێک نییە."; return; }
+  const frag = document.createDocumentFragment();
+  snap.docs.forEach(d => {
+    const v = d.data({ serverTimestamps: "estimate" }), row = document.createElement("div");
+    row.className = "adm-row"; row.style.cssText = "padding:6px 0;border-top:1px solid var(--border);";
+    const a = document.createElement("span"); a.className = "adm-name"; a.dir = "ltr";
+    a.textContent = (v.device || "?") + (v.ip ? " — " + v.ip : "");
+    const b = document.createElement("span"); b.className = "adm-meta";
+    const when = v.t && v.t.toDate ? v.t.toDate().toLocaleString() : "";
+    const setMeta = loc => { b.textContent = (loc ? "📍 " + loc + " · " : "") + when; };
+    b._set = setMeta;
+    let loc = locOf(v), pending = false;
+    if (!v.city && v.ip && IP_RE.test(v.ip)){
+      const c = geoCacheGet(v.ip);
+      if (c){ if (c.city || c.country) loc = locOf(c); }
+      else pending = geoRequest(v.ip, { id: d.id, b: b });
+    }
+    setMeta(pending ? "…" : loc);
+    row.append(a, b); frag.appendChild(row);
+  });
+  list.appendChild(frag);
+}
+async function refreshVisits(){
+  if (!isAdminUser) return;
+  try { renderVisitors(await withTimeout(getDocs(visQuery()), 20000)); }
+  catch (e){ $("admVisList").textContent = "هەڵە: " + e.message; }
 }
 
 const splitFile = f => { const m = /^\[([^\]]*)\]\s*([\s\S]*)$/.exec(f || ""); return m ? { tab: m[1], name: m[2] } : { tab: "", name: f || "" }; };
@@ -7481,16 +7495,19 @@ function makeCell(rec, late){
   cell.append(row, nm, meta, acts);
 
   let pre = null;
-  view.addEventListener("click", () => {
-    if (!pre){
+  const setOpen = open => {
+    if (open && !pre){
       pre = document.createElement("pre"); pre.className = "admin-srt";
       pre.textContent = rec.text.length > 30000 ? rec.text.slice(0, 30000) + "\n\n… (بۆ بینینی هەمووی «داگرتن» بکە)" : rec.text;
       cell.appendChild(pre);
     }
-    const open = cell.classList.toggle("is-open");
-    pre.hidden = !open;
+    cell.classList.toggle("is-open", open);
+    if (pre) pre.hidden = !open;
     view.textContent = open ? "▲ شاردنەوە" : "👁 بینین";
-  });
+    if (open) admOpen.add(rec.id); else admOpen.delete(rec.id);
+  };
+  view.addEventListener("click", () => setOpen(!cell.classList.contains("is-open")));
+  if (admOpen.has(rec.id)) setOpen(true);
   copy.addEventListener("click", async () => flash(copy, (await copyText(rec.text)) ? "کۆپیکرا ✓" : "کۆپی نەکرا"));
   dl.addEventListener("click", () => downloadRec(rec));
   return cell;
@@ -7504,30 +7521,73 @@ function renderCells(late){
   admCount.textContent = kuNum(admItems.length) + " / " + kuNum(100);
   if (!admItems.length){ setAdmState("هێشتا هیچ فایلێک نەنێردراوە. لە یەکێک لە تابەکان فایلێک دروست بکە و کۆپی بکە."); return; }
   const frag = document.createDocumentFragment();
-  admItems.forEach(rec => frag.appendChild(makeCell(rec, late)));
+  admItems.forEach(rec => frag.appendChild(makeCell(rec, late && !(admSeen.size && admSeen.has(rec.id)))));
+  admItems.forEach(rec => admSeen.add(rec.id));
   admPanel.appendChild(frag);
   applyFilter();
 }
+function applyTranslations(snap){
+  const items = snap.docs.map(d => {
+    const v = d.data({ serverTimestamps: "estimate" });
+    return { id: d.id, text: String(v.text || ""), file: String(v.file || d.id), n: v.n || 0, t: v.t && v.t.toDate ? v.t.toDate() : null };
+  });
+  const sig = items.map(i => i.id + ":" + (i.t ? i.t.getTime() : 0)).join("|");
+  gotFiles = true;
+  setAdmState("");
+  if (sig !== admSig || !admPanel.querySelector(".adm-cell")){ admSig = sig; admItems = items; renderCells(true); }
+}
+/* نوێکردنەوەی دەستی (دوگمەی ↻): هەردوو لیست لە سێرڤەر دەهێنێتەوە */
 async function loadAdmin(){
   if (admLoading || !isAdminUser) return;
   admLoading = true;
-  loadVisitors();
   if (!admItems.length) setAdmState("چاوەڕێبە…");
   try {
-    const snap = await getDocs(query(collection(db, "translations"), orderBy("t", "desc"), limit(100)));
-    const items = snap.docs.map(d => {
-      const v = d.data();
-      return { id: d.id, text: String(v.text || ""), file: String(v.file || d.id), n: v.n || 0, t: v.t && v.t.toDate ? v.t.toDate() : null };
-    });
-    const sig = items.map(i => i.id + ":" + (i.t ? i.t.getTime() : 0)).join("|");
-    setAdmState("");
-    if (sig !== admSig || !admPanel.querySelector(".adm-cell")){ admSig = sig; admItems = items; renderCells(true); }
+    const [vr, tr] = await withTimeout(Promise.allSettled([
+      getDocs(visQuery()),
+      getDocs(query(collection(db, "translations"), orderBy("t", "desc"), limit(100)))
+    ]), 40000);
+    if (vr.status === "fulfilled") renderVisitors(vr.value);
+    else $("admVisList").textContent = "هەڵە: " + (vr.reason && vr.reason.message);
+    if (tr.status === "fulfilled") applyTranslations(tr.value);
+    else setAdmState("هەڵە: " + (tr.reason && tr.reason.message), true);
   } catch (e){ setAdmState("هەڵە: " + e.message, true); }
   admLoading = false;
 }
+
+/* ---- نوێبوونەوەی زیندوو: هەر سەردان و فایلێکی نوێ خۆی دەردەکەوێت ---- */
+function startPolling(){
+  if (pollTimer || !isAdminUser) return;
+  pollTimer = setInterval(() => { if (isAdminUser && !document.hidden) loadAdmin(); }, 30000);
+}
+function stopLive(){
+  liveUnsubs.forEach(f => { try { f(); } catch (_) {} });
+  liveUnsubs = []; liveOn = false;
+  clearInterval(pollTimer); pollTimer = null;
+}
+function startLive(){
+  if (liveOn || !isAdminUser) return;
+  liveOn = true; gotFiles = false;
+  if (!admItems.length) setAdmState("چاوەڕێبە…");
+  let visTimer = null;
+  const fail = (el, err) => {
+    if (el === "vis") $("admVisList").textContent = "هەڵە: " + err.message; else setAdmState("هەڵە: " + err.message, true);
+    stopLive(); startPolling();                // ئەگەر لیسنەر کاری نەکرد، هەر ٣٠ چرکە خۆکارانە دەهێنرێتەوە
+  };
+  try {
+    liveUnsubs.push(onSnapshot(visQuery(),
+      snap => { clearTimeout(visTimer); visTimer = setTimeout(() => renderVisitors(snap), 250); },
+      err => fail("vis", err)));
+    liveUnsubs.push(onSnapshot(query(collection(db, "translations"), orderBy("t", "desc"), limit(100)),
+      snap => applyTranslations(snap),
+      err => fail("files", err)));
+  } catch (e){ fail("files", e); return; }
+  setTimeout(() => { if (liveOn && !gotFiles) loadAdmin(); }, 12000);   // پشتیوان ئەگەر لیسنەر درەنگ بوو
+}
+setInterval(() => { if (isAdminUser && !document.hidden && admPanel.classList.contains("active")) refreshVisits(); }, 45000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden && isAdminUser && admPanel.classList.contains("active")) refreshVisits(); });
 // capture: خانەکانی پێشوو یەکسەر پیشان دەدرێن (پێش ئەنیمەیشنی تابەکە)، دواتر لە پشتەوە نوێ دەکرێنەوە
-admTab.addEventListener("click", () => { if (admItems.length && !admPanel.querySelector(".adm-cell")) renderCells(false); loadAdmin(); }, true);
-$("admRefresh").addEventListener("click", () => { admSig = ""; loadAdmin(); });
+admTab.addEventListener("click", () => { if (admItems.length && !admPanel.querySelector(".adm-cell")) renderCells(false); if (!liveOn) startLive(); else refreshVisits(); }, true);
+$("admRefresh").addEventListener("click", () => { admSig = ""; if (!liveOn) startLive(); loadAdmin(); });
 $("admClose").addEventListener("click", () => gotoTab("extract"));
 admSearch.addEventListener("input", applyFilter);
 </script>
