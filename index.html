@@ -1543,6 +1543,7 @@
   #panel-seditor .se-bar .btn{background:var(--lg-fill);border-color:var(--lg-edge);color:var(--text);box-shadow:inset 0 1px 0 var(--lg-rim);}
   #panel-seditor .se-bar .btn:hover{background:var(--lg-fill-hi);border-color:var(--accent-lt);color:var(--text);}
   .se-nb,.se-dots,.file-item .fremove{background:var(--lg-fill);border-color:var(--lg-edge);box-shadow:inset 0 1px 0 var(--lg-rim);}
+  .se-nb.se-nb-ok,.se-nb.se-nb-ok:hover{background:linear-gradient(135deg,var(--accent-lt),var(--accent));border-color:transparent;color:var(--on-accent);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 8px 18px -10px rgba(var(--accent-rgb),.7);}
   .step-badge{box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -3px 6px -2px rgba(0,0,0,.25),0 4px 10px -4px rgba(var(--accent-rgb),.65);}
   .badge{border-color:color-mix(in srgb,var(--accent) 50%,transparent);background:color-mix(in srgb,var(--accent) 12%,transparent);}
 
@@ -2727,11 +2728,12 @@
       <div class="adm-tools">
         <input type="text" id="admSearch" class="text-input" placeholder="گەڕان لە ناوی فایل…">
         <button class="btn btn-ghost" id="admRefresh" type="button">↻ نوێکردنەوە</button>
+        <button class="btn btn-ghost" id="admProbe" type="button">🔍 پشکنینی تۆمارکردنی سەردان</button>
       </div>
       <p class="adm-state" id="admState"></p>
     </div>
     <div class="card" id="admVis" style="grid-column:1/-1;">
-      <div class="adm-top"><h2>لۆگی سەردانەکان 👥 <span class="badge" id="admVisCount">٠</span></h2></div>
+      <div class="adm-top"><h2>لۆگی سەردانەکان 👥 <span class="badge" id="admVisCount">٠</span></h2><span class="adm-meta" id="admVisState"></span></div>
       <div id="admVisList" class="adm-state" style="margin-top:12px;"></div>
     </div>
   </section>
@@ -4270,7 +4272,7 @@
 
   function opCollapseExtraSpaces(blocks){
     return blocks.map(b=>{
-      let lines = b.text.split('\n').map(l => fixQuoteSpacing(l.replace(/[ \t]{2,}/g, ' ').trim()).trim());
+      let lines = b.text.split('\n').map(l => l.replace(/[ \t]{2,}/g, ' ').replace(/(["\u201C\u201D\u00AB\u00BB])[ \t]+(?=\u0640)/g, '$1').trim());
       lines = fixDialogueDashSpacing(lines);
       return { start:b.start, end:b.end, text: lines.join('\n').trim() };
     });
@@ -6678,22 +6680,12 @@ function squeeze(line){
    because in Kurdish/Arabic typing the glyphs often come in either direction.
    Tags and {..} codes are left alone. */
 function fixQuotes(line){
-  if(!/["“”«»()\[\]]/.test(line))return line;
+  if(!/[()\[\]\u0640]/.test(line))return line;
   const keep=[];
   let t=line.replace(/<[^>]*>|\{[^{}]*\}/g,m=>{keep.push(m);return '\uE000'+(keep.length-1)+'\uE001';});
-  const QRE=new RegExp('('+SPC+'*)(["“”«»])('+SPC+'*)','g');
-  const total=(t.match(/["“”«»]/g)||[]).length;let n=0;
-  const WORD=/[\p{L}\p{N}\p{M}]/u;
-  t=t.replace(QRE,(m,a,q,b,off,str)=>{
-    n++;
-    if(total%2&&n===total)return m; /* a lone quote (dialogue continues) is not touched */
-    if(n%2){ /* opening: trim after it; if it is glued to a word before it, put one space there */
-      const before=off>0?str[off-1]:'';
-      return (a===''&&before&&WORD.test(before)?' ':a)+q;
-    }
-    /* closing: trim before it. Nothing is added after it, so a suffix glued to the quote ("ئەحمەد"ی) stays glued */
-    return q+b;
-  });
+  /* quote marks " “ ” « » and the spaces around them are NOT touched,
+     except: a space between a quote mark and a tatweel (" ـی) is removed - never added */
+  t=t.replace(new RegExp('(["“”«»])'+SPC+'+(?=\\u0640)','g'),'$1');
   /* brackets: "(" always opens and ")" always closes, whatever the text direction */
   t=t.replace(new RegExp('([(\\[])'+SPC+'+','g'),'$1').replace(new RegExp(SPC+'+([)\\]])','g'),'$1');
   return t.replace(/\uE000(\d+)\uE001/g,(m,i)=>keep[+i]);
@@ -7634,9 +7626,9 @@ all();
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { initializeApp, getApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { initializeFirestore, doc, setDoc, serverTimestamp, collection, getDocs, getCountFromServer, query, orderBy, limit, addDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { initializeFirestore, doc, setDoc, serverTimestamp, collection, getDocs, getCountFromServer, query, orderBy, limit, addDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD84IM9RTcGD2_Mc__0qQfah0LrKuZ8QY0",
@@ -7696,7 +7688,8 @@ window.PS_logFile = function(tab, name, text){
 const gate = $("authGate"), errEl = $("authErr");
 const admTab = $("admTab"), admPanel = $("panel-admin");
 const admState = $("admState"), admCount = $("admCount"), admSearch = $("admSearch");
-let isAdminUser = false, authReady = false, admAutoOpened = false;
+const admVisState = $("admVisState"), admProbe = $("admProbe");
+let isAdminUser = false, authReady = false, admAutoOpened = false, visInit = false;
 let admItems = [], admSig = "", admLoading = false;
 const admSeen = new Set(), admOpen = new Set();
 let liveOn = false, liveUnsubs = [], pollTimer = null, gotFiles = false;
@@ -7832,23 +7825,81 @@ async function getMyIp(){
   }
   return "";
 }
+/* ---- تۆمارکردنی سەردان: خێرا (زۆرترین ~٣.٥ چرکە)، چەند سەرچاوە پێکەوە، و ئەگەر نووسین سەرنەکەوت دووبارە هەوڵ دەدرێتەوە ---- */
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const errText = e => e && e.code === "permission-denied"
+  ? "ڕێگەپێدان نییە (permission-denied) — ڕێساکانی Firestore بپشکنە"
+  : ((e && (e.message || e.code)) || "هەڵە");
+// هەموو سەرچاوەکان پێکەوە؛ یەکەمێک شاری هەبێت براوەیە، ئەگەرنا باشترین ئەنجام لە کۆتایی کاتەکەدا
+function geoRace(ms){
+  return new Promise(resolve => {
+    let best = null, left = 4, done = false, timer = null;
+    const fin = () => { if (done) return; done = true; clearTimeout(timer); resolve(best); };
+    timer = setTimeout(fin, ms);
+    GEO_SOURCES.slice(0, 4).forEach(src => {
+      fetchJson(src.u(""), ms).then(j => {
+        let g = null; try { g = src.p(j); } catch (_) {}
+        if (!g || done) return;
+        g = cleanGeo(g);
+        if (g.city){ best = g; fin(); }
+        else if (!best && (g.country || g.ip)) best = g;
+        else if (best && !best.ip && g.ip) best.ip = g.ip;
+      }).catch(() => {}).finally(() => { if (--left === 0) fin(); });
+    });
+  });
+}
+// تەنها IP (ئەگەر سەرچاوەکانی شار هەموو شکستیان هێنا)
+function ipRace(ms){
+  return new Promise(resolve => {
+    const srcs = [
+      ["https://api64.ipify.org?format=json", true],
+      ["https://www.cloudflare.com/cdn-cgi/trace", false],
+      ["https://icanhazip.com/", false]
+    ];
+    let left = srcs.length, done = false, timer = null;
+    const fin = v => { if (done) return; done = true; clearTimeout(timer); resolve(v || ""); };
+    timer = setTimeout(() => fin(""), ms);
+    srcs.forEach(([u, isJson]) => {
+      (async () => {
+        const c = new AbortController(), t = setTimeout(() => c.abort(), ms);
+        try {
+          const r = await fetch(u, { signal: c.signal, cache: "no-store" });
+          if (!r.ok) return;
+          let ip = "";
+          if (isJson){ const j = await r.json(); ip = j && j.ip; }
+          else { const tx = await r.text(); const m = /ip=([^\s]+)/.exec(tx); ip = m ? m[1] : tx.trim(); }
+          ip = String(ip || "").trim();
+          if (IP_RE.test(ip)) fin(ip);
+        } catch (_) {}
+        finally { clearTimeout(t); if (--left === 0) fin(""); }
+      })();
+    });
+  });
+}
 async function visLog(){
   try {
     const ua = navigator.userAgent || "";
-    let device = devGuess(ua);
-    try {
-      const h = navigator.userAgentData && await navigator.userAgentData.getHighEntropyValues(["model"]);
-      if (h && h.model) device = h.model;
-    } catch (_) {}
-    let ip = "", city = "", region = "", country = "";
-    const g = await geoLookup("", 5000);
-    if (g){ ip = g.ip; city = g.city; region = g.region; country = g.country; }
-    if (!ip) ip = await getMyIp();
-    // یەکسەر تۆمار دەکرێت (بێ چاوەڕێی زۆر)؛ ئەگەر شار نەبوو، ئەدمین دواتر خۆی دەیدۆزێتەوە
-    await addDoc(collection(db, "visits"), { ip: ip, city: city, region: region, country: country, device: String(device).slice(0, 60), mobile: /Mobi|Android|iPhone|iPad/i.test(ua), t: serverTimestamp() });
-  } catch (_) {}
+    const [model, g, ip2] = await Promise.all([
+      (async () => { try { const h = navigator.userAgentData && await navigator.userAgentData.getHighEntropyValues(["model"]); return (h && h.model) || ""; } catch (_) { return ""; } })(),
+      geoRace(3500),
+      ipRace(3500)
+    ]);
+    const rec = {
+      ip: (g && g.ip) || ip2 || "", city: (g && g.city) || "", region: (g && g.region) || "", country: (g && g.country) || "",
+      device: String(model || devGuess(ua)).slice(0, 60), mobile: /Mobi|Android|iPhone|iPad/i.test(ua), t: serverTimestamp()
+    };
+    // نووسین: ئەگەر هەڵە بوو (نەک permission-denied) سێ جار هەوڵ دەدرێت. هەڵەکە لە console دەمێنێتەوە، نەک بێ دەنگ ون بێت
+    for (let i = 0; i < 3; i++){
+      try { await addDoc(collection(db, "visits"), rec); window.__visLog = "ok"; return; }
+      catch (e){
+        window.__visLog = "failed: " + ((e && e.code) || (e && e.message));
+        console.warn("[visLog] تۆمارکردنی سەردان سەرنەکەوت:", e && e.code, e && e.message);
+        if (e && e.code === "permission-denied") return;
+        await sleep(1500 * (i + 1));
+      }
+    }
+  } catch (e){ console.warn("[visLog]", e); }
 }
-let visInit = false;
 
 /* کاشی ناو وێبگەڕی ئەدمین: ئەو IPانەی پێشتر شارەکەیان دۆزراوەتەوە دووبارە ناپرسرێنەوە */
 const GEO_TTL_NEG = 24 * 3600 * 1000;
@@ -7910,6 +7961,7 @@ async function updateVisCount(shown){
 }
 function renderVisitors(snap){
   const list = $("admVisList");
+  admVisState.textContent = (liveOn ? "● زیندوو" : "↻ خۆکار") + " · " + new Date().toLocaleTimeString();
   updateVisCount(snap.size);
   list.innerHTML = "";
   if (!snap.size){ list.textContent = "هێشتا هیچ سەردانێک نییە."; return; }
@@ -7918,7 +7970,7 @@ function renderVisitors(snap){
     const v = d.data({ serverTimestamps: "estimate" }), row = document.createElement("div");
     row.className = "adm-row"; row.style.cssText = "padding:6px 0;border-top:1px solid var(--border);";
     const a = document.createElement("span"); a.className = "adm-name"; a.dir = "ltr";
-    a.textContent = (v.device || "?") + (v.ip ? " — " + v.ip : "");
+    a.textContent = (v.device || "?") + " — " + (v.ip || "IP نەزانراو");
     const b = document.createElement("span"); b.className = "adm-meta";
     const when = v.t && v.t.toDate ? v.t.toDate().toLocaleString() : "";
     const setMeta = loc => { b.textContent = (loc ? "📍 " + loc + " · " : "") + when; };
@@ -7937,7 +7989,7 @@ function renderVisitors(snap){
 async function refreshVisits(){
   if (!isAdminUser) return;
   try { renderVisitors(await withTimeout(getDocs(visQuery()), 20000)); }
-  catch (e){ $("admVisList").textContent = "هەڵە: " + e.message; }
+  catch (e){ $("admVisList").textContent = "هەڵە: " + errText(e); }
 }
 
 const splitFile = f => { const m = /^\[([^\]]*)\]\s*([\s\S]*)$/.exec(f || ""); return m ? { tab: m[1], name: m[2] } : { tab: "", name: f || "" }; };
@@ -8049,9 +8101,9 @@ async function loadAdmin(){
       getDocs(query(collection(db, "translations"), orderBy("t", "desc"), limit(100)))
     ]), 40000);
     if (vr.status === "fulfilled") renderVisitors(vr.value);
-    else $("admVisList").textContent = "هەڵە: " + (vr.reason && vr.reason.message);
+    else $("admVisList").textContent = "هەڵە: " + errText(vr.reason);
     if (tr.status === "fulfilled") applyTranslations(tr.value);
-    else setAdmState("هەڵە: " + (tr.reason && tr.reason.message), true);
+    else setAdmState("هەڵە: " + errText(tr.reason), true);
   } catch (e){ setAdmState("هەڵە: " + e.message, true); }
   admLoading = false;
 }
@@ -8072,7 +8124,7 @@ function startLive(){
   if (!admItems.length) setAdmState("چاوەڕێبە…");
   let visTimer = null;
   const fail = (el, err) => {
-    if (el === "vis") $("admVisList").textContent = "هەڵە: " + err.message; else setAdmState("هەڵە: " + err.message, true);
+    if (el === "vis") $("admVisList").textContent = "هەڵە: " + errText(err); else setAdmState("هەڵە: " + errText(err), true);
     stopLive(); startPolling();                // ئەگەر لیسنەر کاری نەکرد، هەر ٣٠ چرکە خۆکارانە دەهێنرێتەوە
   };
   try {
@@ -8092,6 +8144,26 @@ admTab.addEventListener("click", () => { if (admItems.length && !admPanel.queryS
 $("admRefresh").addEventListener("click", () => { admSig = ""; if (!liveOn) startLive(); loadAdmin(); });
 $("admClose").addEventListener("click", () => gotoTab("extract"));
 admSearch.addEventListener("input", applyFilter);
+
+/* پشکنین: بە ئەپێکی جیا (چوونەژوورەوە نییە) سەردانێک دەنووسێت، وەک سەردانکەرێکی ئاسایی، و ئەنجامەکە پیشان دەدات */
+let probeDb = null;
+async function probeVisitWrite(){
+  admProbe.disabled = true; setAdmState("پشکنین…");
+  try {
+    if (!probeDb){
+      let papp; try { papp = getApp("probe"); } catch (_) { papp = initializeApp(firebaseConfig, "probe"); }
+      probeDb = initializeFirestore(papp, { experimentalAutoDetectLongPolling: true });
+    }
+    const ref = await withTimeout(addDoc(collection(probeDb, "visits"), { ip: "", city: "", region: "", country: "", device: "🔍 پشکنین", mobile: false, t: serverTimestamp() }), 15000);
+    let removed = true;
+    try { await deleteDoc(doc(db, "visits", ref.id)); } catch (_) { removed = false; }
+    setAdmState("✓ تۆمارکردنی سەردان کار دەکات (سەردانکەری چوونەژوورەوە-نەکراو دەتوانێت بنووسێت)." + (removed ? "" : " ڕیزی «🔍 پشکنین» دەستی لێ بسڕەوە."));
+  } catch (e){
+    setAdmState("✗ تۆمارکردنی سەردان سەرنەکەوت: " + errText(e), true);
+  }
+  admProbe.disabled = false;
+}
+admProbe.addEventListener("click", probeVisitWrite);
 </script>
 
 
