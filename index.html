@@ -941,6 +941,12 @@
   #seRoot:-webkit-full-screen{background:var(--bg);padding:8px;width:100%;height:100%;display:flex;flex-direction:column;}
   #seRoot.se-pfs{position:fixed;inset:0;z-index:9999;background:var(--bg);padding:8px;display:flex;flex-direction:column;}
   .se-hide{display:none!important;}
+  /* in-page dialog (replaces alert/confirm/prompt, which kick the browser out of full screen) */
+  #seDlg{position:fixed;inset:0;z-index:10050;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px;}
+  #seDlg .se-dlg-box{background:var(--card,#fff);color:var(--text,#000);border:1px solid var(--border,#dbe7f0);border-radius:14px;padding:16px;width:min(420px,100%);display:flex;flex-direction:column;gap:12px;box-shadow:0 10px 40px rgba(0,0,0,.35);}
+  #seDlg #seDlgMsg{font-size:14px;line-height:1.7;white-space:pre-wrap;}
+  #seDlg #seDlgIn{width:100%;padding:8px 10px;border:1px solid var(--border,#dbe7f0);border-radius:8px;font:inherit;background:var(--bg);color:inherit;}
+  #seDlg .se-dlg-btns{display:flex;gap:8px;justify-content:flex-start;flex-wrap:wrap;}
   .se-app{display:flex;flex-direction:column;height:min(78vh,760px);}
   #seRoot:fullscreen .se-app,#seRoot.se-pfs .se-app{height:auto;flex:1;min-height:0;}
   #seRoot:-webkit-full-screen .se-app{height:auto;flex:1;min-height:0;}
@@ -2333,6 +2339,7 @@
             </div>
             <div class="se-rep-row">
               <button class="btn btn-download" id="seGlFix" type="button">✓ هاوتاکردنی هەڵبژێرراوەکان</button>
+              <button class="btn btn-ghost" id="seGlUndo" type="button" title="گەڕانەوەی دوایین گۆڕانکاری گشتی" disabled>↶ گەڕانەوە</button>
             </div>
             <div class="se-rep-row"><span id="seGlInfo"></span></div>
           </div>
@@ -2347,6 +2354,7 @@
           </div>
         </div>
         <div id="seMenu"></div>
+        <div id="seDlg" class="se-hide" dir="rtl" role="dialog" aria-modal="true"><div class="se-dlg-box"><div id="seDlgMsg"></div><input type="text" id="seDlgIn" class="se-hide" dir="auto" autocomplete="off" spellcheck="false"><div class="se-dlg-btns"><button class="btn btn-primary" id="seDlgOk" type="button">باشە</button><button class="btn btn-ghost" id="seDlgNo" type="button">پاشگەزبوونەوە</button></div></div></div>
         <div id="seToast" role="status" aria-live="polite"></div>
       </div>
     </div>
@@ -5581,6 +5589,31 @@ ${text}`;
 const KEY='presub_seditor_v1';
 const $=id=>document.getElementById(id);
 const root=$('seRoot'),list=$('seList'),menu=$('seMenu'),panel=$('panel-seditor');
+/* in-page alert / confirm / prompt: native ones make the browser leave full screen */
+const dlg=$('seDlg'),dlgMsg=$('seDlgMsg'),dlgIn=$('seDlgIn'),dlgOk=$('seDlgOk'),dlgNo=$('seDlgNo');
+let dlgCancel=null;
+function dlgOpen(msg,mode,def){
+  return new Promise(res=>{
+    if(dlgCancel)dlgCancel();
+    const neg=mode==='prompt'?null:false;
+    const fin=v=>{dlg.classList.add('se-hide');dlgCancel=null;dlgOk.onclick=dlgNo.onclick=dlg.onclick=dlg.onkeydown=null;res(v);};
+    dlgCancel=()=>fin(mode==='alert'?true:neg);
+    dlgMsg.textContent=msg;
+    dlgIn.classList.toggle('se-hide',mode!=='prompt');
+    dlgNo.classList.toggle('se-hide',mode==='alert');
+    if(mode==='prompt')dlgIn.value=def==null?'':def;
+    dlgOk.onclick=()=>fin(mode==='prompt'?dlgIn.value:true);
+    dlgNo.onclick=()=>fin(neg);
+    dlg.onclick=e=>{if(e.target===dlg)dlgCancel();};
+    dlg.onkeydown=e=>{
+      if(e.key==='Escape'){e.preventDefault();e.stopPropagation();dlgCancel();}
+      else if(e.key==='Enter'&&mode==='prompt'){e.preventDefault();dlgOk.onclick();}
+    };
+    dlg.classList.remove('se-hide');
+    setTimeout(()=>(mode==='prompt'?dlgIn:dlgOk).focus(),0);
+  });
+}
+const seAlert=m=>dlgOpen(m,'alert'),seConfirm=m=>dlgOpen(m,'confirm'),sePrompt=(m,d)=>dlgOpen(m,'prompt',d);
 const FS=CSS.supports('field-sizing','content');
 let S=null,mi=-1,restored=false,saveT,fadeT;
 let solo=false,soloScroll=0,soloStart=0,soloWinY=0,soloRel=0,exitTok=0;
@@ -6458,12 +6491,12 @@ menu.addEventListener('click',async e=>{
     case 'splitblk':splitBlock(i);break;
     case 'mergeprev':if(i>0)mergeNext(i-1);break;
     case 'mergenext':mergeNext(i);break;
-    case 'delblk':if(S.blocks.length>1&&confirm('بلۆکی '+b.n+' دەسڕدرێتەوە و ژمارەی بلۆکەکانی دوای ئەمە یەک کەم دەبنەوە. بەردەوام بیت؟'))delBlock(i);break;
+    case 'delblk':if(S.blocks.length>1&&await seConfirm('بلۆکی '+b.n+' دەسڕدرێتەوە و ژمارەی بلۆکەکانی دوای ئەمە یەک کەم دەبنەوە. بەردەوام بیت؟'))delBlock(i);break;
     case 'copy':await copy(b.x);break;
     case 'time':await copy(b.t);break;
     case 'paste':
       try{setText(i,await navigator.clipboard.readText(),true);}
-      catch(_){alert('ڕێگەپێدان بە پەیست نەدراوە. لە ناو دەقەکە Ctrl+V بەکاربهێنە.');}
+      catch(_){seAlert('ڕێگەپێدان بە پەیست نەدراوە. لە ناو دەقەکە Ctrl+V بەکاربهێنە.');}
       break;
     case 'undo':if(h.i>0){h.i--;setText(i,h.s[h.i],false);}break;
     case 'redo':if(h.i<h.s.length-1){h.i++;setText(i,h.s[h.i],false);}break;
@@ -6478,7 +6511,7 @@ function openFile(f){
   const r=new FileReader();
   r.onload=()=>{
     const bl=parse(r.result);
-    if(!bl.length){alert('ئەم فایلە SRT ی دروست نییە.');return;}
+    if(!bl.length){seAlert('ئەم فایلە SRT ی دروست نییە.');return;}
     hist.clear();bulkStack=[];if(typeof bulkBtn==='function')bulkBtn();
     tmUndo=[];tmBtnState();
     if(typeof repUndo!=='undefined')repUndo=[];
@@ -6635,7 +6668,7 @@ function repToggle(show){
   const on=show==null?repBox.classList.contains('se-hide'):show;
   repBox.classList.toggle('se-hide',!on);rBtn.classList.toggle('on',on);
   if(on){repScan();rF.focus();}
-  else{doneRows=[];doneTotal=0;repUndo=[];found=[];unchecked.clear();rL.innerHTML='';} /* closing the panel clears the replaced list */
+  else{doneRows=[];doneTotal=0;found=[];unchecked.clear();rL.innerHTML='';repUndoBtn();} /* closing the panel clears the replaced list */
 }
 rBtn.onclick=()=>repToggle();
 $('seRepX').onclick=()=>repToggle(false);
@@ -6702,7 +6735,7 @@ function addRle(x){
   }).join('\n');
 }
 let bulkStack=[];
-const bulkBtn=()=>{const b=$('seUndoAll');if(b)b.disabled=!bulkStack.length;};
+const bulkBtn=()=>{['seUndoAll','seGlUndo'].forEach(id=>{const b=$(id);if(b)b.disabled=!bulkStack.length;});};
 function bulk(fn){
   let n=0;const rec=[];
   S.blocks.forEach((b,i)=>{const v=fn(b.x);if(v!==b.x){rec.push([i,b.x]);snap(i);setText(i,v,true);n++;}});
@@ -6711,13 +6744,16 @@ function bulk(fn){
   return n;
 }
 /* global undo: puts back every block changed by the last whole-file tool (spaces, U+202B, {\an8}, split) */
-$('seUndoAll').onclick=()=>{
+function bulkUndo(){
   if(!S||!bulkStack.length)return;
   const rec=bulkStack.pop();
   rec.forEach(([i,old])=>{if(S.blocks[i])setText(i,old,true);});
   save(true);bulkBtn();
+  if(typeof glDraw==='function'&&!$('seGl').classList.contains('se-hide'))glDraw();
   say('↶ گەڕایەوە لە '+rec.length+' بلۆکدا');
-};
+}
+$('seUndoAll').onclick=bulkUndo;
+$('seGlUndo').onclick=bulkUndo;
 bulkBtn();
 $('seSp').onclick=()=>{if(!S)return;const n=bulk(fixSpaces);say(n?('✓ سپەیسی زیادە لابرا لە '+n+' بلۆکدا'):'هیچ سپەیسی زیادە نەدۆزرایەوە');};
 $('seRle').onclick=()=>{if(!S)return;const n=bulk(addRle);say(n?('✓ U+202B زیادکرا لە '+n+' بلۆکدا'):'U+202B پێشتر لە هەموو بلۆکەکان هەیە');};
@@ -6727,10 +6763,10 @@ $('seAn').onclick=()=>{if(!S)return;
   if(!total){say('هیچ بلۆکێکی {\\an8}دار نییە');return;}
   const n=bulk(fixAn);
   say(n?('✓ {\\an8} ڕێکخرا لە '+n+' بلۆکدا'):'هەموو بلۆکەکانی {\\an8}دار پێشتر ڕێکخراون');};
-$('seSplit').onclick=()=>{if(!S)return;
+$('seSplit').onclick=async()=>{if(!S)return;
   let mx=42;try{mx=+localStorage.getItem('presub_se_splitmax')||42;}catch(_){}
-  const v=prompt('هەر دێڕێک لە '+mx+' پیت درێژتر بێت لەت دەکرێت. زۆرترین پیت لە هەر دێڕێک:',mx);
-  if(v===null)return;
+  const v=await sePrompt('هەر دێڕێک لە '+mx+' پیت درێژتر بێت لەت دەکرێت. زۆرترین پیت لە هەر دێڕێک:',mx);
+  if(v===null||!S)return;
   const m=parseInt(v,10);
   if(!(m>=10)){say('ژمارەیەکی دروست بنووسە (10 یان زیاتر)');return;}
   try{localStorage.setItem('presub_se_splitmax',String(m));}catch(_){}
@@ -7059,7 +7095,14 @@ glList.addEventListener('click',e=>{
   const del=e.target.closest('.se-gx');
   if(del){
     const k=+del.dataset.del;
-    if(gl[k]&&confirm('«'+gl[k].n+'» لە فەرهەنگ دەسڕدرێتەوە. بەردەوام بیت؟')){glSel.delete(gl[k].n);gl.splice(k,1);glClearForm();glSave();glDraw();}
+    if(gl[k]){
+      const nm=gl[k].n;
+      seConfirm('«'+nm+'» لە فەرهەنگ دەسڕدرێتەوە. بەردەوام بیت؟').then(ok=>{
+        if(!ok)return;
+        const j=gl.findIndex(x=>x.n===nm);if(j<0)return;
+        glSel.delete(nm);gl.splice(j,1);glClearForm();glSave();glDraw();
+      });
+    }
     return;
   }
   const row=e.target.closest('.se-gi');if(!row)return;
@@ -7107,12 +7150,11 @@ tools.addEventListener('wheel',e=>{
   tools.scrollLeft+=getComputedStyle(tools).direction==='rtl'?-e.deltaY:e.deltaY;
 },{passive:false});
 
-$('seNew').onclick=()=>{
-  if(!confirm('فایلی ئێستا دادەخرێت و دەسکارییەکان دەسڕێنەوە. بەردەوام بیت؟ (پێشتر «دابەزاندن» بکە)'))return;
+$('seNew').onclick=async()=>{
+  if(!(await seConfirm('فایلی ئێستا دادەخرێت و دەسکارییەکان دەسڕێنەوە. بەردەوام بیت؟ (پێشتر «دابەزاندن» بکە)')))return;
   try{localStorage.removeItem(KEY);}catch(_){}
-  S=null;hist.clear();bulkStack=[];bulkBtn();tmUndo=[];tmBtnState();tmToggle(false);glToggle(false);solo=false;list.classList.remove('solo');lw.classList.remove('solo');list.innerHTML='';repToggle(false);rF.value='';rW.value='';
+  S=null;hist.clear();bulkStack=[];bulkBtn();tmUndo=[];tmBtnState();tmToggle(false);glToggle(false);solo=false;list.classList.remove('solo');lw.classList.remove('solo');list.innerHTML='';repToggle(false);repUndo=[];repUndoBtn();rF.value='';rW.value='';
   $('seApp').classList.add('se-hide');$('seEmpty').classList.remove('se-hide');
-  exitFs();
 };
 
 /* full screen (with fallback for browsers that lack the API) */
