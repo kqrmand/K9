@@ -944,6 +944,7 @@
   /* in-page dialog (replaces alert/confirm/prompt, which kick the browser out of full screen) */
   #seDlg{position:fixed;inset:0;z-index:10050;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px;}
   #seDlg .se-dlg-box{background:var(--card,#fff);color:var(--text,#000);border:1px solid var(--border,#dbe7f0);border-radius:14px;padding:16px;width:min(420px,100%);display:flex;flex-direction:column;gap:12px;box-shadow:0 10px 40px rgba(0,0,0,.35);}
+  #seDlg .se-dlg-box{max-height:100%;overflow:auto;}
   #seDlg #seDlgMsg{font-size:14px;line-height:1.7;white-space:pre-wrap;}
   #seDlg #seDlgIn{width:100%;padding:8px 10px;border:1px solid var(--border,#dbe7f0);border-radius:8px;font:inherit;background:var(--bg);color:inherit;}
   #seDlg .se-dlg-btns{display:flex;gap:8px;justify-content:flex-start;flex-wrap:wrap;}
@@ -5610,8 +5611,17 @@ function dlgOpen(msg,mode,def){
       else if(e.key==='Enter'&&mode==='prompt'){e.preventDefault();dlgOk.onclick();}
     };
     dlg.classList.remove('se-hide');
-    setTimeout(()=>(mode==='prompt'?dlgIn:dlgOk).focus(),0);
+    dlgPlace();setTimeout(()=>{dlgOk.focus({preventScroll:true});dlgPlace();},0);
   });
+}
+function dlgPlace(){
+  if(dlg.classList.contains('se-hide'))return;
+  const top=VV?VV.offsetTop:0;
+  let bottom=VV?VV.offsetTop+VV.height:innerHeight;
+  const kh=(typeof vkH==='function')?vkH():0;
+  if(kh)bottom=Math.min(bottom,innerHeight-kh);
+  dlg.style.top=Math.max(0,Math.round(top))+'px';dlg.style.bottom='auto';
+  dlg.style.height=Math.max(120,Math.round(bottom-top))+'px';
 }
 const seAlert=m=>dlgOpen(m,'alert'),seConfirm=m=>dlgOpen(m,'confirm'),sePrompt=(m,d)=>dlgOpen(m,'prompt',d);
 const FS=CSS.supports('field-sizing','content');
@@ -6205,7 +6215,10 @@ function placeNav(){
   nav.style.bottom='auto';
   nav.style.top=Math.max(0,Math.round(bottom-h))+'px';
 }
-if(VV){VV.addEventListener('resize',placeNav);VV.addEventListener('scroll',placeNav);}
+if(VV){VV.addEventListener('resize',()=>{placeNav();dlgPlace();});VV.addEventListener('scroll',()=>{placeNav();dlgPlace();});}
+addEventListener('resize',dlgPlace);
+if(navigator.virtualKeyboard)navigator.virtualKeyboard.addEventListener('geometrychange',dlgPlace);
+dlgIn.addEventListener('focus',()=>{dlgPlace();setTimeout(dlgPlace,150);setTimeout(dlgPlace,400);});
 addEventListener('resize',placeNav);
 addEventListener('scroll',placeNav,{passive:true});
 /* fullscreen: browsers report the keyboard late / not at all, so keep re-checking while the nav is shown */
