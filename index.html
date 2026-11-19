@@ -2116,11 +2116,14 @@
       set('--bg',t.bg);set('--bg-2',t.bg2);set('--surface',t.s||'#ffffff');set('--surface-2',t.s2);
       set('--border',t.b);set('--border-soft',t.bs);
       set('--on-accent',t.on||'#ffffff');set('--text',t.t);set('--text-dim',t.td);set('--text-faint',t.tf);
-      /* editor text box: dark themes get a dark box + light text, light themes a light box + dark text */
-      set('--se-bg',t.dark?'linear-gradient(160deg,'+(t.s2||t.s)+','+t.bg+')':t.s2);
-      set('--se-fg',t.t);set('--se-caret',t.t);
-      set('--se-ring',t.dark?'rgba(255,255,255,.08)':t.b);
-      set('--se-flat',t.s2||t.s);
+      /* editor text box: ALWAYS a dark box + light text, so the subtitle colours (red, yellow, picked ones...) show the very same tone in dark and light mode.
+         Dark themes tint the box with their own dark colours; light themes keep the default dark box from :root (--se-bg / --se-flat / --se-fg ...). */
+      if(t.dark){
+        set('--se-bg','linear-gradient(160deg,'+(t.s2||t.s)+','+t.bg+')');
+        set('--se-fg',t.t);set('--se-caret',t.t);
+        set('--se-ring','rgba(255,255,255,.08)');
+        set('--se-flat',t.s2||t.s);
+      }
       if(!t.dark){set('--danger','#d6455a');set('--danger-soft','#fdebee');set('--ok',t.a);set('--ok-soft',t.soft);set('--shadow-pop','0 18px 40px -16px rgba(20,30,28,.35)');set('--match','#e8b100');}if(t.dark){
         set('--danger-soft',t.ds);set('--ok',t.lt);set('--ok-soft',t.soft);
         set('--shadow-card','0 1px 2px rgba(0,0,0,.35), 0 10px 26px -14px rgba(0,0,0,.7)');
@@ -5916,7 +5919,7 @@ function noteParts(l){
   const trail=rest.match(/(?:[\s\u202A-\u202E]*<\/[^>]+>)*[\s\u202A-\u202E]*$/)[0];
   return {lead,core:rest.slice(0,rest.length-trail.length),trail};
 }
-function noteText(x,s,e){
+function noteText(x,s,e,addOnly){ /* addOnly: only ever ADD the ♪ where it is missing, never take it away */
   const sc=splitColors(x),i=lineInfo(sc.d,s,e);
   const L=x.replace(/\{\\an8\}(?:[\u202B\u202C\u200F]*\n)?/gi,'').split('\n');
   let t=[];for(let k=i.a;k<=i.b;k++)t.push(k);
@@ -5925,7 +5928,7 @@ function noteText(x,s,e){
   t=t.filter(k=>L[k]!=null);
   if(t.length<2){
     const has=l=>/^♪|♪$/.test(noteParts(l).core);
-    const on=!t.every(k=>has(L[k]));
+    const on=addOnly||!t.every(k=>has(L[k]));
     for(const k of t){
       const p=noteParts(L[k]);let c=p.core;
       if(on){if(!has(L[k]))c=c?'♪ '+c+' ♪':'♪';}
@@ -5936,7 +5939,7 @@ function noteText(x,s,e){
     /* two lines: one ♪ at the start of the first line and one at the end of the last line */
     const P=t.map(k=>noteParts(L[k])),last=t.length-1;
     const has=/^♪/.test(P[0].core)&&/♪$/.test(P[last].core);
-    t.forEach((k,n)=>{
+    if(!(addOnly&&has))t.forEach((k,n)=>{
       let c=P[n].core.replace(/^♪\s*/,'').replace(/\s*♪$/,'');
       if(!has){
         if(n===0)c=c?'♪ '+c:'♪';
@@ -6113,6 +6116,22 @@ function applyTop(i){
   c.an=c.an>=0?-1:0;
   const f=ensureRleAn(d,c);
   setText(i,joinColors(f.d,f.c),true);
+}
+/* ♪ + yellow in one go: the ♪ is added only where the text has none yet (never removed), then the yellow is applied.
+   With a selection: only the selected text turns yellow, and the selected lines get the ♪. Otherwise: the whole block (♪ included). */
+function applyNoteYellow(i){
+  const ta=list.children[i].querySelector('textarea'),x=S.blocks[i].x,Y='#ffff00';
+  const active=document.activeElement===ta&&!ta.readOnly;
+  const s=ta.selectionStart,e=ta.selectionEnd,sel=active&&s!==e;
+  let v;
+  if(sel)v=noteText(colorText(x,s,e,Y),s,e,true);
+  else{
+    v=noteText(x,0,splitColors(x).d.length,true);
+    v=colorText(v,0,splitColors(v).d.length,Y);
+  }
+  const same=splitColors(v).d.length===splitColors(x).d.length;
+  setText(i,v,true);
+  if(sel&&same)try{ta.setSelectionRange(s,e);}catch(_){}
 }
 function applyNote(i){
   const ta=list.children[i].querySelector('textarea'),x=S.blocks[i].x;
@@ -6400,9 +6419,8 @@ function openMenu(i,btn){
   mi=i;snap(i);
   const h=H(i),b=S.blocks[i];
   const items=[
-    ['note','♪ ئایکۆنی گۆرانی',0],
     ['red','<span style="color:#FF262F">●</span> ڕەنگی سور',0],
-    ['yellow','<span style="color:#e6c800">●</span> ڕەنگی زەرد',0],
+    ['noteyellow','<span style="color:#e6c800">♪</span> ئایکۆنی گۆرانی + ڕەنگی زەرد',0],
     ['cp'],
     ['top',(splitColors(b.x).c.an>=0?'<span style="display:inline-block;width:14px;height:14px;vertical-align:-2px">'+AN_IC+'</span> لابردنی سەرەوە ':'<span style="display:inline-block;width:14px;height:14px;vertical-align:-2px">'+AN_IC+'</span> سەرەوەی شاشە ')+'<bdi dir="ltr">{\\an8}</bdi>',0],
     ['nocol','✕ لابردنی ڕەنگ',!/<\/?font/i.test(b.x)],
@@ -6537,9 +6555,8 @@ menu.addEventListener('click',async e=>{
   const a=e.target.closest('button');if(!a||a.disabled)return;
   const i=mi,b=S.blocks[i],h=H(i);closeMenu();
   switch(a.dataset.a){
-    case 'note':applyNote(i);break;
     case 'red':applyColor(i,'#FF262F');break;
-    case 'yellow':applyColor(i,'#ffff00');break;
+    case 'noteyellow':applyNoteYellow(i);break;
     case 'nocol':applyColor(i,null);break;
     case 'top':applyTop(i);break;
     case 'quote':setText(i,quoteText(b.x),true);break;
