@@ -2772,7 +2772,8 @@
           <button type="button" id="plBTv" aria-pressed="false">زنجیرە / دراما</button>
         </div>
         <select id="plSource" class="text-input ltr" aria-label="سەرچاوە">
-          <option value="zxcstream" selected>zxcstream.cc</option>
+          <option value="vidora" selected>vidora.ac</option>
+          <option value="zxcstream">zxcstream.cc</option>
           <option value="framextv">framextv.xyz</option>
           <option value="vidhive">vidhive.lol</option>
           <option value="custom">ئادرەسی ڕاستەوخۆ</option>
@@ -2809,11 +2810,11 @@
         <summary>ڕێکخستن و ڕێنمایی</summary>
         <div class="pl-field">
           <label class="label-sm" for="plMovieTpl">ئادرەسی فیلم</label>
-          <input id="plMovieTpl" class="text-input ltr" value="https://zxcstream.cc/player/movie/{id}">
+          <input id="plMovieTpl" class="text-input ltr" value="https://vidora.ac/movie/{id}">
         </div>
         <div class="pl-field">
           <label class="label-sm" for="plTvTpl">ئادرەسی زنجیرە</label>
-          <input id="plTvTpl" class="text-input ltr" value="https://zxcstream.cc/player/tv/{id}/{s}/{e}">
+          <input id="plTvTpl" class="text-input ltr" value="https://vidora.ac/tv/{id}/{s}/{e}">
         </div>
         <p class="pl-help">{id} و {s} و {e} بەکاربهێنە. گەڕان بە ناو هەمان کلیلی TMDB بەکاردێنێت.</p>
         <p class="pl-help">ژمارەکە لە <a href="https://www.themoviedb.org" target="_blank" rel="noopener noreferrer">themoviedb.org</a> لە کۆتایی ئادرەسی پەڕەکەدا دەبینیت (بۆ نموونە <bdi dir="ltr">/movie/550</bdi>).</p>
@@ -7383,6 +7384,10 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')setOpen(fals
   var mode = "movie";
   var KEY = "presub_player_state_v2";
   var SOURCES = {
+    vidora:{
+      movie:"https://vidora.ac/movie/{id}",
+      tv:"https://vidora.ac/tv/{id}/{s}/{e}"
+    },
     framextv:{
       movie:"https://framextv.xyz/embed/{id}?autoplay=1&muted=0",
       tv:"https://framextv.xyz/embed/tv/{id}/{s}/{e}?autoplay=1&muted=0"
@@ -7419,6 +7424,12 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')setOpen(fals
 
   try{
     var s = JSON.parse(localStorage.getItem(KEY)||"{}");
+    // یەکجار: vidora دەبێتە سەرچاوەی سەرەکی، ئەگەر پێشتر سەرچاوەیەکی تر هەڵگیرابێت
+    if(localStorage.getItem("presub_player_vidora_main") !== "1"){
+      delete s.source; delete s.movieTpl; delete s.tvTpl;
+      localStorage.setItem(KEY, JSON.stringify(s));
+      localStorage.setItem("presub_player_vidora_main", "1");
+    }
     if(s.id) $("plTmdb").value = s.id;
     if(s.season) $("plSeason").value = s.season;
     if(s.episode) $("plEpisode").value = s.episode;
