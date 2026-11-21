@@ -7091,32 +7091,65 @@ function glDetect(){
   glDetInfo.textContent=glNames.length?(glNames.length+' ناوی جیاواز دۆزرایەوە. کرتەیان لەسەر بکە بۆ دیاریکردن'):'';
 }
 $('seGlDet').onclick=glDetect;
-/* every place of `from` in d: it must not start inside a longer word, may be followed by a suffix (unless `whole`), never inside a {..} code, and not where the correct form `skipTo` already stands */
-function glScan(d,from,whole,skipTo){
-  const out=[];if(!from)return out;
-  const br=braceMask(d);let k=0;
-  while(k<d.length){
-    const j=d.indexOf(from,k);if(j<0)break;
-    const e=j+from.length;k=j+1;
-    const pb=j>0?d[j-1]:'',na=e<d.length?d[e]:'';
-    if(pb&&isWc(pb))continue;
-    if(whole&&na&&isWc(na))continue;
-    if(br[j])continue;
-    if(skipTo&&d.startsWith(skipTo,j))continue;
-    out.push([j,e]);k=e;
+/* ---- name matching, same rules as the multi-file names tab:
+   ي ى -> ی , ك -> ک , ھ -> ه ; ZWNJ / tatweel / vowel marks / RLE marks are ignored.
+   A name must not start inside a longer word and may be followed ONLY by a real suffix (جۆن ← جۆنەکە، جۆنی، جۆنیش ...), never by other letters.
+   "whole" = no suffix at all. Never inside a {..} code. All wrong forms are replaced in ONE pass, so a replaced name is never replaced again. ---- */
+const GL_IGN=/[\u200c\u200d\u0640\u064b-\u065f\u0670\u200e\u200f\u202a-\u202e\u2066-\u2069\ufeff]/;
+const GL_SUF=/^(?:(?:ەکان|ەکە|ێک|یەک|ان|ە)(?:یان|مان|تان|ەوە|یش|ی|ش|م|ت)?|یان|مان|تان|ەوە|یش|ەش|ی|ش|م|ت|ێ)?(?![\p{L}\p{M}\p{N}])/u;
+const glMap=ch=>ch==='ي'||ch==='ى'?'ی':ch==='ك'?'ک':ch==='ھ'?'ه':ch;
+function glSkel(d){ /* text without the ignorable characters; map[i] = place in the original text */
+  let s='';const map=[];
+  for(let i=0;i<d.length;i++){
+    const ch=d[i];
+    if(GL_IGN.test(ch))continue;
+    if(/\s/.test(ch)){if(s&&s[s.length-1]!==' '){s+=' ';map.push(i);}continue;}
+    s+=glMap(ch);map.push(i);
+  }
+  return {s,map,br:null};
+}
+const glKey=t=>glSkel(t||'').s.trim();
+/* keys: [{k:wrong form (normalised), tk:correct name (normalised), to:correct name}] -> every place in d, longest first, no overlaps */
+function glFind(d,keys,whole,sk){
+  const out=[];if(!keys.length)return out;
+  sk=sk||glSkel(d);const s=sk.s,map=sk.map;
+  const by=new Map();
+  keys.forEach(o=>{if(!o.k)return;const a=by.get(o.k[0]);if(a)a.push(o);else by.set(o.k[0],[o]);});
+  by.forEach(a=>a.sort((x,y)=>y.k.length-x.k.length));
+  for(let i=0;i<s.length;){
+    const a=by.get(s[i]);
+    if(a&&!(i&&isWc(s[i-1]))){
+      let hit=null;
+      for(const o of a){
+        if(!s.startsWith(o.k,i))continue;
+        const e=i+o.k.length;
+        if(whole?(e<s.length&&isWc(s[e])):!GL_SUF.test(s.slice(e,e+10)))continue;
+        if(o.tk&&o.tk.length>o.k.length&&s.startsWith(o.tk,i))continue; /* the correct, longer form already stands here */
+        hit={o,e};break;
+      }
+      if(hit){
+        const j=map[i],e=map[hit.e-1]+1;
+        if(!sk.br)sk.br=braceMask(d);
+        let inB=0;for(let q=j;q<e;q++)if(sk.br[q]){inB=1;break;}
+        if(!inB)out.push({j,e,to:hit.o.to});
+        i=hit.e;continue;
+      }
+    }
+    i++;
   }
   return out;
 }
 /* replace in text d and in its colour map c together, so colours of the untouched characters stay */
-function repDC(d,c,from,to,whole){
-  const ps=glScan(d,from,whole,to);if(!ps.length)return null;
+function glApply(d,c,keys,whole){
+  const ps=glFind(d,keys,whole).filter(p=>d.slice(p.j,p.e)!==p.to);
+  if(!ps.length)return null;
   let nd='',nc=[],k=0;
-  for(const [j,e] of ps){
-    nd+=d.slice(k,j)+to;
-    for(let q=k;q<j;q++)nc.push(c[q]);
-    const col=c[j]||null;
-    for(let q=0;q<to.length;q++)nc.push(col);
-    k=e;
+  for(const p of ps){
+    nd+=d.slice(k,p.j)+p.to;
+    for(let q=k;q<p.j;q++)nc.push(c[q]);
+    const col=c[p.j]||null;
+    for(let q=0;q<p.to.length;q++)nc.push(col);
+    k=p.e;
   }
   nd+=d.slice(k);
   for(let q=k;q<d.length;q++)nc.push(c[q]);
@@ -7125,11 +7158,12 @@ function repDC(d,c,from,to,whole){
 }
 function glDraw(){
   glList.textContent='';
-  const ds=S?S.blocks.map(b=>splitColors(b.x).d):[],whole=glWhole.checked;
+  const ds=S?S.blocks.map(b=>splitColors(b.x).d):[],sks=ds.map(glSkel),whole=glWhole.checked;
   const fr=document.createDocumentFragment();
   gl.forEach((e,k)=>{
     let vc=0,cc=0;
-    ds.forEach(d=>{e.v.forEach(v=>{vc+=glScan(d,v,whole,e.n).length;});cc+=glScan(d,e.n,whole).length;});
+    const nk=glKey(e.n),vk=e.v.map(v=>({k:glKey(v),tk:nk,to:e.n})),cq=[{k:nk,tk:'',to:e.n}];
+    ds.forEach((d,q)=>{vc+=glFind(d,vk,whole,sks[q]).filter(p=>d.slice(p.j,p.e)!==e.n).length;cc+=glFind(d,cq,whole,sks[q]).length;});
     const row=document.createElement('div');row.className='se-gi'+(k===glEd?' ed':'');row.dataset.k=k;
     const ck=document.createElement('input');ck.type='checkbox';ck.className='se-gck';ck.dataset.n=e.n;ck.checked=glSel.has(e.n);ck.setAttribute('aria-label','هەڵبژاردن');
     const n=document.createElement('span');n.className='se-gn';n.dir='auto';n.textContent=e.n;
@@ -7160,6 +7194,7 @@ glAdd.onclick=()=>{
   const e={n,v};
   if(glEd>=0&&gl[glEd]){if(glSel.delete(gl[glEd].n))glSel.add(n);gl[glEd]=e;}
   else{const dup=gl.findIndex(x=>x.n===n);if(dup>=0)gl[dup]=e;else gl.push(e);}
+  glSel.add(n);
   glClearForm();glSave();glDraw();
 };
 [glName,glVars].forEach(el=>el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();glAdd.click();}}));
@@ -7190,16 +7225,15 @@ glWhole.addEventListener('change',glDraw);
 $('seGlFix').onclick=()=>{
   if(!S)return;
   if(!gl.some(e=>glSel.has(e.n))){say('سەرەتا ناوەکان هەڵبژێرە');return;}
-  const whole=glWhole.checked,pairs=[];
-  gl.forEach(e=>{if(glSel.has(e.n))e.v.forEach(v=>{if(v!==e.n)pairs.push([v,e.n]);});});
-  if(!pairs.length){say('هیچ شێوەیەکی هەڵە بۆ ناوە هەڵبژێردراوەکان نییە');return;}
-  pairs.sort((a,b)=>b[0].length-a[0].length);
+  const whole=glWhole.checked,keys=[];
+  gl.forEach(e=>{if(glSel.has(e.n)){const tk=glKey(e.n);e.v.forEach(v=>{const k=glKey(v);if(k&&v!==e.n)keys.push({k,tk,to:e.n});});}});
+  if(!keys.length){say('هیچ شێوەیەکی هەڵە بۆ ناوە هەڵبژێردراوەکان نییە');return;}
   let total=0;
   const n=bulk(x=>{
-    let {d,c}=splitColors(x),ch=0;
-    for(const [v,to] of pairs){const r=repDC(d,c,v,to,whole);if(r){d=r.d;c=r.c;ch+=r.n;}}
-    if(!ch)return x;
-    total+=ch;
+    let {d,c}=splitColors(x);
+    const r=glApply(d,c,keys,whole);
+    if(!r)return x;
+    d=r.d;c=r.c;total+=r.n;
     if(c.an>=0){const f=ensureRleAn(d,c);d=f.d;c=f.c;}
     return joinColors(d,c);
   });
@@ -8090,7 +8124,7 @@ function renderVisitors(snap){
   admVisState.textContent = (liveOn ? "● زیندوو" : "↻ خۆکار") + " · " + new Date().toLocaleTimeString();
   updateVisCount(snap.size);
   list.innerHTML = "";
-  if (!snap.size){ list.textContent = "هێشتا هیچ سەردانێک نییە."; return; }
+  if (!snap.size){ list.textContent = "هێشتا هیچ سەردانێک نییە. ئەگەر چاوەڕێی سەردانێکت دەکرد، دوگمەی «🔍 پشکنینی تۆمارکردنی سەردان» بکە."; return; }
   const frag = document.createDocumentFragment();
   snap.docs.forEach(d => {
     const v = d.data({ serverTimestamps: "estimate" }), row = document.createElement("div");
@@ -8244,23 +8278,31 @@ function stopLive(){
   liveUnsubs = []; liveOn = false;
   clearInterval(pollTimer); pollTimer = null;
 }
+let liveGen = 0;
 function startLive(){
   if (liveOn || !isAdminUser) return;
   liveOn = true; gotFiles = false;
   if (!admItems.length) setAdmState("چاوەڕێبە…");
-  let visTimer = null;
-  const fail = (el, err) => {
-    if (el === "vis") $("admVisList").textContent = "هەڵە: " + errText(err); else setAdmState("هەڵە: " + errText(err), true);
-    stopLive(); startPolling();                // ئەگەر لیسنەر کاری نەکرد، هەر ٣٠ چرکە خۆکارانە دەهێنرێتەوە
+  const gen = ++liveGen;
+  /* هەر لیسنەرێک بە جیا کار دەکات: ئەگەر یەکێک هەڵەی کرد، ئەوی تر نایوەستێت و ئەمیش دووبارە هەوڵ دەداتەوە */
+  const listen = (mk, ok, bad) => {
+    let un = null, dead = false;
+    liveUnsubs.push(() => { dead = true; try { un && un(); } catch (_) {} });
+    const go = n => {
+      if (dead || gen !== liveGen || !liveOn) return;
+      const retry = () => { try { un && un(); } catch (_) {} un = null; startPolling(); setTimeout(() => go(Math.min(n + 1, 5)), Math.min(60000, 4000 * Math.pow(2, n))); };
+      try { un = onSnapshot(mk(), snap => { n = 0; ok(snap); }, err => { bad(err); retry(); }); }
+      catch (e) { bad(e); retry(); }
+    };
+    go(0);
   };
-  try {
-    liveUnsubs.push(onSnapshot(visQuery(),
-      snap => { clearTimeout(visTimer); visTimer = setTimeout(() => renderVisitors(snap), 250); },
-      err => fail("vis", err)));
-    liveUnsubs.push(onSnapshot(query(collection(db, "translations"), orderBy("t", "desc"), limit(100)),
-      snap => applyTranslations(snap),
-      err => fail("files", err)));
-  } catch (e){ fail("files", e); return; }
+  let visTimer = null;
+  listen(visQuery,
+    snap => { clearTimeout(visTimer); visTimer = setTimeout(() => renderVisitors(snap), 250); },
+    err => { $("admVisList").textContent = "هەڵە: " + errText(err); });
+  listen(() => query(collection(db, "translations"), orderBy("t", "desc"), limit(100)),
+    snap => applyTranslations(snap),
+    err => setAdmState("هەڵە: " + errText(err), true));
   setTimeout(() => { if (liveOn && !gotFiles) loadAdmin(); }, 12000);   // پشتیوان ئەگەر لیسنەر درەنگ بوو
 }
 setInterval(() => { if (isAdminUser && !document.hidden && admPanel.classList.contains("active")) refreshVisits(); }, 45000);
