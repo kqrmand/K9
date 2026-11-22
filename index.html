@@ -1115,6 +1115,7 @@
   #seGlList .se-gi:hover,#seGlList .se-gi.ed{background:var(--accent-soft);}
   #seGlList .se-gck{width:auto;margin:0;flex:none;accent-color:var(--accent);}
   #seGlDetInfo{flex:1 1 120px;min-width:0;font-size:12px;color:var(--text-dim);}
+  #seGl .se-gl-note{flex:1 1 150px;min-width:0;font-size:12px;color:var(--text-dim);}
   #seGlList .se-gn{flex:none;max-width:40%;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   #seGlList .se-gv{flex:1 1 auto;min-width:0;color:var(--text-dim);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   #seGlList .se-gc{flex:none;font-size:11px;color:var(--text-dim);}
@@ -2343,7 +2344,7 @@
             <div id="seGlList"></div>
             <div class="se-rep-row">
               <button class="btn btn-ghost" id="seGlAll" type="button">☑ هەڵبژاردنی هەموو</button>
-              <label><input type="checkbox" id="seGlWhole"> تەنها وشەی تەواو (بێ پاشگر)</label>
+              <span class="se-gl-note">تەنها ناوی ناو ( ) « » " " دەگۆڕدرێت؛ وشەی هاوشێوە لە دەرەوەیان دەستکاری ناکرێت</span>
             </div>
             <div class="se-rep-row">
               <button class="btn btn-download" id="seGlFix" type="button">✓ هاوتاکردنی هەڵبژێرراوەکان</button>
@@ -7019,8 +7020,9 @@ tmNew.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();tmGo
 rBtn.addEventListener('click',()=>{if(!repBox.classList.contains('se-hide')){tmToggle(false);glToggle(false);}});
 
 /* ---- glossary: names / terms kept in this browser, the same for every episode.
-   "Find names" works like the multi-file names tab: it lists the names found inside ( ) « » " " of this file; tap them to fill the wrong spellings, type the correct name, add. ---- */
-const glBox=$('seGl'),glOpen=$('seGlB'),glName=$('seGlName'),glVars=$('seGlVars'),glList=$('seGlList'),glInfo=$('seGlInfo'),glAdd=$('seGlAdd'),glWhole=$('seGlWhole');
+   "Find names" works like the multi-file names tab: it lists the names found inside ( ) « » " " of this file; tap them to fill the wrong spellings, type the correct name, add.
+   "Match" changes only those bracketed / quoted names, the same way the multi-file names tab sees them. ---- */
+const glBox=$('seGl'),glOpen=$('seGlB'),glName=$('seGlName'),glVars=$('seGlVars'),glList=$('seGlList'),glInfo=$('seGlInfo'),glAdd=$('seGlAdd');
 const glStrip=$('seGlStrip'),glStripW=$('seGlStripW'),glDetInfo=$('seGlDetInfo');
 const GLK='presub_se_gloss_v1';
 let gl=[],glEd=-1,glSel=new Set(),glNames=[],glPick=[]; /* glSel / glNames / glPick start empty every time the panel opens */
@@ -7091,57 +7093,67 @@ function glDetect(){
   glDetInfo.textContent=glNames.length?(glNames.length+' ناوی جیاواز دۆزرایەوە. کرتەیان لەسەر بکە بۆ دیاریکردن'):'';
 }
 $('seGlDet').onclick=glDetect;
-/* ---- name matching, same rules as the multi-file names tab:
-   ي ى -> ی , ك -> ک , ھ -> ه ; ZWNJ / tatweel / vowel marks / RLE marks are ignored.
-   A name must not start inside a longer word and may be followed ONLY by a real suffix (جۆن ← جۆنەکە، جۆنی، جۆنیش ...), never by other letters.
-   "whole" = no suffix at all. Never inside a {..} code. All wrong forms are replaced in ONE pass, so a replaced name is never replaced again. ---- */
+/* ---- name matching: the SAME places the "find names" button and the multi-file names tab look at.
+   A name is what stands inside ( ) « » " " ‘ ’ ... ; one bracket can hold several names split by a comma (A، B).
+   A name is changed ONLY when a whole name inside such a bracket / quote is exactly a wrong form.
+   Words outside brackets and quotes are never touched, and a word that merely STARTS like a name never matches
+   (name (گوم) -> (گۆم) leaves the plain word گومان alone). Written forms are compared like the multi-file tab:
+   ي ى -> ی , ك -> ک , ھ -> ه ; ZWNJ / tatweel / vowel marks / RLE marks / spaces are ignored. Never inside a {..} code. ---- */
 const GL_IGN=/[\u200c\u200d\u0640\u064b-\u065f\u0670\u200e\u200f\u202a-\u202e\u2066-\u2069\ufeff]/;
-const GL_SUF=/^(?:(?:ەکان|ەکە|ێک|یەک|ان|ە)(?:یان|مان|تان|ەوە|یش|ی|ش|م|ت)?|یان|مان|تان|ەوە|یش|ەش|ی|ش|م|ت|ێ)?(?![\p{L}\p{M}\p{N}])/u;
 const glMap=ch=>ch==='ي'||ch==='ى'?'ی':ch==='ك'?'ک':ch==='ھ'?'ه':ch;
-function glSkel(d){ /* text without the ignorable characters; map[i] = place in the original text */
-  let s='';const map=[];
+function glSkel(d){ /* text without the ignorable characters */
+  let s='';
   for(let i=0;i<d.length;i++){
     const ch=d[i];
     if(GL_IGN.test(ch))continue;
-    if(/\s/.test(ch)){if(s&&s[s.length-1]!==' '){s+=' ';map.push(i);}continue;}
-    s+=glMap(ch);map.push(i);
+    if(/\s/.test(ch)){if(s&&s[s.length-1]!==' ')s+=' ';continue;}
+    s+=glMap(ch);
   }
-  return {s,map,br:null};
+  return {s};
 }
 const glKey=t=>glSkel(t||'').s.trim();
-/* keys: [{k:wrong form (normalised), tk:correct name (normalised), to:correct name}] -> every place in d, longest first, no overlaps */
-function glFind(d,keys,whole,sk){
+const GL_PAIRS=['\\(([^()]*)\\)','«([^«»]*)»','»([^«»]*)«','“([^“”]*)”','”([^“”]*)“','"([^"]*)"','‘([^‘’]*)’',"'([^']*)'",'‹([^‹›]*)›'];
+const GL_TRIM=/[\s\-–—.،,:؛;!؟?…]/;
+/* keys: [{k:wrong form (normalised), tk:correct name (normalised), to:correct name}] -> [{j,e,to}] places in d to replace, no overlaps */
+function glFind(d,keys){
   const out=[];if(!keys.length)return out;
-  sk=sk||glSkel(d);const s=sk.s,map=sk.map;
-  const by=new Map();
-  keys.forEach(o=>{if(!o.k)return;const a=by.get(o.k[0]);if(a)a.push(o);else by.set(o.k[0],[o]);});
-  by.forEach(a=>a.sort((x,y)=>y.k.length-x.k.length));
-  for(let i=0;i<s.length;){
-    const a=by.get(s[i]);
-    if(a&&!(i&&isWc(s[i-1]))){
-      let hit=null;
-      for(const o of a){
-        if(!s.startsWith(o.k,i))continue;
-        const e=i+o.k.length;
-        if(whole?(e<s.length&&isWc(s[e])):!GL_SUF.test(s.slice(e,e+10)))continue;
-        if(o.tk&&o.tk.length>o.k.length&&s.startsWith(o.tk,i))continue; /* the correct, longer form already stands here */
-        hit={o,e};break;
-      }
-      if(hit){
-        const j=map[i],e=map[hit.e-1]+1;
-        if(!sk.br)sk.br=braceMask(d);
-        let inB=0;for(let q=j;q<e;q++)if(sk.br[q]){inB=1;break;}
-        if(!inB)out.push({j,e,to:hit.o.to});
-        i=hit.e;continue;
+  const by=new Map();keys.forEach(o=>{if(o.k)by.set(o.k,o);});
+  if(!by.size)return out;
+  let br=null;
+  const seen=new Set();
+  GL_PAIRS.forEach(src=>{
+    const re=new RegExp(src,'g');let m;
+    while((m=re.exec(d))!==null){
+      const a0=m.index+m[0].indexOf(m[1],1),a1=a0+m[1].length; /* inside of the bracket / quote */
+      let s=a0;
+      while(s<=a1){
+        let e=s;while(e<a1&&d[e]!=='،'&&d[e]!==',')e++; /* one name = up to the next comma */
+        let x=s,y=e;
+        for(;;){ /* cut spaces, punctuation, invisible marks and tags off both ends */
+          if(x<y&&(GL_TRIM.test(d[x])||GL_IGN.test(d[x]))){x++;continue;}
+          if(x<y&&(GL_TRIM.test(d[y-1])||GL_IGN.test(d[y-1]))){y--;continue;}
+          if(x<y&&d[x]==='<'){const g=d.indexOf('>',x);if(g>=0&&g<y){x=g+1;continue;}}
+          if(x<y&&d[y-1]==='>'){const g=d.lastIndexOf('<',y-1);if(g>=x){y=g;continue;}}
+          break;
+        }
+        if(y>x&&!seen.has(x+':'+y)){
+          const o=by.get(glKey(d.slice(x,y)));
+          if(o){
+            if(!br)br=braceMask(d);
+            let inB=0;for(let q=x;q<y;q++)if(br[q]){inB=1;break;}
+            if(!inB){seen.add(x+':'+y);out.push({j:x,e:y,to:o.to});}
+          }
+        }
+        s=e+1;
       }
     }
-    i++;
-  }
-  return out;
+  });
+  out.sort((p,q)=>p.j-q.j);
+  return out.filter((p,i)=>!i||p.j>=out[i-1].e); /* no overlaps */
 }
 /* replace in text d and in its colour map c together, so colours of the untouched characters stay */
-function glApply(d,c,keys,whole){
-  const ps=glFind(d,keys,whole).filter(p=>d.slice(p.j,p.e)!==p.to);
+function glApply(d,c,keys){
+  const ps=glFind(d,keys).filter(p=>d.slice(p.j,p.e)!==p.to);
   if(!ps.length)return null;
   let nd='',nc=[],k=0;
   for(const p of ps){
@@ -7158,12 +7170,12 @@ function glApply(d,c,keys,whole){
 }
 function glDraw(){
   glList.textContent='';
-  const ds=S?S.blocks.map(b=>splitColors(b.x).d):[],sks=ds.map(glSkel),whole=glWhole.checked;
+  const ds=S?S.blocks.map(b=>splitColors(b.x).d):[];
   const fr=document.createDocumentFragment();
   gl.forEach((e,k)=>{
     let vc=0,cc=0;
     const nk=glKey(e.n),vk=e.v.map(v=>({k:glKey(v),tk:nk,to:e.n})),cq=[{k:nk,tk:'',to:e.n}];
-    ds.forEach((d,q)=>{vc+=glFind(d,vk,whole,sks[q]).filter(p=>d.slice(p.j,p.e)!==e.n).length;cc+=glFind(d,cq,whole,sks[q]).length;});
+    ds.forEach(d=>{vc+=glFind(d,vk).filter(p=>d.slice(p.j,p.e)!==e.n).length;cc+=glFind(d,cq).length;});
     const row=document.createElement('div');row.className='se-gi'+(k===glEd?' ed':'');row.dataset.k=k;
     const ck=document.createElement('input');ck.type='checkbox';ck.className='se-gck';ck.dataset.n=e.n;ck.checked=glSel.has(e.n);ck.setAttribute('aria-label','هەڵبژاردن');
     const n=document.createElement('span');n.className='se-gn';n.dir='auto';n.textContent=e.n;
@@ -7220,18 +7232,17 @@ glList.addEventListener('click',e=>{
   glList.querySelectorAll('.se-gi').forEach(r=>r.classList.toggle('ed',r===row));
   glName.focus();
 });
-glWhole.addEventListener('change',glDraw);
 /* fix: every wrong form of the ticked names -> the correct name, in the whole file (undo: the ↶ button of the toolbar) */
 $('seGlFix').onclick=()=>{
   if(!S)return;
   if(!gl.some(e=>glSel.has(e.n))){say('سەرەتا ناوەکان هەڵبژێرە');return;}
-  const whole=glWhole.checked,keys=[];
+  const keys=[];
   gl.forEach(e=>{if(glSel.has(e.n)){const tk=glKey(e.n);e.v.forEach(v=>{const k=glKey(v);if(k&&v!==e.n)keys.push({k,tk,to:e.n});});}});
   if(!keys.length){say('هیچ شێوەیەکی هەڵە بۆ ناوە هەڵبژێردراوەکان نییە');return;}
   let total=0;
   const n=bulk(x=>{
     let {d,c}=splitColors(x);
-    const r=glApply(d,c,keys,whole);
+    const r=glApply(d,c,keys);
     if(!r)return x;
     d=r.d;c=r.c;total+=r.n;
     if(c.an>=0){const f=ensureRleAn(d,c);d=f.d;c=f.c;}
