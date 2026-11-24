@@ -11,25 +11,26 @@
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&family=Noto+Naskh+Arabic:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --accent-rgb:39,66,58;
-    --accent-lt:#4f7d6c;
-    --accent-line:#c9dcd3;
-    --accent-ink:#1c332c;
-    --bg:#e8f0f7;
-    --bg-2:#dbe8f2;
-    --surface:#ffffff;
-    --surface-2:#f0f6fb;
-    --border:#dbe7f0;
-    --border-soft:#e6eff6;
-    --text:#000;
-    --text-dim:#6b8092;
-    --text-faint:#a2b4c2;
-    --accent:#27423a;
-    --accent-dim:#1c332c;
-    --accent-soft:#e8f0ec;
-    --accent-2:#27423a;
+    --accent-rgb:59,111,224;
+    --on-accent:#ffffff;
+    --accent-lt:#7aa8ff;
+    --accent-line:#2b3f6e;
+    --accent-ink:#b4ceff;
+    --bg:#0b1020;
+    --bg-2:#10172b;
+    --surface:#131a30;
+    --surface-2:#1a2340;
+    --border:#2a3558;
+    --border-soft:#222b49;
+    --text:#eaf0ff;
+    --text-dim:#a3afcf;
+    --text-faint:#66739a;
+    --accent:#3b6fe0;
+    --accent-dim:#2a52b0;
+    --accent-soft:#16223f;
+    --accent-2:#3b6fe0;
     --danger:#ec5e6f;
-    --danger-soft:#fdebee;
+    --danger-soft:#3d1b22;
     --ok:var(--accent);
     --ok-soft:var(--accent-soft);
     --match:#e8b100;
@@ -37,8 +38,8 @@
     --radius-sm:16px;
     --font-body:'Vazirmatn', sans-serif;
     --font-mono:'JetBrains Mono', monospace;
-    --shadow-card:0 1px 2px rgba(30,60,90,0.04), 0 10px 26px -14px rgba(30,60,90,0.16);
-    --shadow-pop:0 14px 34px -10px rgba(20,40,60,0.30);
+    --shadow-card:0 1px 2px rgba(0,0,0,.35), 0 10px 26px -14px rgba(0,0,0,.7);
+    --shadow-pop:0 14px 34px -10px rgba(0,0,0,.75);color-scheme:dark;
   }
 
   *{box-sizing:border-box;}
@@ -529,7 +530,7 @@
   }
   .status.show{display:flex;}
   .status.info{background:var(--accent-soft);color:var(--accent-ink);border:1px solid var(--accent-line);}
-  .status.error{background:var(--danger-soft);color:var(--danger);border:1px solid #f9d3da;}
+  .status.error{background:var(--danger-soft);color:var(--danger);border:1px solid color-mix(in srgb,var(--danger) 40%,transparent);}
   .status.success{background:var(--ok-soft);color:var(--ok);border:1px solid var(--accent-line);}
 
   .divider{height:1px;background:var(--border-soft);margin:22px 0;}
@@ -733,7 +734,7 @@
   .chunk-head{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
   .chunk-head strong{font-size:14px;font-weight:700;color:var(--text);}
   .chunk-head .badge{margin-inline-start:0;}
-  .chunk-head .badge.warn{background:var(--danger-soft);border-color:#f9d3da;color:var(--danger);}
+  .chunk-head .badge.warn{background:var(--danger-soft);border-color:color-mix(in srgb,var(--danger) 40%,transparent);color:var(--danger);}
   .chunk-part textarea{min-height:120px;max-height:220px;background:var(--surface);}
   .field-label .count.ok{color:var(--ok);font-weight:600;}
   .field-label .count.bad{color:var(--danger);font-weight:600;}
@@ -1605,25 +1606,25 @@
   }
   @media(prefers-reduced-motion:reduce){body::before,body::after{animation:none!important;}}
 
-  /* ===== Theme: سپی شووشەیی (clear white glass, dark crisp text) ===== */
+  /* ===== Theme: شووشەی تاریک (dark glass) ===== */
   html[data-theme="glass"]{
     --lg-blur:32px;
-    --lg-tint:rgba(255,255,255,.44);
-    --lg-fill:rgba(255,255,255,.58);
-    --lg-fill-hi:rgba(255,255,255,.80);
-    --lg-field:rgba(255,255,255,.78);
-    --lg-rim:rgba(255,255,255,1);
-    --lg-edge:rgba(255,255,255,.75);
-    --lg-sheen-a:.60;--lg-sheen-b:.14;
-    --lg-shade:rgba(44,76,130,.30);
+    --lg-tint:rgba(18,26,48,.50);
+    --lg-fill:rgba(255,255,255,.07);
+    --lg-fill-hi:rgba(255,255,255,.14);
+    --lg-field:rgba(16,24,46,.58);
+    --lg-rim:rgba(255,255,255,.30);
+    --lg-edge:rgba(255,255,255,.13);
+    --lg-sheen-a:.14;--lg-sheen-b:.02;
+    --lg-shade:rgba(0,0,0,.60);
     --lg-blobs:
-      radial-gradient(38% 34% at 12% 8%,rgba(96,165,250,.55),transparent 70%),
-      radial-gradient(34% 32% at 90% 16%,rgba(196,170,255,.50),transparent 72%),
-      radial-gradient(42% 38% at 82% 92%,rgba(94,222,200,.45),transparent 70%),
-      radial-gradient(30% 30% at 6% 82%,rgba(255,190,220,.42),transparent 72%);
+      radial-gradient(38% 34% at 12% 8%,rgba(59,111,224,.50),transparent 70%),
+      radial-gradient(34% 32% at 90% 16%,rgba(124,92,214,.38),transparent 72%),
+      radial-gradient(42% 38% at 82% 92%,rgba(30,150,140,.34),transparent 70%),
+      radial-gradient(30% 30% at 6% 82%,rgba(190,70,130,.28),transparent 72%);
   }
   html[data-theme="glass"] body{
-    background-image:linear-gradient(160deg,#fafcff 0%,#e8f0fb 52%,#dbe6f6 100%);
+    background-image:linear-gradient(160deg,#0e1630 0%,#0a1020 52%,#0f1226 100%);
     background-attachment:fixed;
   }
   html[data-theme="glass"] body::after{filter:saturate(1.1);opacity:.8;}
@@ -1636,24 +1637,20 @@
   html[data-theme="glass"] .auth-card,
   html[data-theme="glass"] .diff-popup,
   html[data-theme="glass"] .se-nav{
-    -webkit-backdrop-filter:blur(32px) saturate(220%) brightness(1.08);
-            backdrop-filter:blur(32px) saturate(220%) brightness(1.08);
-    border:1px solid rgba(255,255,255,.85);
+    -webkit-backdrop-filter:blur(32px) saturate(160%);
+            backdrop-filter:blur(32px) saturate(160%);
+    border:1px solid rgba(255,255,255,.13);
     box-shadow:
-      inset 0 1.5px 0 #fff,
-      inset 0 0 0 1px rgba(255,255,255,.45),
-      inset 0 -16px 28px -18px rgba(90,125,185,.40),
-      inset 0 18px 30px -22px rgba(255,255,255,.9),
-      0 0 0 1px rgba(70,100,150,.10),
-      0 28px 56px -26px rgba(44,76,130,.45),
-      0 4px 12px -4px rgba(44,76,130,.12);
+      inset 0 1px 0 rgba(255,255,255,.22),
+      inset 0 0 0 1px rgba(255,255,255,.04),
+      0 28px 56px -26px rgba(0,0,0,.75),
+      0 4px 12px -4px rgba(0,0,0,.4);
   }
-  /* glare band across the glass */
   html[data-theme="glass"] header.hero::before,
   html[data-theme="glass"] .card::before{
     background:
-      linear-gradient(112deg,transparent 22%,rgba(255,255,255,.55) 34%,rgba(255,255,255,.08) 42%,transparent 52%),
-      radial-gradient(120% 55% at 14% -8%,rgba(255,255,255,.75),transparent 60%);
+      linear-gradient(112deg,transparent 22%,rgba(255,255,255,.07) 34%,rgba(255,255,255,.01) 42%,transparent 52%),
+      radial-gradient(120% 55% at 14% -8%,rgba(255,255,255,.10),transparent 60%);
   }
   html[data-theme="glass"] .stat,html[data-theme="glass"] .drop,html[data-theme="glass"] .deep-item,
   html[data-theme="glass"] .result-item,html[data-theme="glass"] .choice,html[data-theme="glass"] .lk-item,
@@ -1662,20 +1659,11 @@
   html[data-theme="glass"] .names-scroll-strip,html[data-theme="glass"] .movie-output,html[data-theme="glass"] .se-blk,
   html[data-theme="glass"] .pl-res,html[data-theme="glass"] .se-chips span,html[data-theme="glass"] .se-go,
   html[data-theme="glass"] .name-chip,html[data-theme="glass"] .status{
-    border-color:rgba(255,255,255,.9);
-    box-shadow:inset 0 1px 0 #fff,inset 0 -8px 14px -10px rgba(90,125,185,.35),0 10px 20px -14px rgba(44,76,130,.35);
+    border-color:rgba(255,255,255,.12);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 10px 20px -14px rgba(0,0,0,.7);
   }
-  /* crisp text on glass */
-  html[data-theme="glass"] .card h2,html[data-theme="glass"] h1{color:#0b1424;text-shadow:0 1px 0 rgba(255,255,255,.7);}
-  html[data-theme="glass"] .card .sub,html[data-theme="glass"] .tagline,
-  html[data-theme="glass"] .stat .l,html[data-theme="glass"] .drop .hint{color:#33445c;text-shadow:0 1px 0 rgba(255,255,255,.6);}
-  html[data-theme="glass"] .drop .label,html[data-theme="glass"] .field-label,html[data-theme="glass"] .label-sm{color:#0b1424;}
-  html[data-theme="glass"] .tab-btn{color:#2a3b54;}
-  html[data-theme="glass"] .tab-btn.active{color:#0b1b44;}
-  html[data-theme="glass"] .btn-ghost,html[data-theme="glass"] .btn-download{color:#0b1b44;}
-  html[data-theme="glass"] textarea,html[data-theme="glass"] .text-input,html[data-theme="glass"] select{color:#0b1424;border-color:rgba(255,255,255,.95);}
-  html[data-theme="glass"] .stat .n{text-shadow:none;}
-  html[data-theme="glass"] .drop{border-color:rgba(42,91,215,.45);}
+  html[data-theme="glass"] textarea,html[data-theme="glass"] .text-input,html[data-theme="glass"] select{border-color:rgba(255,255,255,.14);}
+  html[data-theme="glass"] .drop{border-color:rgba(111,160,255,.45);}
 
 
   /* ================= بەرشەلۆنە — blaugrana glass ================= */
@@ -1774,7 +1762,7 @@
     -webkit-backdrop-filter:none;backdrop-filter:none;
     box-shadow:inset 0 1px 0 var(--lg-rim),0 30px 60px -20px rgba(0,0,0,.55),0 0 0 1px var(--lg-edge);
   }
-  html[data-theme="glass"] .theme-pop{background:#fff;-webkit-backdrop-filter:none;backdrop-filter:none;}
+  html[data-theme="glass"] .theme-pop{background:#131a30;-webkit-backdrop-filter:none;backdrop-filter:none;}
 
   /* smaller corner radii; buttons outside the editor toolbar are pills */
   :root{--r-sm:12px;--r-lg:20px;--radius:24px;}
@@ -1943,6 +1931,9 @@
   .adm-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
   .adm-name{font-size:13.5px;font-weight:700;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.5;}
   .adm-meta{font-size:11.5px;color:var(--text-dim);line-height:1.6;}
+  .adm-more{display:flex;justify-content:center;margin-top:12px;}
+  .adm-more[hidden]{display:none!important;}
+  .adm-more .btn{padding:8px 18px;font-size:13px;}
   .adm-acts{display:flex;flex-wrap:wrap;gap:8px;}
   .adm-acts .btn{min-height:36px;padding:6px 12px;font-size:12.5px;}
   .admin-srt{max-height:48vh;overflow:auto;margin:0;padding:12px;border:1px solid var(--border-soft);border-radius:12px;background:var(--surface-2);color:var(--text);white-space:pre-wrap;word-break:break-word;font:12px/1.8 var(--font-mono);}
@@ -2045,7 +2036,7 @@
   .brand-edit:active{transform:scale(.95);}
   .brand-edit[aria-expanded="true"]{filter:brightness(1.12);}
   .brand-edit:focus-visible{outline:2px solid var(--accent-lt);outline-offset:3px;}
-  html[data-theme="glass"] .brand-edit{color:#0b1b44;}
+  html[data-theme="glass"] .brand-edit{color:var(--accent-ink);}
   html[style*="color-scheme: dark"] .brand-edit{color:var(--accent-ink);}
   .brand-pop{width:min(94vw,360px);}
   .brand-pv-row{display:flex;align-items:flex-end;gap:14px;margin-bottom:6px;}
@@ -2078,9 +2069,9 @@
   .fold:not(.open) .fold-btn{top:50%;margin-top:-12px;}
   .fold-btn svg{transition:transform .22s ease;}
   .fold.open .fold-btn svg{transform:rotate(180deg);}
-  html[data-theme="glass"] .fold-btn{color:#0b1b44;}
+  html[data-theme="glass"] .fold-btn{color:var(--accent-ink);}
 </style>
-<meta name="theme-color" content="#e8f0f7" id="metaTheme">
+<meta name="theme-color" content="#0b1020" id="metaTheme">
 <script>
 (function(){
   "use strict";
@@ -2088,17 +2079,17 @@
   /* a = main colour, lt = light end of gradients, dim = hover shade, soft = tinted fill, ink = accent-coloured text,
      line = soft accent border, bg/bg2 = page, s = cards, s2 = inputs, b/bs = borders, t/td/tf = text shades */
   var T=[
-    {id:'glass',n:'سپی شووشەیی',a:'#2a5bd7',lt:'#6fa0ff',dim:'#1e44a8',soft:'#e6eeff',ink:'#12306e',line:'#c4d4f5',bg:'#e9f0fa',bg2:'#dde8f6',s:'#ffffff',s2:'#f6f9fe',b:'#cfdcee',bs:'#e1eaf6',t:'#0b1424',td:'#3f5068',tf:'#74839a'},
+    {id:'glass',n:'شووشەی تاریک',dark:1,a:'#3b6fe0',lt:'#7aa8ff',dim:'#2a52b0',soft:'#16223f',ink:'#b4ceff',line:'#2b3f6e',bg:'#0b1020',bg2:'#10172b',s:'#131a30',s2:'#1a2340',b:'#2a3558',bs:'#222b49',t:'#eaf0ff',td:'#a3afcf',tf:'#66739a',ds:'#3d1b22',os:'#143522'},
     {id:'barca',n:'بەرشەلۆنە',dark:1,a:'#0a5cc0',lt:'#4c9dff',dim:'#074a9b',soft:'#14233f',ink:'#a9cfff',line:'#2a4375',bg:'#0a0d1f',bg2:'#10142b',s:'#121731',s2:'#191f3d',b:'#2a3158',bs:'#222849',t:'#eef2ff',td:'#a3acd0',tf:'#6a7399',ds:'#3d1b22',os:'#143522'},
-    {id:'gold',n:'زێڕ و ڕەش',def:1,dark:1,a:'#d4a937',lt:'#f0cf74',bg:'#0a0907'},
-    {id:'day',n:'زێڕ و کرێم',on:'#14100a',a:'#b08a2a',lt:'#d4a937',dim:'#8a6717',soft:'#f6ecd0',ink:'#5e430a',line:'#e0cc96',bg:'#f7f1e3',bg2:'#efe6d0',s:'#fffdf7',s2:'#faf4e4',b:'#e4d6b0',bs:'#eee3c6',t:'#231c0e',td:'#6e6244',tf:'#a89c7b'},
-    {id:'jade',n:'جەید',a:'#0a7d5a',lt:'#34c79a',dim:'#07644a',soft:'#e0f5ec',ink:'#07553f',line:'#bfe6d6',bg:'#e3f3ec',bg2:'#d2ebe0',s2:'#eef9f4',b:'#c9e5d9',bs:'#dbf0e6',t:'#10302a',td:'#587d71',tf:'#98b8ac'},
-    {id:'scarlet',n:'سکارلێت',a:'#b3121f',lt:'#e5485a',dim:'#8f0e19',soft:'#fbe7e9',ink:'#7d0c16',line:'#f0c4c9',bg:'#f8e8ea',bg2:'#f0d6d9',s2:'#fdf2f3',b:'#efd0d4',bs:'#f6e0e3',t:'#2c1618',td:'#8a666a',tf:'#c0a0a4'},
-    {id:'amethyst',n:'ئەمیسەست',a:'#6a3fa3',lt:'#9d72d6',dim:'#54308a',soft:'#efe8fa',ink:'#47277a',line:'#d9c9f0',bg:'#eee8f7',bg2:'#e1d7f0',s2:'#f6f1fc',b:'#dacdee',bs:'#e8dff5',t:'#241a35',td:'#74668c',tf:'#aa9fbf'},
-    {id:'sapphire',n:'سەفایر',a:'#1d4f9c',lt:'#5a8fe0',dim:'#163e7d',soft:'#e5edfb',ink:'#12346b',line:'#c2d4f1',bg:'#e5edf9',bg2:'#d6e2f4',s2:'#eff4fc',b:'#d0def1',bs:'#e0eaf7',t:'#14233b',td:'#5f7899',tf:'#9fb2ca'},
-    {id:'amber',n:'ئەمبەر',a:'#9c5800',lt:'#dd9a31',dim:'#7c4500',soft:'#fbefd9',ink:'#6b3b00',line:'#ebd3a6',bg:'#f6ecd9',bg2:'#ecddc0',s2:'#fcf5e8',b:'#ead9b9',bs:'#f2e6cc',t:'#2d2210',td:'#8b744d',tf:'#bfad8b'},
-    {id:'petrol',n:'پەترۆڵ',a:'#0e5d6b',lt:'#2fa0b3',dim:'#0a4853',soft:'#e0f1f4',ink:'#093e48',line:'#b9dce2',bg:'#e2eff2',bg2:'#d1e4e9',s2:'#ecf6f8',b:'#cbe1e6',bs:'#dbecf0',t:'#112a30',td:'#5b8087',tf:'#9ab4ba'},
-    {id:'rose',n:'ڕۆز',a:'#8d2a5a',lt:'#c85f8f',dim:'#721f48',soft:'#f7e5ee',ink:'#611a3d',line:'#e8c3d5',bg:'#f4e5ed',bg2:'#ead4e0',s2:'#faf0f5',b:'#e8cfdc',bs:'#f1e0e9',t:'#2c1622',td:'#8a667a',tf:'#c0a0b2'},
+    {id:'gold',n:'زێڕ و ڕەش',dark:1,on:'#0a0907',a:'#d4a937',lt:'#f0cf74',dim:'#a98320',soft:'#2b2208',ink:'#f3d88a',line:'#4d3d12',bg:'#0a0907',bg2:'#100e0a',s:'#141210',s2:'#1b1814',b:'#2e281c',bs:'#262016',t:'#f6eedb',td:'#b8aa88',tf:'#7a6f55',ds:'#3d1b22',os:'#143522'},
+    {id:'day',n:'زێڕ و قاوەیی',dark:1,on:'#14100a',a:'#c79a2e',lt:'#e8c767',dim:'#a07a1c',soft:'#2e2411',ink:'#f0d890',line:'#51401c',bg:'#14100a',bg2:'#1b160d',s:'#1f190f',s2:'#282013',b:'#3d3119',bs:'#31281a',t:'#f6ecd6',td:'#bba983',tf:'#7f6f4d',ds:'#3d1b22',os:'#143522'},
+    {id:'jade',n:'جەید',dark:1,a:'#12a577',lt:'#3fd9a8',dim:'#0d8260',soft:'#10291f',ink:'#86ecc6',line:'#1f4a3a',bg:'#08130f',bg2:'#0d1b16',s:'#101f19',s2:'#162821',b:'#233a30',bs:'#1b2e26',t:'#e2f5ed',td:'#8fb0a2',tf:'#58786b',ds:'#3d1b22',os:'#143522'},
+    {id:'scarlet',n:'سکارلێت',dark:1,a:'#d12a3a',lt:'#f2677a',dim:'#a81e2c',soft:'#331519',ink:'#ff9aa6',line:'#5a2630',bg:'#140a0c',bg2:'#1b0f11',s:'#201215',s2:'#2a181b',b:'#3e2328',bs:'#321b1f',t:'#f7e8ea',td:'#b99a9f',tf:'#7d6165',ds:'#3d1b22',os:'#143522'},
+    {id:'amethyst',n:'ئەمیسەست',dark:1,a:'#8a5cd0',lt:'#b793f0',dim:'#6b43ad',soft:'#241a38',ink:'#d6c0ff',line:'#43326a',bg:'#0e0a17',bg2:'#140f20',s:'#181228',s2:'#201934',b:'#32284f',bs:'#292042',t:'#efe9fb',td:'#ac9fc8',tf:'#70648f',ds:'#3d1b22',os:'#143522'},
+    {id:'sapphire',n:'سەفایر',dark:1,a:'#2f6fd0',lt:'#6fa5f5',dim:'#2356a6',soft:'#14233d',ink:'#b0cdfb',line:'#27406b',bg:'#080f1c',bg2:'#0d1627',s:'#111b2e',s2:'#172439',b:'#243553',bs:'#1c2b45',t:'#e7efff',td:'#9fb2d0',tf:'#63779a',ds:'#3d1b22',os:'#143522'},
+    {id:'amber',n:'ئەمبەر',dark:1,a:'#d98a1a',lt:'#f5b24d',dim:'#b06e0e',soft:'#33210b',ink:'#fbcb85',line:'#5a3d17',bg:'#140d06',bg2:'#1c1309',s:'#21170c',s2:'#2b1e11',b:'#42301a',bs:'#352614',t:'#f8ecda',td:'#bda27c',tf:'#80694a',ds:'#3d1b22',os:'#143522'},
+    {id:'petrol',n:'پەترۆڵ',dark:1,a:'#1a95aa',lt:'#4fd0e3',dim:'#127688',soft:'#0f2a30',ink:'#8fe6f2',line:'#1d4a54',bg:'#070f12',bg2:'#0c171b',s:'#101d22',s2:'#16272d',b:'#22383f',bs:'#1a2d33',t:'#e0f3f6',td:'#8fb1b8',tf:'#587880',ds:'#3d1b22',os:'#143522'},
+    {id:'rose',n:'ڕۆز',dark:1,a:'#c04a86',lt:'#ee86b8',dim:'#9a3669',soft:'#331828',ink:'#ffb3d6',line:'#5a2a47',bg:'#140a10',bg2:'#1c0f17',s:'#21121b',s2:'#2b1824',b:'#41263a',bs:'#341d2e',t:'#f8e8f0',td:'#bb9aaf',tf:'#7e6173',ds:'#3d1b22',os:'#143522'},
     {id:'obsidian',n:'ئۆبسیدیان',dark:1,a:'#1c8f6c',lt:'#35cb98',dim:'#147356',soft:'#17302a',ink:'#7be3bd',line:'#25483c',bg:'#0d1412',bg2:'#121b18',s:'#151f1c',s2:'#1b2824',b:'#26362f',bs:'#202e28',t:'#e3f1eb',td:'#93aca1',tf:'#587064',ds:'#3a1c22',os:'#143522'},
     {id:'onyx',n:'ئۆنیکس',dark:1,a:'#c0243a',lt:'#f2596f',dim:'#9a1b2d',soft:'#3a1a20',ink:'#ff8d9c',line:'#5c2a34',bg:'#120c0d',bg2:'#191112',s:'#1c1416',s2:'#251a1d',b:'#38262a',bs:'#2e2023',t:'#f4e7e9',td:'#b89aa0',tf:'#7a6064',ds:'#3d1b22',os:'#143522'}
   ];
@@ -2134,7 +2125,7 @@
     st.colorScheme=t.dark?'dark':'';
     r.setAttribute('data-theme',t.id);
     var m=document.getElementById('metaTheme');
-    if(m)m.setAttribute('content',t.bg||'#e8f0f7');
+    if(m)m.setAttribute('content',t.bg||'#0b1020');
     window.PS_themeId=t.id;
     if(save){try{localStorage.setItem(KEY,t.id);}catch(e){}}
     return t;
@@ -2752,6 +2743,9 @@
     <div class="card" id="admVis" style="grid-column:1/-1;">
       <div class="adm-top"><h2>لۆگی سەردانەکان 👥 <span class="badge" id="admVisCount">٠</span></h2><span class="adm-meta" id="admVisState"></span></div>
       <div id="admVisList" class="adm-state" style="margin-top:12px;"></div>
+      <div class="adm-more" id="admVisMoreWrap" hidden>
+        <button class="btn btn-ghost" id="admVisMore" type="button" aria-expanded="false"></button>
+      </div>
     </div>
   </section>
 
@@ -8130,14 +8124,24 @@ async function updateVisCount(shown){
   if (shown < 200) return;           // کەمتر لە سنوور = هەموو سەردانەکان لێرەن
   try { el.textContent = kuNum((await getCountFromServer(collection(db, "visits"))).data().count); } catch (_) {}
 }
+const VIS_PREVIEW = 10;            // لە سەرەتادا تەنها نوێترین ١٠ سەردان پیشان دەدرێت
+let visExpanded = false, lastVisSnap = null;
 function renderVisitors(snap){
+  lastVisSnap = snap;
   const list = $("admVisList");
+  const moreWrap = $("admVisMoreWrap"), moreBtn = $("admVisMore");
+  const total = snap.docs.length;
+  moreWrap.hidden = total <= VIS_PREVIEW;
+  moreBtn.setAttribute("aria-expanded", visExpanded ? "true" : "false");
+  moreBtn.textContent = visExpanded
+    ? "▲ کورتکردنەوە (نوێترین " + kuNum(VIS_PREVIEW) + ")"
+    : "▼ بینینی هەموو (" + kuNum(total) + ")";
   admVisState.textContent = (liveOn ? "● زیندوو" : "↻ خۆکار") + " · " + new Date().toLocaleTimeString();
   updateVisCount(snap.size);
   list.innerHTML = "";
   if (!snap.size){ list.textContent = "هێشتا هیچ سەردانێک نییە. ئەگەر چاوەڕێی سەردانێکت دەکرد، دوگمەی «🔍 پشکنینی تۆمارکردنی سەردان» بکە."; return; }
   const frag = document.createDocumentFragment();
-  snap.docs.forEach(d => {
+  (visExpanded ? snap.docs : snap.docs.slice(0, VIS_PREVIEW)).forEach(d => {
     const v = d.data({ serverTimestamps: "estimate" }), row = document.createElement("div");
     row.className = "adm-row"; row.style.cssText = "padding:6px 0;border-top:1px solid var(--border);";
     const a = document.createElement("span"); a.className = "adm-name"; a.dir = "ltr";
@@ -8157,6 +8161,10 @@ function renderVisitors(snap){
   });
   list.appendChild(frag);
 }
+$("admVisMore").addEventListener("click", () => {
+  visExpanded = !visExpanded;
+  if (lastVisSnap) renderVisitors(lastVisSnap);
+});
 async function refreshVisits(){
   if (!isAdminUser) return;
   try { renderVisitors(await withTimeout(getDocs(visQuery()), 20000)); }
