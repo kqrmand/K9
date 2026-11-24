@@ -2186,7 +2186,14 @@
     <button class="tab-btn adm-off" id="admTab" data-tab="admin" type="button">&nbsp; ئەدمین ⚷</button>
     <button class="tab-btn active" data-tab="extract">✎&nbsp; دەق دەرهێنەر</button>
     <button class="tab-btn" data-tab="seditor"><svg class="ti" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V7z"/><path d="M14 3v4h4M9 12h6M9 16h6"/></svg>&nbsp; ئیدیتەری SRT</button>
+    <button class="tab-btn" data-tab="clean">✦&nbsp; بژار</button>
+    <button class="tab-btn" data-tab="unify"><svg class="ti" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5z"/><path d="m3 13 9 5 9-5"/></svg>&nbsp;  ناو (فرە فایل)</button>
+    <button class="tab-btn" data-tab="rtlfix">⇋&nbsp; (U+202B)</button>
+    <button class="tab-btn" data-tab="player">▶&nbsp; پلەیەر</button>
     <button class="tab-btn" data-tab="movie"><svg class="ti" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="1.5"/><path d="M8 5v14M16 5v14M4 9.5h4M4 14.5h4M16 9.5h4M16 14.5h4"/></svg>&nbsp; زانیاری فیلم</button>
+    <button class="tab-btn" data-tab="links"><svg class="ti" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg>&nbsp; لینکەکان</button>
+    <button class="tab-btn" data-tab="chunk">✂&nbsp; هەڵەچن</button>
+    <button class="tab-btn" data-tab="compare">⇄&nbsp; بەراورد</button>
   </nav>
 
   <div class="content">
@@ -2223,6 +2230,50 @@
 
       <div class="status" id="statusRebuild"></div>
     </div>
+  </section>
+
+  <!-- ===================== TAB: CHUNK (9500 CHARS) ===================== -->
+  <section class="panel" id="panel-chunk">
+
+    <div class="card">
+      <h2><span class="step-badge">1</span>فایلی SRT باربکە</h2>
+      <p class="sub">دەقەکە بەبێ ژمارە و کات دەردەهێنرێت و دابەش دەکرێت بۆ بەشی کەمتر لە ٩٥٠٠ پیت.</p>
+
+      <div class="drop" id="dropChunk" style="max-width:420px;">
+        <input type="file" id="fileChunk" accept=".srt,text/plain">
+        <span class="drop-icon">◍</span>
+        <div class="label">فایلی SRT</div>
+        <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە ئێرەوە</div>
+        <div class="filename" id="filenameChunk"></div>
+      </div>
+
+      <div class="status" id="statusChunk"></div>
+    </div>
+
+    <div class="card" id="chunkCard" style="display:none;">
+      <h2><span class="step-badge">2</span>بەشەکانی دەق و گەڕاندنەوەی وەرگێڕان <span class="badge" id="chunkBlockBadge">0 بلۆک</span><span class="badge" id="chunkPartBadge">0 بەش</span></h2>
+      <p class="sub">هەر بەشێک کۆپی بکە و وەرگێڕانەکەی لە بۆکسی ژێری دابنێ. <span class="badge" style="margin-inline-start:2px;">&amp;</span> مەسڕەوە، و ژمارەی بلۆکەکان دەبێت یەک بگرنەوە.</p>
+
+      <div id="chunkPairsContainer" class="hscroll"></div>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="btnChunkCopy">دروستکردن و کۆپیکردنی SRT</button>
+      </div>
+
+      <div class="status" id="statusChunkRebuild"></div>
+    </div>
+
+    <div class="card">
+      <h2><span class="step-badge">3</span>halachn.krd</h2>
+      <div class="btn-row" style="margin-bottom:10px;">
+        <a class="btn btn-ghost" href="https://halachn.krd" target="_blank" rel="noopener" style="text-decoration:none;">کردنەوە لە پەڕەیەکی نوێ ↗</a>
+      </div>
+      <iframe id="halachnFrame" src="https://halachn.krd" title="halachn.krd" loading="lazy"
+        allow="clipboard-read; clipboard-write; fullscreen"
+        style="width:100%;height:80vh;min-height:500px;border:1px solid var(--border,#ddd);border-radius:12px;background:#fff;"></iframe>
+      <p class="sub" style="margin-top:8px;">ئەگەر سایتەکە نەکرایەوە، «کردنەوە لە پەڕەیەکی نوێ» بەکاربهێنە.</p>
+    </div>
+
   </section>
 
   <!-- ===================== TAB: SRT EDITOR ===================== -->
@@ -2317,6 +2368,149 @@
       </div>
     </div>
   </section>
+
+  <!-- ===================== TAB 1: COMPARE ===================== -->
+  <section class="panel" id="panel-compare">
+
+    <div class="card">
+      <h2><span class="step-badge">1</span>هەردوو فایلەکە باربکە</h2>
+      <p class="sub">فایلی یەکەم و دووەم (.srt) باربکە بۆ بەراوردکردنی کاتەکان.</p>
+
+      <div class="cols">
+        <div class="drop" id="drop1">
+          <input type="file" id="file1" accept=".srt,text/plain">
+          <span class="drop-icon">◤</span>
+          <div class="label">فایلی یەکەم</div>
+          <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە ئێرەوە</div>
+          <div class="filename" id="filename1"></div>
+        </div>
+        <div class="drop" id="drop2">
+          <input type="file" id="file2" accept=".srt,text/plain">
+          <span class="drop-icon">◢</span>
+          <div class="label">فایلی دووەم</div>
+          <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە ئێرەوە</div>
+          <div class="filename" id="filename2"></div>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnCompare" disabled>بەراوردکردن</button>
+        <button class="btn btn-ghost" id="btnResetCompare">سڕینەوەی هەردوولا</button>
+      </div>
+
+      <div class="status" id="statusCompare"></div>
+    </div>
+
+    <div class="card" id="resultsCard" style="display:none;">
+      <h2><span class="step-badge">2</span>ئەنجامی بەراورد</h2>
+      <p class="sub">ژمارەی بلۆکی جیاواز لە ڕووی کاتەوە لەنێوان دوو فایلەکە.</p>
+
+      <div class="stats">
+        <div class="stat"><div class="n" id="statTotal1">0</div><div class="l">بلۆکی فایلی یەکەم</div></div>
+        <div class="stat"><div class="n" id="statTotal2">0</div><div class="l">بلۆکی فایلی دووەم</div></div>
+        <div class="stat diff"><div class="n" id="statDiff">0</div><div class="l">جیاوازی timestamp</div></div>
+      </div>
+
+      <div class="strip-wrap">
+        <div class="strip-label">نەخشەی بلۆکەکان (هەر تیکێک = بلۆکێک)</div>
+        <div class="strip" id="diffStrip"></div>
+        <div class="legend">
+          <span><i class="dot ok"></i> هاوشێوەن</span>
+          <span><i class="dot bad"></i> جیاوازن</span>
+        </div>
+      </div>
+
+      <div class="diff-popup" id="diffPopup"></div>
+
+    </div>
+
+    <div class="card" id="deepCard" style="display:none;">
+      <h2><span class="step-badge">3</span>پشکنینی قووڵ — بلۆکی ونبوو و تێکەڵبوو</h2>
+      <p class="sub">هەردوو فایل ڕیزدەکاتەوە بۆ دۆزینەوەی ئەو بلۆکانەی لە یەک فایلدا ونن یان تێکەڵ بوون.</p>
+
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text-dim);margin:10px 0 4px;cursor:pointer;">
+        <input type="checkbox" id="deepBilingualMode" checked style="width:16px;height:16px;">
+        فایلەکان بە زمانی جیاوازن (بۆ نموونە ئینگلیزی/عەرەبی بەرامبەر کوردی) — ئەگەر کاتژمێرەکانی دوو فایلەکە هاوبەش بن (کاتژمێر گواسترابێتەوە بۆ وەرگێڕانەکە)، بەراورد بەپێی کاتژمێر دەکات (وردترین)، ئەگەر نا بەپێی ژمارەی هێڵ و درێژی ڕستە، نەک بە دەقی وەکیەک، چونکە وەرگێڕان هەرگیز دەقی وەک یەک نادات.
+      </label>
+
+      <div class="stats">
+        <div class="stat diff"><div class="n" id="deepOnlyA">0</div><div class="l">تەنها لە فایلی یەکەمدا</div></div>
+        <div class="stat diff"><div class="n" id="deepOnlyB">0</div><div class="l">تەنها لە فایلی دووەمدا</div></div>
+        <div class="stat"><div class="n" id="deepMerged">0</div><div class="l">جووتی بلۆکی تێکەڵبوو</div></div>
+        <div class="stat"><div class="n" id="deepComplex">0</div><div class="l">جیاوازی ئاڵۆز</div></div>
+      </div>
+
+      <div class="deep-list" id="deepList" style="margin-top:14px;"></div>
+
+      <div class="status" id="statusDeep"></div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnFixA" disabled>⧉ کۆپیکردنی چاککردنەوەی فایلی یەکەم (بەپێی دووەم)</button>
+        <button class="btn btn-primary" id="btnFixB" disabled>⧉ کۆپیکردنی چاککردنەوەی فایلی دووەم (بەپێی یەکەم)</button>
+      </div>
+      <p class="sub" style="margin-top:10px;">دوای چاککردنەوە هەردوو فایل هەمان ژمارە و ڕیزبەندی بلۆکیان دەبێت.</p>
+    </div>
+
+    <div class="card" id="mergeCard" style="display:none;">
+      <h2><span class="step-badge">4</span>چۆن یەکیانبخەیتەوە؟</h2>
+      <p class="sub">دیاریبکە کاتەکان لە کام فایلەوە بێت و دەقەکە لە کام فایلەوە.</p>
+
+      <div class="choice-group" id="choiceGroup">
+        <label class="choice checked">
+          <input type="radio" name="mergeChoice" value="1to2" checked>
+          <div>
+            <div class="t">کاتەکان لە فایلی یەکەم + دەق لە فایلی دووەم</div>
+            <div class="d">timestamp ـەکانی فایلی یەکەم دەمێننەوە.</div>
+          </div>
+        </label>
+        <label class="choice">
+          <input type="radio" name="mergeChoice" value="2to1">
+          <div>
+            <div class="t">کاتەکان لە فایلی دووەم + دەق لە فایلی یەکەم</div>
+            <div class="d">timestamp ـەکانی فایلی دووەم دەمێننەوە.</div>
+          </div>
+        </label>
+      </div>
+
+      <div class="status" id="statusMerge"></div>
+
+      <div class="btn-row">
+        <button class="btn btn-download" id="btnCopyMerge">⧉ کۆپیکردنی فایلی تێکەڵ (.srt)</button>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ===================== TAB 3: RTL-FIX (U+202B) ===================== -->
+  <section class="panel" id="panel-rtlfix">
+
+    <div class="card">
+      <h2><span class="step-badge">1</span>زیادکردنی نیشانەی ڕاستەڕێیی نووسین <span class="badge">U+202B</span></h2>
+      <p class="sub">فایلی SRT باربکە — U+202B بۆ ڕێگرتن لە پێچەوانەبوونەوەی خاڵبەندی زیاد دەکرێت؛ کاتەکان نەگۆڕدراو دەمێننەوە.</p>
+
+      <div class="drop" id="dropR" style="max-width:420px;">
+        <input type="file" id="fileR" accept=".srt,text/plain">
+        <span class="drop-icon">⇋</span>
+        <div class="label">فایلی SRT</div>
+        <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە ئێرەوە</div>
+        <div class="filename" id="filenameR"></div>
+      </div>
+
+      <div class="status" id="statusRtl"></div>
+    </div>
+
+    <div class="card" id="rtlCard" style="display:none;">
+      <h2><span class="step-badge">2</span>ئامادەیە <span class="badge" id="rtlBlockBadge">0 بلۆک</span></h2>
+      <p class="sub">U+202B زیادکرا؛ کاتەکان نەگۆڕدراون.</p>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="btnCopyRtl">کۆپیکردنی فایلی نوێ</button>
+        <button class="btn btn-ghost" id="btnResetRtl">سڕینەوەی فایلەکە</button>
+      </div>
+    </div>
+
+  </section>
+
   <!-- ===================== TAB 4: MOVIE INFO ===================== -->
   <section class="panel" id="panel-movie">
 
@@ -2369,6 +2563,178 @@
 
   </section>
 
+  <!-- ===================== TAB: UNIFY NAMES ACROSS MULTIPLE FILES ===================== -->
+  <section class="panel" id="panel-unify">
+
+    <div class="card">
+      <h2><span class="step-badge">1</span>فایلەکانی SRT باربکە</h2>
+      <p class="sub">چەند فایلی SRT هەڵبژێرە یان فڕێیان بدە ئێرە.</p>
+
+      <div class="drop" id="dropU" style="max-width:420px;">
+        <input type="file" id="fileU" accept=".srt,text/plain" multiple>
+        <span class="drop-icon">🧩</span>
+        <div class="label">فایلەکانی SRT</div>
+        <div class="hint">کرتە بکە یان فایلەکان فڕێبدەرە ئێرەوە (چەند فایلێک پێکەوە)</div>
+      </div>
+
+      <div id="unifyFileList" style="margin-top:14px;"></div>
+
+      <div class="stats" id="unifyStats" style="display:none;">
+        <div class="stat"><div class="n" id="statFileCount">٠</div><div class="l">فایل بارکراو</div></div>
+        <div class="stat"><div class="n" id="statWordCount">٠</div><div class="l">ناوی جیاواز دۆزراو</div></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="btnClearUnifyFiles">سڕینەوەی هەموو فایلەکان</button>
+      </div>
+
+      <div class="status" id="statusUnify"></div>
+    </div>
+
+    <div class="card" id="unifyDetectCard" style="display:none;">
+      <h2><span class="step-badge">2</span>دۆزینەوەی ناوەکان</h2>
+      <p class="sub">ناوەکانی ناو <b>( ) یان « » " "</b> دەدۆزرێنەوە.</p>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnDetectNames">🔍 دۆزینەوەی ناوەکان</button>
+      </div>
+
+      <div id="allNamesSection" style="display:none; margin-top:16px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+          <h3 style="font-size:14px; margin:0; color:var(--text-dim);">هەموو ناوەکانی دۆزراو <span class="badge" id="allNamesCount">٠</span></h3>
+          <button class="btn btn-ghost" id="btnClearNameSelection" style="font-size:12px; padding:6px 10px;">پاکردنەوەی دیاریکراو</button>
+        </div>
+        <p class="sub" style="margin-top:4px;">کرتە لەسەر ناوەکان بکە بۆ دیاریکردن، پاشان «زیادکردن».</p>
+        <div class="names-scroll-strip" id="allNamesStrip"></div>
+      </div>
+    </div>
+
+    <div class="card" id="unifyManualCard" style="display:none;">
+      <h2><span class="step-badge">3</span>یاسای دەستی <span class="badge">ئارەزوومەندانە</span></h2>
+      <p class="sub">ئەگەر ناوێک نەدۆزرایەوە، لێرە شێوازەکان زیاد بکە (بە کۆما , جیا بکەرەوە).</p>
+
+      <div class="field-gap">
+        <label class="label-sm">شێوازەکان (لە → بۆ)</label>
+        <div class="subst-row" style="flex-wrap:wrap;">
+          <input type="text" class="text-input" id="manualFrom" placeholder="نموونە: جۆن, جون, جوون" style="flex:2 1 220px;">
+          <span class="arrow">→</span>
+          <input type="text" class="text-input" id="manualTo" placeholder="ناوی دروست" style="flex:1 1 140px;">
+          <button class="btn btn-ghost" id="btnAddManualRule" style="flex-shrink:0;">＋ زیادکردن</button>
+        </div>
+      </div>
+
+      <div id="manualRulesList"></div>
+    </div>
+
+    <div class="card" id="unifyApplyCard" style="display:none;">
+      <h2><span class="step-badge">4</span>جێبەجێکردن و کۆپیکردن</h2>
+      <p class="sub">یاساکان بەسەر هەموو فایلەکاندا جێبەجێ دەکرێن، پاشان کۆپییان بکە.</p>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnApplyUnify">▶ یەکخستنی هەموو فایلەکان</button>
+      </div>
+
+      <div class="status" id="statusUnifyApply"></div>
+
+      <div id="unifyResultsList" style="margin-top:14px;"></div>
+
+      <div class="btn-row" id="unifyDownloadAllRow" style="display:none;">
+        <button class="btn btn-ghost" id="btnCopyAllUnify">📋 کۆپیکردنی هەموو فایلەکان</button>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ===================== TAB 6: CLEAN & CONVERT (VTT→SRT) ===================== -->
+  <section class="panel" id="panel-clean">
+
+    <div class="card">
+      <h2><span class="step-badge">1</span>پاکژکردنی ژێرنووس + گۆڕین بۆ SRT</h2>
+      <p class="sub">فایلەکە باربکە، پاشان هەر تایبەتمەندییەک کە دەتەوێت جێبەجێی بکە.</p>
+
+      <div class="drop" id="dropC" style="max-width:420px;">
+        <input type="file" id="fileC" accept=".srt,.vtt,text/plain">
+        <span class="drop-icon">✦</span>
+        <div class="label">فایلی SRT یان VTT</div>
+        <div class="hint">کرتە بکە یان فایلەکە فڕێبدەرە ئێرەوە</div>
+        <div class="filename" id="filenameC"></div>
+      </div>
+
+      <div class="status" id="statusClean"></div>
+    </div>
+
+    <div class="card" id="cleanCard" style="display:none;">
+      <h2><span class="step-badge">2</span>تایبەتمەندییەکان <span class="badge" id="cleanBlockBadge">0 بلۆک</span></h2>
+      <p class="sub">هەر یەکەیان بەجیا جێبەجێ دەکرێت و هەڵدەوەشێتەوە.</p>
+
+      <div id="cleanRowsList"></div>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="btnRevertClean">گەڕانەوە بۆ دەقی سەرەتا</button>
+        <button class="btn btn-ghost" id="btnResetClean">سڕینەوەی فایلەکە</button>
+      </div>
+
+      <div class="divider"></div>
+
+      <h2><span class="step-badge">3</span>دەقی ئێستا <span class="badge" id="cleanFinalBadge">0 بلۆک</span></h2>
+      <textarea id="cleanOutput" readonly style="min-height:220px;"></textarea>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="btnCopyClean">کۆپیکردنی دەق</button>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ===================== TAB 7: LINKS ===================== -->
+  <section class="panel" id="panel-links">
+
+    <div class="card">
+      <h2><span class="step-badge">1</span>لینکەکانم <span class="badge" id="lkCountBadge">0 لینک</span></h2>
+      <p class="sub">بۆ ڕیزبەندی ⠿ ڕابکێشە یان ▲ ▼ بەکاربهێنە.</p>
+      <div class="lk-tools">
+        <input type="text" id="lkSearch" class="text-input" placeholder="گەڕان لە ناو و لینکەکان…">
+        <button class="btn btn-ghost" id="btnLkFav" type="button">★ دڵخوازەکان</button>
+      </div>
+      <div class="lk-list" id="lkList"></div>
+    </div>
+
+    <div class="card">
+      <h2><span class="step-badge">2</span>لینکێکی نوێ زیاد بکە</h2>
+      <p class="sub">ناو و ناونیشانی ماڵپەڕەکە بنووسە (<span class="ltr">https://</span> خۆی زیاد دەبێت).</p>
+      <div class="lk-add">
+        <div class="field-gap">
+          <label class="label-sm">ناو</label>
+          <input type="text" id="lkName" class="text-input" placeholder="بۆ نموونە: SubSource">
+        </div>
+        <div class="field-gap">
+          <label class="label-sm">لینک</label>
+          <input type="text" id="lkUrl" class="text-input ltr" placeholder="example.com" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false">
+        </div>
+        <button class="btn btn-primary" id="btnLkAdd" type="button">＋ زیادکردن</button>
+      </div>
+      <div class="status" id="statusLinks"></div>
+    </div>
+
+    <div class="card">
+      <h2><span class="step-badge">3</span>کۆپی، هێنان و باکئەپ</h2>
+      <p class="sub">لینکەکان تەنها لەم وێبگەڕەدا هەڵدەگیرێن؛ بۆ گواستنەوە کۆپییان بکە و «هێنان» بکە.</p>
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="btnLkCopyAll" type="button">⧉ کۆپیکردنی هەموو لینکەکان</button>
+        <button class="btn btn-ghost" id="btnLkRestore" type="button">↺ گەڕاندنەوەی لینکە بنەڕەتییەکان</button>
+      </div>
+      <div class="field-gap" style="margin-top:16px;">
+        <label class="label-sm">هێنانی لینک (هەر دێڕێک: <span class="ltr">ناو | لینک</span> یان تەنها لینک)</label>
+        <textarea id="lkImport" class="ltr" style="min-height:110px;" placeholder="SubSource | https://subsource.net&#10;https://fmhy.net"></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btnLkImport" type="button">هێنانی لینکەکان</button>
+      </div>
+      <div class="status" id="statusLinksIO"></div>
+    </div>
+
+  </section>
+
   <!-- ===================== TAB: PLAYER ===================== -->
   <section class="panel" id="panel-admin">
     <div class="card adm-head">
@@ -2386,6 +2752,76 @@
     <div class="card" id="admVis" style="grid-column:1/-1;">
       <div class="adm-top"><h2>لۆگی سەردانەکان 👥 <span class="badge" id="admVisCount">٠</span></h2><span class="adm-meta" id="admVisState"></span></div>
       <div id="admVisList" class="adm-state" style="margin-top:12px;"></div>
+    </div>
+  </section>
+
+  <section class="panel" id="panel-player">
+    <div class="card">
+      <h2><span class="step-badge">▶</span>پلەیەری فیلم و زنجیرە</h2>
+
+      <div class="pl-stage" id="plStage">ناوی فیلمەکە بگەڕێ یان ژمارەی TMDB بنووسە و «پەخش بکە» دابگرە</div>
+      <div class="pl-tools">
+        <button class="btn btn-ghost" id="plFull" type="button">⛶ پڕ بە شاشە</button>
+        <button class="btn btn-ghost" id="plOpen" type="button">↗ تابی نوێ</button>
+      </div>
+
+      <hr class="pl-sep">
+
+      <div class="pl-top">
+        <div class="pl-seg pl-tmdb-only" role="group" aria-label="جۆر">
+          <button type="button" id="plBMovie" aria-pressed="true">فیلم</button>
+          <button type="button" id="plBTv" aria-pressed="false">زنجیرە / دراما</button>
+        </div>
+        <select id="plSource" class="text-input ltr" aria-label="سەرچاوە">
+          <option value="vidora" selected>vidora.ac</option>
+          <option value="zxcstream">zxcstream.cc</option>
+          <option value="framextv">framextv.xyz</option>
+          <option value="vidhive">vidhive.lol</option>
+          <option value="custom">ئادرەسی ڕاستەوخۆ</option>
+        </select>
+      </div>
+
+      <div class="pl-custom-only">
+        <input id="plCustomUrl" class="text-input ltr" aria-label="ئادرەس" placeholder="https://…  یان کۆدی &lt;iframe src=&quot;https://…&quot;&gt;">
+        <p class="pl-help">ئادرەسی https یان کۆدی embed دابنێ؛ ئەگەر شاشەکە بەتاڵ بوو «تابی نوێ» بەکاربهێنە.</p>
+      </div>
+
+      <div class="pl-tmdb-only">
+        <div class="pl-search">
+          <input id="plQuery" class="text-input" aria-label="گەڕان بە ناو" placeholder="🔍 گەڕان بە ناوی فیلم یان دراما (ئینگلیزی باشترە)">
+          <button class="btn btn-ghost" id="plSearch" type="button">بگەڕێ</button>
+        </div>
+        <div class="pl-status" id="plSearchStatus"></div>
+        <div class="pl-results" id="plResults"></div>
+      </div>
+
+      <div class="pl-fields pl-tmdb-only">
+        <input id="plTmdb" class="text-input ltr" inputmode="numeric" aria-label="ژمارەی TMDB" placeholder="ژمارەی TMDB">
+        <input id="plSeason" class="text-input ltr pl-tv-only" inputmode="numeric" aria-label="وەرز" placeholder="وەرز" value="1">
+        <input id="plEpisode" class="text-input ltr pl-tv-only" inputmode="numeric" aria-label="ئەڵقە" placeholder="ئەڵقە" value="1">
+      </div>
+
+      <div class="pl-actions">
+        <button class="btn btn-ghost pl-tv-only" type="button" id="plPrev">‹ پێشوو</button>
+        <button class="btn btn-primary" id="plPlay" type="button">▶ پەخش بکە</button>
+        <button class="btn btn-ghost pl-tv-only" type="button" id="plNext">دواتر ›</button>
+      </div>
+
+      <details>
+        <summary>ڕێکخستن و ڕێنمایی</summary>
+        <div class="pl-field">
+          <label class="label-sm" for="plMovieTpl">ئادرەسی فیلم</label>
+          <input id="plMovieTpl" class="text-input ltr" value="https://vidora.ac/movie/{id}">
+        </div>
+        <div class="pl-field">
+          <label class="label-sm" for="plTvTpl">ئادرەسی زنجیرە</label>
+          <input id="plTvTpl" class="text-input ltr" value="https://vidora.ac/tv/{id}/{s}/{e}">
+        </div>
+        <p class="pl-help">{id} و {s} و {e} بەکاربهێنە. گەڕان بە ناو هەمان کلیلی TMDB بەکاردێنێت.</p>
+        <p class="pl-help">ژمارەکە لە <a href="https://www.themoviedb.org" target="_blank" rel="noopener noreferrer">themoviedb.org</a> لە کۆتایی ئادرەسی پەڕەکەدا دەبینیت (بۆ نموونە <bdi dir="ltr">/movie/550</bdi>).</p>
+      </details>
+
+      <p class="pl-help">تەنها ڤیدیۆی ماڵپەڕێکی دەرەکی پیشان دەدات؛ بۆ بەکارهێنانی کەسی بەکاری بهێنە.</p>
     </div>
   </section>
 
@@ -2528,6 +2964,574 @@
       reader.readAsText(file, 'utf-8');
     }
   }
+
+  /* ===================== COMPARE TAB LOGIC ===================== */
+  let dataA = null, dataB = null;
+  let fileNameA = null, fileNameB = null;
+  const btnCompare = document.getElementById('btnCompare');
+  const statusCompare = document.getElementById('statusCompare');
+  const statusDeep = document.getElementById('statusDeep');
+  const statusMerge = document.getElementById('statusMerge');
+  let deepOps = null; // cached alignment result of the last deep analysis
+  let deepMode = 'exact';      // 'exact' | 'time' | 'struct' — matching strategy used by the last analysis
+  let deepStructA = null, deepStructB = null; // structural signatures from the last analysis ('struct' mode only)
+
+  function refreshCompareBtn(){
+    btnCompare.disabled = !(dataA && dataB);
+  }
+
+  wireDrop(document.getElementById('drop1'), document.getElementById('file1'), document.getElementById('filename1'), (content, name)=>{
+    const blocks = parseSRT(content);
+    if(blocks.length === 0){
+      setStatus(statusCompare, 'error', 'فایلی یەکەم بە دروستی ناخوێنرێتەوە وەک SRT.');
+      dataA = null;
+    } else {
+      clearStatus(statusCompare);
+      dataA = blocks;
+      fileNameA = name;
+    }
+    refreshCompareBtn();
+  });
+
+  wireDrop(document.getElementById('drop2'), document.getElementById('file2'), document.getElementById('filename2'), (content, name)=>{
+    const blocks = parseSRT(content);
+    if(blocks.length === 0){
+      setStatus(statusCompare, 'error', 'فایلی دووەم بە دروستی ناخوێنرێتەوە وەک SRT.');
+      dataB = null;
+    } else {
+      clearStatus(statusCompare);
+      dataB = blocks;
+      fileNameB = name;
+    }
+    refreshCompareBtn();
+  });
+
+  document.getElementById('btnResetCompare').addEventListener('click', ()=>{
+    dataA = null; dataB = null;
+    fileNameA = null; fileNameB = null;
+    ['drop1','drop2'].forEach(id=>document.getElementById(id).classList.remove('filled'));
+    document.getElementById('filename1').textContent = '';
+    document.getElementById('filename2').textContent = '';
+    document.getElementById('file1').value = '';
+    document.getElementById('file2').value = '';
+    document.getElementById('resultsCard').style.display = 'none';
+    document.getElementById('deepCard').style.display = 'none';
+    document.getElementById('mergeCard').style.display = 'none';
+    deepOps = null;
+    clearStatus(statusCompare);
+    clearStatus(statusDeep);
+    refreshCompareBtn();
+  });
+
+  let diffMask = [];
+
+  btnCompare.addEventListener('click', ()=>{
+    if(!dataA || !dataB) return;
+    // تەنها ئەو بەشەی هەردوو فایلەکەی تێدایە بەراورد دەکرێت — ئەگەر یەکێک لە فایلەکان کورتترە
+    // (بۆ نموونە نیوەی هەمان فایلە)، ئەو زیادەیەی فایلی درێژتر وەک جیاوازی ناژمێردرێت.
+    const len = Math.min(dataA.length, dataB.length);
+    let diffCount = 0;
+    diffMask = [];
+    for(let i=0;i<len;i++){
+      const same = dataA[i].start === dataB[i].start && dataA[i].end === dataB[i].end;
+      diffMask.push(!same);
+      if(!same) diffCount++;
+    }
+
+    document.getElementById('statTotal1').textContent = dataA.length;
+    document.getElementById('statTotal2').textContent = dataB.length;
+    document.getElementById('statDiff').textContent = diffCount;
+
+    const strip = document.getElementById('diffStrip');
+    const diffPopup = document.getElementById('diffPopup');
+    strip.innerHTML = '';
+    diffMask.forEach((bad, i)=>{
+      const t = document.createElement('div');
+      t.className = 'tick' + (bad ? ' bad' : '');
+
+      const bA = dataA[i];
+      const bB = dataB[i];
+
+      const blockHtml = (label, b) => {
+        if(!b){
+          return '<div class="dp-block"><div class="dp-file">' + label + '</div>'
+               + '<div class="dp-time missing">ئەم بلۆکە بوونی نییە لەم فایلەدا</div></div>';
+        }
+        const text = (b.text || '').trim().slice(0, 160);
+        return '<div class="dp-block"><div class="dp-file">' + label + '</div>'
+             + '<div class="dp-time">' + b.start + ' &rarr; ' + b.end + '</div>'
+             + '<div class="dp-text">' + text.replace(/</g,'&lt;') + '</div></div>';
+      };
+
+      t.addEventListener('mouseenter', (ev)=>{
+        const titleText = bad ? 'بلۆکی ' + (i+1) + ' — کاتەکان جیاوازن' : 'بلۆکی ' + (i+1) + ' — هاوشێوەن';
+        diffPopup.innerHTML = '<div class="dp-title">' + titleText + '</div>'
+          + blockHtml('فایلی یەکەم', bA)
+          + blockHtml('فایلی دووەم', bB);
+        if(diffPopup.parentNode !== document.body) document.body.appendChild(diffPopup);
+        diffPopup.style.visibility = 'hidden';
+        diffPopup.classList.add('show');
+        const rect = t.getBoundingClientRect();
+        const popW = Math.min(300, window.innerWidth - 16);
+        diffPopup.style.width = popW + 'px';
+        diffPopup.style.right = 'auto';
+        diffPopup.style.bottom = 'auto';
+        const popH = diffPopup.offsetHeight;
+        let left = rect.left + rect.width/2 - popW/2;
+        left = Math.max(8, Math.min(left, window.innerWidth - popW - 8));
+        let top = rect.top - popH - 10;
+        if(top < 8) top = rect.bottom + 10;
+        if(top + popH > window.innerHeight - 8) top = Math.max(8, window.innerHeight - popH - 8);
+        diffPopup.style.left = left + 'px';
+        diffPopup.style.top = top + 'px';
+        diffPopup.style.visibility = '';
+      });
+      t.addEventListener('mouseleave', ()=>{
+        diffPopup.classList.remove('show');
+      });
+
+      strip.appendChild(t);
+    });
+
+    document.getElementById('resultsCard').style.display = 'block';
+    document.getElementById('mergeCard').style.display = 'block';
+    if(dataA.length !== dataB.length){
+      setStatus(statusCompare, 'info', 'تێبینی: ژمارەی بلۆکەکانی دوو فایلەکە یەکسان نییە (' + dataA.length + ' بەرامبەر ' + dataB.length + ').');
+    } else {
+      clearStatus(statusCompare);
+    }
+
+    runDeepAnalysis();
+  });
+
+  /* ===================== DEEP STRUCTURAL DIFF (missing / merged blocks) =====================
+     Standard compare above lines up blocks purely by their index (block #1 vs block #1, #2 vs #2, ...).
+     That works fine until one file is missing a block, or two blocks got merged into one — after that
+     point every following block is compared against the wrong counterpart, and the "diff" numbers
+     become meaningless.
+     This section instead aligns the two files by the TEXT of each block (a classic LCS diff, like
+     "git diff"), so a missing or merged block is found exactly where it happened, no matter how many
+     blocks come after it. */
+
+  const DEEP_MAX_CELLS = 9000000; // safety cap so huge files don't freeze the tab
+  const TIME_TOLERANCE_MS = 30;   // small rounding tolerance when comparing timestamps
+  const TIME_OVERLAP_THRESHOLD = 0.15; // if at least this fraction of blocks share exact timing, trust timing over text/structure
+
+  function normText(t){
+    return (t || '').replace(/\r/g,'').split('\n').map(l=>l.trim()).join('\n').trim();
+  }
+
+  // ---- Timestamp signal (used in "different languages" mode whenever available) ----
+  // When a translation is made by transferring the source file's timestamps onto the new
+  // text (this tool's own "timestamp transfer" workflow), the start/end times of corresponding
+  // blocks are byte-identical across languages — a far more reliable, noise-free alignment key
+  // than text or line-count, which are only ever approximate across two different languages.
+  function timeToMs(t){
+    const m = (t || '').match(/(\d{2}):(\d{2}):(\d{2})[,.](\d{3})/);
+    if(!m) return NaN;
+    return (((+m[1]*60 + +m[2])*60 + +m[3])*1000) + +m[4];
+  }
+  // Fraction of the shorter file's blocks whose exact (start,end) pair also appears somewhere
+  // in the other file — a quick signal for whether the two files share transferred timestamps.
+  function timeOverlapFraction(dataA, dataB){
+    if(!dataA.length || !dataB.length) return 0;
+    const setA = new Set(dataA.map(b => b.start + '|' + b.end));
+    let hit = 0;
+    dataB.forEach(b => { if(setA.has(b.start + '|' + b.end)) hit++; });
+    return hit / Math.min(dataA.length, dataB.length);
+  }
+  function timesMatch(a, b){
+    return Math.abs(timeToMs(a.start) - timeToMs(b.start)) <= TIME_TOLERANCE_MS
+        && Math.abs(timeToMs(a.end) - timeToMs(b.end)) <= TIME_TOLERANCE_MS;
+  }
+  // Combines several consecutive blocks' timing into the outer range they span (earliest start
+  // to latest end) — for recognizing when N blocks on one side cover the same span as 1 block
+  // on the other side (a merge/split).
+  function combineTimeRange(data, idxs){
+    let startMs = Infinity, endMs = -Infinity;
+    idxs.forEach(i => {
+      const s = timeToMs(data[i].start), e = timeToMs(data[i].end);
+      if(s < startMs) startMs = s;
+      if(e > endMs) endMs = e;
+    });
+    return { startMs, endMs };
+  }
+  function timeRangeMatchesBlock(range, block){
+    return Math.abs(range.startMs - timeToMs(block.start)) <= TIME_TOLERANCE_MS
+        && Math.abs(range.endMs - timeToMs(block.end)) <= TIME_TOLERANCE_MS;
+  }
+
+  // ---- Structural signature (fallback for "different languages" mode when timestamps aren't
+  // shared between the two files) ----
+  // Compares each block's LINE COUNT (1-line / 2-line / 3-line...) and its SENTENCE LENGTH
+  // relative to the average block length of its own file — subtitle blocks generally keep the
+  // same line-break structure and roughly proportional length across a translation, even though
+  // the words differ.
+  function blockLineCount(t){
+    return normText(t).split('\n').filter(l=>l.trim()!=='').length;
+  }
+  function blockCharLen(t){
+    return normText(t).split('\n').map(l=>l.trim()).join(' ').trim().length;
+  }
+  function buildStructSigs(data){
+    const lens = data.map(b => blockCharLen(b.text));
+    const total = lens.reduce((s,v)=>s+v, 0);
+    const avg = (data.length && total > 0) ? (total / data.length) : 1;
+    return data.map((b,i) => ({ lc: blockLineCount(b.text), rel: lens[i] / avg }));
+  }
+  // Sums of "rel" combine correctly since each rel is already length/avg for its own file.
+  function combineSigs(sigs, idxs){
+    let lc = 0, rel = 0;
+    idxs.forEach(i => { lc += sigs[i].lc; rel += sigs[i].rel; });
+    return { lc, rel };
+  }
+  function relClose(x, y){
+    if(x <= 0 && y <= 0) return true;
+    const hi = Math.max(x, y), lo = Math.max(Math.min(x, y), 0.0001);
+    return (hi / lo) <= 2.1; // generous — different scripts vary a lot in average character width
+  }
+  function sigsMatch(sa, sb){
+    return sa.lc === sb.lc && relClose(sa.rel, sb.rel);
+  }
+
+  // Classic LCS-based diff between two sequences of length n/m, using an arbitrary match(i,j)
+  // predicate instead of hardcoded equality -> list of {type:'equal'|'delete'|'insert', aIndex, bIndex}
+  function diffArrays(n, m, matchFn){
+    if((n+1) * (m+1) > DEEP_MAX_CELLS) return null; // too big, skip deep analysis
+
+    const width = m + 1;
+    const dp = new Int32Array((n + 1) * width);
+    for(let i = n - 1; i >= 0; i--){
+      const rowCur = i * width, rowNext = (i + 1) * width;
+      for(let j = m - 1; j >= 0; j--){
+        if(matchFn(i, j)){
+          dp[rowCur + j] = dp[rowNext + j + 1] + 1;
+        } else {
+          const down = dp[rowNext + j], right = dp[rowCur + j + 1];
+          dp[rowCur + j] = down >= right ? down : right;
+        }
+      }
+    }
+
+    const ops = [];
+    let i = 0, j = 0;
+    while(i < n && j < m){
+      if(matchFn(i, j)){
+        ops.push({ type:'equal', aIndex:i, bIndex:j });
+        i++; j++;
+      } else if(dp[(i+1)*width + j] >= dp[i*width + (j+1)]){
+        ops.push({ type:'delete', aIndex:i });
+        i++;
+      } else {
+        ops.push({ type:'insert', bIndex:j });
+        j++;
+      }
+    }
+    while(i < n){ ops.push({ type:'delete', aIndex:i }); i++; }
+    while(j < m){ ops.push({ type:'insert', bIndex:j }); j++; }
+    return ops;
+  }
+
+  // Picks the best matching strategy for the loaded pair of files:
+  // - 'exact': compare exact text (for two versions of the SAME language file)
+  // - 'time':  compare timestamps (for different-language files whose timing was transferred
+  //            from a shared source — the most reliable, noise-free signal when available)
+  // - 'struct': compare line-count + relative sentence length (fallback for different-language
+  //            files that do NOT share timing)
+  function pickDeepMode(bilingualChecked, dataA, dataB){
+    if(!bilingualChecked) return 'exact';
+    return timeOverlapFraction(dataA, dataB) >= TIME_OVERLAP_THRESHOLD ? 'time' : 'struct';
+  }
+
+  function makeMatchFn(mode, dataA, dataB, structA, structB){
+    if(mode === 'time') return (i, j) => timesMatch(dataA[i], dataB[j]);
+    if(mode === 'struct') return (i, j) => sigsMatch(structA[i], structB[j]);
+    const aTexts = dataA.map(b => normText(b.text));
+    const bTexts = dataB.map(b => normText(b.text));
+    return (i, j) => aTexts[i] === bTexts[j];
+  }
+
+  // Does the group of blocks at idxsOne (in dataOne) match the single block at singleIdx (in
+  // dataOther)? Compared via timing range, structural signature, or exact text depending on
+  // mode. Used to recognize 2-block and 3-block merges either direction.
+  function groupMatchesSingle(mode, dataOne, structOne, idxsOne, dataOther, structOther, singleIdx){
+    if(mode === 'time'){
+      return timeRangeMatchesBlock(combineTimeRange(dataOne, idxsOne), dataOther[singleIdx]);
+    }
+    if(mode === 'struct'){
+      return sigsMatch(combineSigs(structOne, idxsOne), structOther[singleIdx]);
+    }
+    const joined = idxsOne.map(k => normText(dataOne[k].text)).join('\n');
+    return joined === normText(dataOther[singleIdx].text);
+  }
+
+  // Classifies one hunk (a run of consecutive delete/insert ops) as onlyA / onlyB / a merge of
+  // 2-3 blocks into 1, or an unresolved "complex" region.
+  function classifyHunk(delIdxs, insIdxs, mode, dataA, dataB, structA, structB){
+    const dA = delIdxs.length, dB = insIdxs.length;
+    if(dA === 1 && dB === 0) return 'onlyA';
+    if(dA === 0 && dB === 1) return 'onlyB';
+    if(dB === 1 && (dA === 2 || dA === 3) &&
+      groupMatchesSingle(mode, dataA, structA, delIdxs, dataB, structB, insIdxs[0])) return 'mergedAtoB';
+    if(dA === 1 && (dB === 2 || dB === 3) &&
+      groupMatchesSingle(mode, dataB, structB, insIdxs, dataA, structA, delIdxs[0])) return 'mergedBtoA';
+    return 'complex';
+  }
+
+  // Groups the flat op list into hunks (runs of consecutive non-equal ops) and classifies each one.
+  function buildDeepHunks(ops, dataA, dataB, mode, structA, structB){
+    const hunks = [];
+    let i = 0;
+    while(i < ops.length){
+      if(ops[i].type === 'equal'){ i++; continue; }
+      let j = i;
+      const delIdxs = [], insIdxs = [];
+      while(j < ops.length && ops[j].type !== 'equal'){
+        if(ops[j].type === 'delete') delIdxs.push(ops[j].aIndex);
+        else insIdxs.push(ops[j].bIndex);
+        j++;
+      }
+      const kind = classifyHunk(delIdxs, insIdxs, mode, dataA, dataB, structA, structB);
+      hunks.push({ delIdxs, insIdxs, kind });
+      i = j;
+    }
+    return hunks;
+  }
+
+  function deepPreview(t){
+    t = (t || '').trim();
+    return t.length > 90 ? t.slice(0,90) + '…' : t;
+  }
+
+  function runDeepAnalysis(){
+    document.getElementById('deepCard').style.display = 'block';
+    const deepList = document.getElementById('deepList');
+    deepList.innerHTML = '';
+    clearStatus(statusDeep);
+
+    const bilingualChecked = document.getElementById('deepBilingualMode').checked;
+    deepMode = pickDeepMode(bilingualChecked, dataA, dataB);
+    if(deepMode === 'struct'){
+      deepStructA = buildStructSigs(dataA);
+      deepStructB = buildStructSigs(dataB);
+    } else {
+      deepStructA = null;
+      deepStructB = null;
+    }
+    const matchFn = makeMatchFn(deepMode, dataA, dataB, deepStructA, deepStructB);
+    const ops = diffArrays(dataA.length, dataB.length, matchFn);
+
+    if(ops === null){
+      deepOps = null;
+      document.getElementById('deepOnlyA').textContent = '—';
+      document.getElementById('deepOnlyB').textContent = '—';
+      document.getElementById('deepMerged').textContent = '—';
+      document.getElementById('deepComplex').textContent = '—';
+      setStatus(statusDeep, 'error', 'فایلەکان زۆر گەورەن بۆ پشکنینی قووڵ لە ناو وێبگەڕدا.');
+      document.getElementById('btnFixA').disabled = true;
+      document.getElementById('btnFixB').disabled = true;
+      return;
+    }
+
+    deepOps = ops;
+    const hunks = buildDeepHunks(ops, dataA, dataB, deepMode, deepStructA, deepStructB);
+
+    let nOnlyA = 0, nOnlyB = 0, nMerged = 0, nComplex = 0;
+
+    if(hunks.length === 0){
+      deepList.innerHTML = '<div class="deep-empty">هیچ بلۆکێکی ونبوو یان تێکەڵبوو نەدۆزرایەوە — هەردوو فایل لە ڕووی دەقەوە بە هەمان ڕیزبەندین. ✓</div>';
+    }
+
+    hunks.forEach(h=>{
+      const item = document.createElement('div');
+      let titleText = '', tagText = '', kClass = 'k-complex';
+      let colA = '<div class="di-col empty">بوونی نییە</div>';
+      let colB = '<div class="di-col empty">بوونی نییە</div>';
+
+      const colHtml = (label, b) => {
+        if(!b) return '<div class="di-col empty">'+label+' — بوونی نییە</div>';
+        return '<div class="di-col"><div class="di-label">'+label+'</div>'
+          + '<div class="di-time">'+b.start+' &rarr; '+b.end+'</div>'
+          + '<div class="di-txt">'+deepPreview(b.text).replace(/</g,'&lt;')+'</div></div>';
+      };
+
+      if(h.kind === 'onlyA'){
+        nOnlyA++; kClass = 'k-onlyA'; tagText = 'ونبوو لە فایلی ٢';
+        const a = dataA[h.delIdxs[0]];
+        titleText = 'بلۆکی #' + (h.delIdxs[0]+1) + ' تەنها لە فایلی یەکەمدا هەیە';
+        colA = colHtml('فایلی یەکەم', a);
+        colB = colHtml('فایلی دووەم', null);
+      } else if(h.kind === 'onlyB'){
+        nOnlyB++; kClass = 'k-onlyB'; tagText = 'ونبوو لە فایلی ١';
+        const b = dataB[h.insIdxs[0]];
+        titleText = 'بلۆکی #' + (h.insIdxs[0]+1) + ' تەنها لە فایلی دووەمدا هەیە';
+        colA = colHtml('فایلی یەکەم', null);
+        colB = colHtml('فایلی دووەم', b);
+      } else if(h.kind === 'mergedAtoB'){
+        nMerged++; kClass = 'k-merged'; tagText = 'تێکەڵبوون';
+        const nums = h.delIdxs.map(x => '#' + (x+1)).join(' و ');
+        titleText = 'بلۆکەکانی ' + nums + ' لە فایلی یەکەم تێکەڵ بوون و بوونەتە بلۆکی #' + (h.insIdxs[0]+1) + ' لە فایلی دووەم';
+        colA = h.delIdxs.map((idx, k) => colHtml(k===0 ? ('فایلی یەکەم ('+h.delIdxs.length+' بلۆک)') : '', dataA[idx])).join('');
+        colB = colHtml('فایلی دووەم (١ بلۆک — تێکەڵبوو)', dataB[h.insIdxs[0]]);
+      } else if(h.kind === 'mergedBtoA'){
+        nMerged++; kClass = 'k-merged'; tagText = 'تێکەڵبوون';
+        const nums = h.insIdxs.map(x => '#' + (x+1)).join(' و ');
+        titleText = 'بلۆکەکانی ' + nums + ' لە فایلی دووەم تێکەڵ بوون و بوونەتە بلۆکی #' + (h.delIdxs[0]+1) + ' لە فایلی یەکەم';
+        colA = colHtml('فایلی یەکەم (١ بلۆک — تێکەڵبوو)', dataA[h.delIdxs[0]]);
+        colB = h.insIdxs.map((idx, k) => colHtml(k===0 ? ('فایلی دووەم ('+h.insIdxs.length+' بلۆک)') : '', dataB[idx])).join('');
+      } else {
+        nComplex++; kClass = 'k-complex'; tagText = 'جیاوازی ئاڵۆز';
+        const aFirst = h.delIdxs.length ? dataA[h.delIdxs[0]] : null;
+        const bFirst = h.insIdxs.length ? dataB[h.insIdxs[0]] : null;
+        titleText = 'ناوچەیەکی جیاوازی ئاڵۆز نزیکەی بلۆکی #' + ((h.delIdxs[0]!==undefined?h.delIdxs[0]:h.insIdxs[0])+1) + ' (' + h.delIdxs.length + ' بلۆک ↔ ' + h.insIdxs.length + ' بلۆک) — پێویستی بە پشکنینی دەستی هەیە';
+        colA = aFirst ? colHtml('فایلی یەکەم', aFirst) : '<div class="di-col empty">بوونی نییە</div>';
+        colB = bFirst ? colHtml('فایلی دووەم', bFirst) : '<div class="di-col empty">بوونی نییە</div>';
+      }
+
+      item.className = 'deep-item ' + kClass;
+      item.innerHTML = '<div class="di-head"><div class="di-title">'+titleText+'</div><div class="di-tag">'+tagText+'</div></div>'
+        + '<div class="di-body">'+colA+colB+'</div>';
+      deepList.appendChild(item);
+    });
+
+    document.getElementById('deepOnlyA').textContent = nOnlyA;
+    document.getElementById('deepOnlyB').textContent = nOnlyB;
+    document.getElementById('deepMerged').textContent = nMerged;
+    document.getElementById('deepComplex').textContent = nComplex;
+
+    document.getElementById('btnFixA').disabled = false;
+    document.getElementById('btnFixB').disabled = false;
+
+    const modeNote = deepMode === 'time'
+      ? 'کاتژمێرەکانی دوو فایلەکە هاوبەشن — بەراورد بەپێی کاتژمێر کرا (وردترین شێواز).'
+      : (deepMode === 'struct'
+        ? 'کاتژمێرەکان هاوبەش نین — بەراورد بەپێی ژمارەی هێڵ و درێژی ڕستە کرا.'
+        : '');
+
+    if(nOnlyA + nOnlyB + nMerged + nComplex === 0){
+      if(modeNote) setStatus(statusDeep, 'info', modeNote); else clearStatus(statusDeep);
+    } else if(nComplex > 0){
+      setStatus(statusDeep, 'info', (modeNote ? modeNote + ' ' : '') + nComplex + ' ناوچەی ئاڵۆز دۆزرایەوە کە خۆکار چاک ناکرێنەوە — پێویستیان بە پشکنینی دەستییە.');
+    } else {
+      if(modeNote) setStatus(statusDeep, 'info', modeNote); else clearStatus(statusDeep);
+    }
+  }
+
+  document.getElementById('deepBilingualMode').addEventListener('change', ()=>{
+    if(dataA && dataB) runDeepAnalysis();
+  });
+
+  // Rebuilds one file's block list, filling missing/merged blocks in from the other file
+  // wherever the automatic alignment above resolved them, and otherwise keeping the target
+  // file's own content untouched. fixTarget is 'A' or 'B' — the file being repaired.
+  function buildFixedBlocks(ops, dataA, dataB, fixTarget, mode, structA, structB){
+    let i = 0;
+    const out = [];
+    let manualCount = 0;
+
+    const pushBlock = (b) => out.push({ start: b.start, end: b.end, text: b.text });
+
+    while(i < ops.length){
+      const op = ops[i];
+      if(op.type === 'equal'){
+        pushBlock(fixTarget === 'A' ? dataA[op.aIndex] : dataB[op.bIndex]);
+        i++;
+        continue;
+      }
+      let j = i;
+      const delIdxs = [], insIdxs = [];
+      while(j < ops.length && ops[j].type !== 'equal'){
+        if(ops[j].type === 'delete') delIdxs.push(ops[j].aIndex);
+        else insIdxs.push(ops[j].bIndex);
+        j++;
+      }
+      const dA = delIdxs.length, dB = insIdxs.length;
+      const kind = classifyHunk(delIdxs, insIdxs, mode, dataA, dataB, structA, structB);
+
+      if(dA === 0){
+        // Block(s) exist only in file 2 — borrow straight from file 2, both directions converge here.
+        insIdxs.forEach(bi => pushBlock(dataB[bi]));
+      } else if(dB === 0){
+        // Block(s) exist only in file 1 — borrow straight from file 1.
+        delIdxs.forEach(ai => pushBlock(dataA[ai]));
+      } else if(kind === 'mergedAtoB'){
+        // File 1 has the blocks separately (the more precise data) — split the merged block using it.
+        delIdxs.forEach(ai => pushBlock(dataA[ai]));
+      } else if(kind === 'mergedBtoA'){
+        // File 2 has the blocks separately — split the merged block using it.
+        insIdxs.forEach(bi => pushBlock(dataB[bi]));
+      } else {
+        // Complex/unresolved region: can't safely auto-merge, so keep the target's own version
+        // (or borrow the other file's if the target has nothing at all here) and flag it.
+        manualCount++;
+        if(fixTarget === 'A'){
+          if(delIdxs.length) delIdxs.forEach(ai => pushBlock(dataA[ai]));
+          else insIdxs.forEach(bi => pushBlock(dataB[bi]));
+        } else {
+          if(insIdxs.length) insIdxs.forEach(bi => pushBlock(dataB[bi]));
+          else delIdxs.forEach(ai => pushBlock(dataA[ai]));
+        }
+      }
+      i = j;
+    }
+    return { blocks: out, manualCount };
+  }
+
+  function copyFixed(fixTarget){
+    if(!deepOps){
+      setStatus(statusDeep, 'error', 'تکایە سەرەتا بەراوردکردن ئەنجام بدە.');
+      return;
+    }
+    const { blocks, manualCount } = buildFixedBlocks(deepOps, dataA, dataB, fixTarget, deepMode, deepStructA, deepStructB);
+    const srt = buildSRT(blocks);
+    if(window.PS_logFile) window.PS_logFile('بەراورد', (fixTarget === 'A' ? fileNameA : fileNameB) || 'fixed.srt', srt);
+    const btn = document.getElementById(fixTarget === 'A' ? 'btnFixA' : 'btnFixB');
+    const originalLabel = btn.textContent;
+    copyTextToClipboard(srt, ()=>{
+      if(manualCount > 0){
+        setStatus(statusDeep, 'info', 'دەقی چاککراو کۆپی کرا، بەڵام ' + manualCount + ' ناوچەی ئاڵۆز خۆکار چاک نەکراونەتەوە — تکایە بەدەستی پشکنینیان بکە.');
+      } else {
+        setStatus(statusDeep, 'success', 'دەقی چاککراو بە سەرکەوتوویی کۆپی کرا. ✓');
+      }
+      btn.textContent = btn.classList.contains('btn-sm') ? '✓' : '✓ کۆپی کرا';
+      setTimeout(()=>{ btn.textContent = originalLabel; }, 1800);
+    }, ()=>{
+      setStatus(statusDeep, 'error', 'کۆپیکردن سەرکەوتوو نەبوو، تکایە دووبارە هەوڵبدەوە.');
+    });
+  }
+
+  document.getElementById('btnFixA').addEventListener('click', ()=> copyFixed('A'));
+  document.getElementById('btnFixB').addEventListener('click', ()=> copyFixed('B'));
+
+  document.querySelectorAll('input[name="mergeChoice"]').forEach(radio=>{
+    radio.addEventListener('change', ()=>{
+      document.querySelectorAll('.choice').forEach(c=>c.classList.remove('checked'));
+      radio.closest('.choice').classList.add('checked');
+    });
+  });
+
+  document.getElementById('btnCopyMerge').addEventListener('click', ()=>{
+    if(!dataA || !dataB) return;
+    const choice = document.querySelector('input[name="mergeChoice"]:checked').value;
+    const timingSrc = choice === '1to2' ? dataA : dataB;
+    const textSrc = choice === '1to2' ? dataB : dataA;
+    const len = Math.min(timingSrc.length, textSrc.length);
+    const merged = [];
+    for(let i=0;i<len;i++){
+      merged.push({ start: timingSrc[i].start, end: timingSrc[i].end, text: textSrc[i].text });
+    }
+    const srt = buildSRT(merged);
+    if(window.PS_logFile) window.PS_logFile('بەراورد', 'merged: ' + (fileNameA || '') + ' + ' + (fileNameB || ''), srt);
+    const btn = document.getElementById('btnCopyMerge');
+    const originalLabel = btn.textContent;
+    copyTextToClipboard(srt, ()=>{
+      setStatus(statusMerge, 'success', 'فایلی تێکەڵ بە سەرکەوتوویی کۆپی کرا. ✓');
+      btn.textContent = '✓ کۆپی کرا';
+      setTimeout(()=>{ btn.textContent = originalLabel; }, 1800);
+    }, ()=>{
+      setStatus(statusMerge, 'error', 'کۆپیکردن سەرکەوتوو نەبوو، تکایە دووبارە هەوڵبدەوە.');
+    });
+  });
 
   /* ===================== EXTRACT TAB LOGIC ===================== */
   let extractState = null;
@@ -2867,6 +3871,541 @@
     extractPairsContainer.innerHTML = '';
     clearStatus(statusExtract);
     clearStatus(statusRebuild);
+  });
+
+  /* ===================== CHUNK (9500 CHARS) TAB LOGIC ===================== */
+  // هەر بەشێک دەبێت لە ٩٥٠٠ پیت کەمتر بێت (جیاکەرەوەکانیش دەژمێردرێن).
+  const CHUNK_MAX_CHARS = 9500;
+  const CHUNK_SEP = '\n\n&\n\n';   // & تەنها لە هێڵێکی تایبەتی خۆیدا
+  let chunkState = null;
+  const statusChunk = document.getElementById('statusChunk');
+  const statusChunkRebuild = document.getElementById('statusChunkRebuild');
+  const chunkPairsContainer = document.getElementById('chunkPairsContainer');
+
+  // بلۆکەکان یەک بە یەک دەخاتە ناو بەشێک تا ئەو کاتەی بەشەکە لە سنوورەکە نزیک دەبێتەوە.
+  // هیچ بلۆکێک لەت ناکرێت، بۆیە هەموو دەقەکان دەگەڕێنەوە شوێنی خۆیان.
+  function computeChunkParts(texts){
+    const parts = [];
+    let start = 0, len = 0, count = 0;
+    function close(end){
+      const text = texts.slice(start, end).join(CHUNK_SEP);
+      parts.push({ start, end, text, over: text.length >= CHUNK_MAX_CHARS });
+    }
+    for(let i=0; i<texts.length; i++){
+      const add = (count === 0 ? 0 : CHUNK_SEP.length) + texts[i].length;
+      if(count > 0 && len + add >= CHUNK_MAX_CHARS){
+        close(i);
+        start = i; len = texts[i].length; count = 1;
+      } else {
+        len += add; count++;
+      }
+    }
+    if(count > 0) close(texts.length);
+    return parts;
+  }
+
+  const CHUNK_INVISIBLES = '\\s\\u200B-\\u200F\\u202A-\\u202E\\u2066-\\u2069\\uFEFF';
+  const CHUNK_AMP_LINE = new RegExp('^[' + CHUNK_INVISIBLES + ']*&[' + CHUNK_INVISIBLES + ']*$');
+
+  function tidyChunk(s){
+    // هێڵی بەتاڵ لەناو بلۆکێکدا فایلی SRT تێکدەدات، بۆیە لادەبرێت
+    return s.trim().replace(/\n[ \t]*\n+/g, '\n');
+  }
+  // & کە تەنها لە هێڵێکی خۆیدایە (شێوازی سەرەکی)
+  function splitChunksByLine(value){
+    const out = [];
+    let cur = [];
+    value.replace(/\r/g, '').split('\n').forEach(line=>{
+      if(CHUNK_AMP_LINE.test(line)){ out.push(cur.join('\n')); cur = []; }
+      else cur.push(line);
+    });
+    out.push(cur.join('\n'));
+    return out.map(tidyChunk);
+  }
+  // پلانی یەدەگ: هەر & یەک، ئەگەر وەرگێڕەکە نیشانەکەی لە ناو هێڵێکدا نووسیبێت
+  function splitChunksInline(value){
+    return value.replace(/\r/g, '').split('&').map(tidyChunk);
+  }
+  function resolveChunkPart(value, expected){
+    const byLine = splitChunksByLine(value);
+    if(byLine.length === expected) return { chunks: byLine, ok: true };
+    const inline = splitChunksInline(value);
+    if(inline.length === expected) return { chunks: inline, ok: true };
+    return { chunks: byLine, ok: false };
+  }
+
+  function renderChunkParts(){
+    chunkPairsContainer.innerHTML = '';
+
+    chunkState.parts.forEach((p, idx)=>{
+      const n = idx + 1;
+      const rangeLabel = 'بلۆکی ' + (p.start+1) + ' تا ' + p.end;
+
+      const col = document.createElement('div');
+      col.className = 'chunk-pair';
+
+      // ---- سەرەوە: بۆکسی کۆپیکردن ----
+      const wrap = document.createElement('div');
+      wrap.className = 'chunk-part';
+
+      const head = document.createElement('div');
+      head.className = 'chunk-head';
+      const title = document.createElement('strong');
+      title.textContent = 'بەشی ' + n;
+      const b1 = document.createElement('span');
+      b1.className = 'badge';
+      b1.textContent = rangeLabel;
+      const b2 = document.createElement('span');
+      b2.className = 'badge' + (p.over ? ' warn' : '');
+      b2.textContent = p.text.length.toLocaleString('en-US') + ' / ' + CHUNK_MAX_CHARS.toLocaleString('en-US') + ' پیت';
+      head.appendChild(title); head.appendChild(b1); head.appendChild(b2);
+
+      const ta = document.createElement('textarea');
+      ta.readOnly = true;
+      ta.value = p.text;
+
+      const row = document.createElement('div');
+      row.className = 'btn-row';
+      row.style.marginTop = '10px';
+      const copyBtn = document.createElement('button');
+      copyBtn.type = 'button';
+      copyBtn.className = 'btn btn-primary';
+      copyBtn.textContent = 'کۆپیکردنی بەشی ' + n;
+      copyBtn.addEventListener('click', ()=>{
+        copyTextToClipboard(p.text, ()=>{
+          setStatus(statusChunk, 'success', 'بەشی ' + n + ' (' + rangeLabel + ') کۆپیکرا. ✓');
+          copyBtn.textContent = '✓ کۆپی کرا';
+          setTimeout(()=>{ copyBtn.textContent = 'کۆپیکردنی بەشی ' + n; }, 1800);
+        }, ()=>{
+          setStatus(statusChunk, 'error', 'کۆپیکردن سەرکەوتوو نەبوو، تکایە دووبارە هەوڵبدەوە.');
+        });
+      });
+      row.appendChild(copyBtn);
+      const flatBtn = document.createElement('button');
+      flatBtn.type = 'button';
+      flatBtn.className = 'btn btn-ghost btn-sm';
+      flatBtn.textContent = 'لاین برەیک';
+      flatBtn.title = 'لابردنی لاین برەیکەکان';
+      flatBtn.addEventListener('click', ()=>{
+        flatOn = !flatOn;
+        ta.value = getPartText();
+        ta.scrollTop = 0;
+        flatBtn.title = flatOn ? 'گەڕاندنەوەی لاین برەیکەکان' : 'لابردنی لاین برەیکەکان';
+        flatBtn.classList.toggle('on', flatOn);
+      });
+      row.appendChild(flatBtn);
+
+      wrap.appendChild(head); wrap.appendChild(ta); wrap.appendChild(row);
+
+      // ---- ژێرەوە: بۆکسی گەڕاندنەوە (هەمان بەش) ----
+      const field = document.createElement('div');
+      field.className = 'paste-field';
+
+      const label = document.createElement('div');
+      label.className = 'field-label';
+      const span = document.createElement('span');
+      span.textContent = 'وەرگێڕانی بەشی ' + n;
+      const count = document.createElement('span');
+      count.className = 'count';
+      count.id = 'chunkPasteCount' + idx;
+      count.textContent = '0 / ' + (p.end - p.start) + ' بلۆک';
+      label.appendChild(span); label.appendChild(count);
+
+      const pta = document.createElement('textarea');
+      pta.id = 'chunkTranslated' + idx;
+      pta.placeholder = 'وەرگێڕانی بەشی ' + n + ' لێرە بلکێنە (paste بکە)...';
+      pta.addEventListener('input', refreshChunkCounts);
+
+      field.appendChild(label);
+      field.appendChild(pta);
+
+      col.appendChild(wrap);
+      col.appendChild(field);
+      chunkPairsContainer.appendChild(col);
+    });
+  }
+
+  function refreshChunkCounts(){
+    if(!chunkState) return;
+    chunkState.parts.forEach((p, idx)=>{
+      const ta = document.getElementById('chunkTranslated' + idx);
+      const countEl = document.getElementById('chunkPasteCount' + idx);
+      if(!ta || !countEl) return;
+      const expected = p.end - p.start;
+      const has = ta.value.trim().length > 0;
+      const r = has ? resolveChunkPart(ta.value, expected) : { chunks: [], ok: false };
+      countEl.textContent = r.chunks.length + ' / ' + expected + ' بلۆک';
+      countEl.className = 'count' + (!has ? '' : (r.ok ? ' ok' : ' bad'));
+    });
+  }
+
+  wireDrop(document.getElementById('dropChunk'), document.getElementById('fileChunk'), document.getElementById('filenameChunk'), (content, name)=>{
+    const blocks = parseSRT(content);
+    if(blocks.length === 0){
+      setStatus(statusChunk, 'error', 'فایلەکە بە دروستی ناخوێنرێتەوە وەک SRT.');
+      document.getElementById('chunkCard').style.display = 'none';
+      chunkState = null;
+      return;
+    }
+    const parts = computeChunkParts(blocks.map(b=>b.text.trim()));
+    chunkState = { blocks, fileName: name, parts };
+    document.getElementById('chunkBlockBadge').textContent = blocks.length + ' بلۆک';
+    document.getElementById('chunkPartBadge').textContent = parts.length + ' بەش';
+    renderChunkParts();
+    clearStatus(statusChunkRebuild);
+    document.getElementById('chunkCard').style.display = 'block';
+    if(parts.some(p=>p.over)){
+      setStatus(statusChunk, 'error', 'بلۆکێک هەیە کە بە تەنیا لە ٩٥٠٠ پیت زیاترە، بۆیە ناچارە بەتەنیا بەشێک بێت.');
+    } else {
+      clearStatus(statusChunk);
+    }
+  });
+
+  function makeChunkResult(){
+    const newBlocks = chunkState.blocks.map(b=>({ start: b.start, end: b.end, text: b.text }));
+    const notes = [];
+    let hasMismatch = false;
+    const translated = [];
+
+    chunkState.parts.forEach((p, idx)=>{
+      const n = idx + 1;
+      const ta = document.getElementById('chunkTranslated' + idx);
+      const value = ta ? ta.value : '';
+      const expected = p.end - p.start;
+      if(!value.trim()){
+        notes.push('بەشی ' + n + ' هێشتا وەرگێڕدراو نەکراوە');
+        return;
+      }
+      const r = resolveChunkPart(value, expected);
+      if(!r.ok){
+        notes.push('بەشی ' + n + ' ژمارەی بلۆکەکانی یەک ناگرێتەوە (' + r.chunks.length + ' لە جیاتی ' + expected + ')');
+        hasMismatch = true;
+        return;
+      }
+      r.chunks.forEach((t, k)=>{ newBlocks[p.start + k].text = t; translated.push(t); });
+    });
+
+    return {
+      srt: buildSRT(newBlocks),
+      filename: withActionPrefix('TRA', chunkState.fileName, 'translated.srt'),
+      notes, hasMismatch, translated
+    };
+  }
+
+  function reportChunk(res, verb){
+    if(res.notes.length === 0){
+      setStatus(statusChunkRebuild, 'success', 'فایلی SRT ' + verb + ' (هەموو بەشەکان وەرگێڕدراو بوون). ✓');
+    } else {
+      setStatus(statusChunkRebuild, res.hasMismatch ? 'error' : 'info',
+        'فایلی SRT ' + verb + '، بەڵام: ' + res.notes.join('، ') + ' — ئەو بەشانە بە دەقی سەرەتایی نووسران. کاتێک ئامادەبوو، دەقەکەی ڕاست بکەرەوە و دووبارە دروستیکەرەوە.');
+    }
+  }
+
+  document.getElementById('btnChunkCopy').addEventListener('click', ()=>{
+    if(!chunkState){
+      setStatus(statusChunkRebuild, 'error', 'سەرەتا فایلی SRT باربکە.');
+      return;
+    }
+    const res = makeChunkResult();
+    res.tab = 'هەڵەچن';
+    if(window.PS_logTranslation) window.PS_logTranslation(res);
+    copyBtnFeedback(document.getElementById('btnChunkCopy'), res.srt, ()=>{
+      reportChunk(res, 'دروستکرا و کۆپیکرا');
+    }, ()=>{
+      setStatus(statusChunkRebuild, 'error', 'کۆپیکردن سەرکەوتوو نەبوو.');
+    });
+  });
+
+
+  /* ===================== RTL-FIX TAB LOGIC (U+202B) ===================== */
+  const RLE = '\u202B';
+  const PDF = '\u202C';
+  let rtlState = null;
+  const statusRtl = document.getElementById('statusRtl');
+
+  function wrapWithRLE(text){
+    return text.split('\n').map(line => {
+      const lead = line.match(/^(?:\{[^{}]*\})*/)[0];
+      const rest = line.slice(lead.length).replace(/[\u202B\u202C]/g, '');
+      if(!rest.trim()) return lead;
+      return lead + RLE + rest + PDF;
+    }).join('\n');
+  }
+
+  wireDrop(document.getElementById('dropR'), document.getElementById('fileR'), document.getElementById('filenameR'), (content, name)=>{
+    const blocks = parseSRT(content);
+    if(blocks.length === 0){
+      setStatus(statusRtl, 'error', 'فایلەکە بە دروستی ناخوێنرێتەوە وەک SRT.');
+      document.getElementById('rtlCard').style.display = 'none';
+      rtlState = null;
+      return;
+    }
+    clearStatus(statusRtl);
+    rtlState = { blocks, fileName: name };
+    document.getElementById('rtlBlockBadge').textContent = blocks.length + ' بلۆک';
+    document.getElementById('rtlCard').style.display = 'block';
+  });
+
+  function makeRtlSrt(){
+    const newBlocks = rtlState.blocks.map(b => {
+      const t = b.text.trim();
+      return { start: b.start, end: b.end, text: t ? wrapWithRLE(t) : '' };
+    });
+    return buildSRT(newBlocks);
+  }
+
+
+  document.getElementById('btnCopyRtl').addEventListener('click', ()=>{
+    if(!rtlState){
+      setStatus(statusRtl, 'error', 'سەرەتا فایلی SRT باربکە.');
+      return;
+    }
+    const rtlSrt = makeRtlSrt();
+    if(window.PS_logFile) window.PS_logFile('U+202B', rtlState.fileName, rtlSrt);
+    copyBtnFeedback(document.getElementById('btnCopyRtl'), rtlSrt, ()=>{
+      setStatus(statusRtl, 'success', 'فایلی نوێ کۆپیکرا. ✓');
+    }, ()=>{
+      setStatus(statusRtl, 'error', 'کۆپیکردن سەرکەوتوو نەبوو.');
+    });
+  });
+
+  document.getElementById('btnResetRtl').addEventListener('click', ()=>{
+    rtlState = null;
+    document.getElementById('dropR').classList.remove('filled');
+    document.getElementById('filenameR').textContent = '';
+    document.getElementById('fileR').value = '';
+    document.getElementById('rtlCard').style.display = 'none';
+    clearStatus(statusRtl);
+  });
+
+  /* ===================== CLEAN & CONVERT TAB LOGIC (VTT→SRT) ===================== */
+  const statusClean = document.getElementById('statusClean');
+  const cleanOutput = document.getElementById('cleanOutput');
+  const cleanRowsList = document.getElementById('cleanRowsList');
+
+  let cleanOriginalBlocks = null;  // pristine, as parsed from the loaded file — never mutated
+  let cleanBlocks = null;          // current working blocks
+  let cleanFileName = 'subtitle.srt';
+  const cleanSnapshots = {};       // opKey -> deep-cloned blocks array taken right before that op's last Apply
+
+  function cloneBlocks(blocks){ return blocks.map(b => ({ start: b.start, end: b.end, text: b.text })); }
+
+  // ---- individual operations (each returns a NEW blocks array) ----
+
+  // 1) Remove line breaks inside each block's text, except two-person dialogue blocks
+  //    (blocks whose two remaining lines both start with "-").
+  function opRemoveLineBreaks(blocks){
+    return blocks.map(b=>{
+      const lines = b.text.split('\n').map(l=>l.trim()).filter(l=>l!=='');
+      if(lines.length === 0) return { start:b.start, end:b.end, text:b.text };
+      const isDialogue = lines.length >= 2 && lines[0].startsWith('-') && lines[1].startsWith('-');
+      const text = isDialogue ? lines.join('\n') : lines.join(' ');
+      return { start:b.start, end:b.end, text };
+    });
+  }
+
+  // 2) Strip formatting tags (i/b/u/em/strong) but leave color-related markup untouched
+  //    (e.g. <font color="...">, </font>, <c.colorname>, </c>).
+  function opStripFormattingTags(blocks){
+    return blocks.map(b=>({
+      start:b.start, end:b.end,
+      text: b.text.replace(/<\/?(i|b|u|em|strong)(\s[^>]*)?>/gi, '')
+    }));
+  }
+
+  // 3) Remove [ ... ] bracketed content; if a block's text becomes fully empty, drop the block.
+  function opRemoveBrackets(blocks){
+    const out = [];
+    blocks.forEach(b=>{
+      const lines = b.text.split('\n')
+        .map(l => l.replace(/\[[^\]]*\]/g, '').trim())
+        .filter(l => l !== '');
+      if(lines.length === 0) return; // block dropped entirely
+      out.push({ start:b.start, end:b.end, text: lines.join('\n') });
+    });
+    return out;
+  }
+
+  // 4) VTT→SRT cleanup: strip inline VTT word-timing tags like <00:00:12.340>
+  //    (karaoke-style timing has no SRT equivalent). Top-level timestamp/index
+  //    normalization already happens automatically when the file is parsed.
+  function opStripVttTiming(blocks){
+    return blocks.map(b=>({
+      start:b.start, end:b.end,
+      text: b.text.replace(/<\d{2}:\d{2}:\d{2}[.,]\d{3}>/g, '')
+    }));
+  }
+
+  // 5) Remove blocks whose text has no content at all (fully empty after trimming).
+  function opRemoveEmptyBlocks(blocks){
+    return blocks.filter(b => b.text.replace(/\s+/g,'') !== '');
+  }
+
+  // 6) Remove extra whitespace: trim spaces from the start/end of each line of text,
+  //    and collapse any run of two or more spaces (or tabs) in the middle of a line into one.
+  //    Also: no space right after an opening quote or right before a closing quote
+  //    (" text " -> "text"), and no space between a closing quote and a tatweel suffix (" ـی -> "ـی).
+  function fixQuoteSpacing(line){
+    const chars = Array.from(line);
+    const straightCount = chars.filter(c => c === '"').length;
+    const pairStraight = straightCount % 2 === 0; // only touch straight quotes when they pair up
+    const roles = [];
+    let inQ = false;
+    chars.forEach(c=>{
+      if (c === '"' && pairStraight){ roles.push(inQ ? 'close' : 'open'); inQ = !inQ; }
+      else if (c === '\u201C' || c === '\u00AB') roles.push('open');
+      else if (c === '\u201D' || c === '\u00BB') roles.push('close');
+      else roles.push(null);
+    });
+    if (!roles.some(Boolean)) return line;
+    const isWs = c => c === ' ' || c === '\t';
+    let out = '';
+    for (let i = 0; i < chars.length; i++){
+      const c = chars[i], r = roles[i];
+      if (r === 'open'){
+        out += c;
+        while (i + 1 < chars.length && isWs(chars[i+1])) i++;
+      } else if (r === 'close'){
+        out = out.replace(/[ \t]+$/, '');
+        out += c;
+        let j = i + 1;
+        while (j < chars.length && isWs(chars[j])) j++;
+        if (j > i + 1 && chars[j] === '\u0640') i = j - 1;
+      } else {
+        out += c;
+      }
+    }
+    return out;
+  }
+
+  // Two-speaker dialogue: when 2+ lines of a block start with a dash ("-سڵاو"),
+  // put one space between the dash and the text ("- سڵاو"). Single dashes only
+  // (a "--" is left alone), and blocks with fewer than two dash lines are untouched.
+  const DIALOGUE_DASH_RE = /^([\u200E\u200F\u202A-\u202E\u2066-\u2069]*[-\u2013\u2014])(?=[^\s\-\u2013\u2014])/;
+  function fixDialogueDashSpacing(lines){
+    const dashLines = lines.filter(l => DIALOGUE_DASH_RE.test(l) || /^[\u200E\u200F\u202A-\u202E\u2066-\u2069]*[-\u2013\u2014]\s/.test(l)).length;
+    if (dashLines < 2) return lines;
+    return lines.map(l => l.replace(DIALOGUE_DASH_RE, '$1 '));
+  }
+
+  function opCollapseExtraSpaces(blocks){
+    return blocks.map(b=>{
+      let lines = b.text.split('\n').map(l => l.replace(/[ \t]{2,}/g, ' ').replace(/(["\u201C\u201D\u00AB\u00BB])[ \t]+(?=\u0640)/g, '$1').trim());
+      lines = fixDialogueDashSpacing(lines);
+      return { start:b.start, end:b.end, text: lines.join('\n').trim() };
+    });
+  }
+
+  const CLEAN_OPS = [
+    { key:'linebreaks', title:'لابردنی هێڵ‌بڕەکان', desc:'هێڵ‌بڕی ناو هەر بلۆکێک لادەبرێت، جگە لە گفتوگۆی دوو کەس.', fn:opRemoveLineBreaks },
+    { key:'spaces', title:'لابردنی سپەیسی زیادە', desc:'سپەیسی زیادە لادەبرێت، و لە گفتوگۆی دوو کەس «-» لە دەق جیا دەکرێتەوە.', fn:opCollapseExtraSpaces },
+    { key:'emptyblocks', title:'سڕینەوەی بلۆکی بەتاڵ', desc:'بلۆکە بەتاڵەکان دەسڕدرێنەوە.', fn:opRemoveEmptyBlocks },
+    { key:'tags', title:'لابردنی ئینکۆدەکان', desc:'تاگی وەک <i> و <b> لادەبرێن؛ ڕەنگ دەست نادرێت.', fn:opStripFormattingTags },
+    { key:'brackets', title:'لابردنی دەقی ناو [ ]', desc:'دەقی ناو [ ] لادەبرێت.', fn:opRemoveBrackets },
+    { key:'vtt', title:'گۆڕینی VTT بۆ SRT', desc:'تاگی کاتی وشەی VTT لادەبرێت.', fn:opStripVttTiming },
+  ];
+
+  function renderCleanStats(){
+    document.getElementById('cleanBlockBadge').textContent = cleanOriginalBlocks.length + ' بلۆک';
+    document.getElementById('cleanFinalBadge').textContent = cleanBlocks.length + ' بلۆک';
+    cleanOutput.value = buildSRT(cleanBlocks);
+  }
+
+  function renderCleanRows(){
+    cleanRowsList.innerHTML = '';
+    CLEAN_OPS.forEach(op=>{
+      const row = document.createElement('div');
+      row.className = 'clean-row' + (cleanSnapshots[op.key] ? ' applied' : '');
+
+      const info = document.createElement('div');
+      info.className = 'info';
+      const t = document.createElement('div'); t.className = 't'; t.textContent = op.title;
+      const d = document.createElement('div'); d.className = 'd'; d.textContent = op.desc;
+      info.appendChild(t); info.appendChild(d);
+
+      const actions = document.createElement('div');
+      actions.className = 'actions';
+
+      const applyBtn = document.createElement('button');
+      applyBtn.className = 'apply-btn';
+      applyBtn.type = 'button';
+      applyBtn.textContent = 'جێبەجێکردن';
+      applyBtn.addEventListener('click', ()=>{
+        cleanSnapshots[op.key] = cloneBlocks(cleanBlocks);
+        cleanBlocks = op.fn(cleanBlocks);
+        renderCleanStats();
+        renderCleanRows();
+        setStatus(statusClean, 'success', '«' + op.title + '» جێبەجێکرا. ✓');
+      });
+
+      const undoBtn = document.createElement('button');
+      undoBtn.className = 'undo-btn';
+      undoBtn.type = 'button';
+      undoBtn.textContent = 'هەڵوەشاندنەوە';
+      undoBtn.disabled = !cleanSnapshots[op.key];
+      undoBtn.addEventListener('click', ()=>{
+        if(!cleanSnapshots[op.key]) return;
+        cleanBlocks = cleanSnapshots[op.key];
+        cleanSnapshots[op.key] = null;
+        renderCleanStats();
+        renderCleanRows();
+        setStatus(statusClean, 'info', '«' + op.title + '» هەڵوەشایەوە.');
+      });
+
+      actions.appendChild(applyBtn);
+      actions.appendChild(undoBtn);
+      row.appendChild(info);
+      row.appendChild(actions);
+      cleanRowsList.appendChild(row);
+    });
+  }
+
+  wireDrop(document.getElementById('dropC'), document.getElementById('fileC'), document.getElementById('filenameC'), (content, name)=>{
+    const blocks = parseSRT(content);
+    if(blocks.length === 0){
+      setStatus(statusClean, 'error', 'فایلەکە بە دروستی ناخوێنرێتەوە وەک SRT یان VTT.');
+      document.getElementById('cleanCard').style.display = 'none';
+      cleanOriginalBlocks = null; cleanBlocks = null;
+      return;
+    }
+    clearStatus(statusClean);
+    cleanOriginalBlocks = blocks;
+    cleanBlocks = cloneBlocks(blocks);
+    cleanFileName = name || 'subtitle.srt';
+    CLEAN_OPS.forEach(op => { cleanSnapshots[op.key] = null; });
+    document.getElementById('cleanCard').style.display = 'block';
+    renderCleanRows();
+    renderCleanStats();
+  });
+
+  document.getElementById('btnRevertClean').addEventListener('click', ()=>{
+    if(!cleanOriginalBlocks) return;
+    cleanBlocks = cloneBlocks(cleanOriginalBlocks);
+    CLEAN_OPS.forEach(op => { cleanSnapshots[op.key] = null; });
+    renderCleanRows();
+    renderCleanStats();
+    setStatus(statusClean, 'success', 'گەڕایتەوە بۆ دەقی سەرەتای فایلەکە.');
+  });
+
+  document.getElementById('btnResetClean').addEventListener('click', ()=>{
+    cleanOriginalBlocks = null; cleanBlocks = null;
+    CLEAN_OPS.forEach(op => { cleanSnapshots[op.key] = null; });
+    document.getElementById('dropC').classList.remove('filled');
+    document.getElementById('filenameC').textContent = '';
+    document.getElementById('fileC').value = '';
+    document.getElementById('cleanCard').style.display = 'none';
+    cleanOutput.value = '';
+    clearStatus(statusClean);
+  });
+
+
+  document.getElementById('btnCopyClean').addEventListener('click', ()=>{
+    if(window.PS_logFile) window.PS_logFile('بژار', cleanFileName, cleanOutput.value);
+    copyTextToClipboard(cleanOutput.value, ()=>{
+      setStatus(statusClean, 'success', 'دەقەکە کۆپیکرا. ✓');
+    }, ()=>{
+      setStatus(statusClean, 'error', 'کۆپیکردن سەرکەوتوو نەبوو.');
+    });
   });
 
   /* ===================== MOVIE INFO TAB LOGIC ===================== */
@@ -3225,6 +4764,834 @@ ${text}`;
       setStatus(statusMovie, 'error', 'کۆپیکردن سەرکەوتوو نەبوو.');
     });
   });
+
+  /* ===================== UNIFY NAMES (MULTI-FILE) TAB LOGIC ===================== */
+  (function(){
+    const dropU = document.getElementById('dropU');
+    const fileU = document.getElementById('fileU');
+    const fileListEl = document.getElementById('unifyFileList');
+    const statusUnify = document.getElementById('statusUnify');
+    const unifyStats = document.getElementById('unifyStats');
+    const statFileCount = document.getElementById('statFileCount');
+    const statWordCount = document.getElementById('statWordCount');
+    const kuNum = n => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+    const btnClearUnifyFiles = document.getElementById('btnClearUnifyFiles');
+    const unifyDetectCard = document.getElementById('unifyDetectCard');
+    const unifyManualCard = document.getElementById('unifyManualCard');
+    const unifyApplyCard = document.getElementById('unifyApplyCard');
+    const btnDetectNames = document.getElementById('btnDetectNames');
+    const manualFrom = document.getElementById('manualFrom');
+    const manualTo = document.getElementById('manualTo');
+    const btnAddManualRule = document.getElementById('btnAddManualRule');
+    const manualRulesList = document.getElementById('manualRulesList');
+    const btnApplyUnify = document.getElementById('btnApplyUnify');
+    const statusUnifyApply = document.getElementById('statusUnifyApply');
+    const unifyResultsList = document.getElementById('unifyResultsList');
+    const unifyDownloadAllRow = document.getElementById('unifyDownloadAllRow');
+    const allNamesSection = document.getElementById('allNamesSection');
+    const allNamesStrip = document.getElementById('allNamesStrip');
+    const allNamesCount = document.getElementById('allNamesCount');
+    const btnClearNameSelection = document.getElementById('btnClearNameSelection');
+
+    function escapeRegExp(s){
+      return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    let unifyFiles = [];   // { id, name, content }
+    let manualRules = [];  // { id, from:[words], to }
+    let unifyResults = []; // { name, content, replacements }
+    let allNames = [];         // { word, count, fileCount } — every name found, no clustering/filter
+    let selectedNames = [];    // ordered list of words the user clicked in the strip
+
+    const STOPWORDS = new Set([
+      'ئەوە','ئەوان','ئێمە','ئێوە','تۆ','من','ئەو','ئەم','ئەمە','ئەوەی','کە','لە','بۆ','لەگەڵ','دەبێت','هەیە','نییە','ناکات',
+      'دەکات','دەکەم','دەکەیت','دەکەین','دەکەن','بووە','بوو','دەبم','دەبیت','دەبین','دەبن','هەموو','هیچ','چۆن','کەی','بۆچی',
+      'چی','کێ','ئایا','یان','بەڵام','هەروەها','ئەگەر','چونکە','تاکو','پێش','دوای','ناو','سەر','ژێر','پاش','هەر','تەنها',
+      'دەبوو','بکات','بکەم','بکەیت','بکەین','بکەن','وا','ئاوا','ئێستا','هەمیشە','هەرگیز','بەڵێ','نەخێر','زۆر','کەم',
+      'باش','خراپ','گەورە','بچووک','نوێ','کۆن','ڕاست','هەڵە','ئێرە','ئەوێ','هەتا','بەرلە','دوایی','پێویستە',
+      'دەبێ','دەتوانی','دەتوانم','دەتوانین','ناتوانم','ناتوانیت','گوتی','گوتم','گوتیت','ووتی','دەڵێت','دەڵێم','بڵێ',
+      'ئێمەش','تۆش','منیش','ئەویش','ئەوانیش','ئێستاش'
+    ]);
+
+    function updateFileList(){
+      fileListEl.innerHTML = '';
+      if(unifyFiles.length === 0){
+        const empty = document.createElement('div');
+        empty.className = 'file-empty';
+        empty.textContent = 'هێشتا هیچ فایلێک بارنەکراوە.';
+        fileListEl.appendChild(empty);
+      } else {
+        unifyFiles.forEach(f=>{
+          const row = document.createElement('div');
+          row.className = 'file-item';
+          const name = document.createElement('div');
+          name.className = 'fname';
+          name.textContent = f.name;
+          const remove = document.createElement('button');
+          remove.className = 'fremove';
+          remove.type = 'button';
+          remove.textContent = '✕';
+          remove.addEventListener('click', ()=>{
+            unifyFiles = unifyFiles.filter(x=>x.id !== f.id);
+            updateFileList();
+            resetDetection();
+          });
+          row.appendChild(name);
+          row.appendChild(remove);
+          fileListEl.appendChild(row);
+        });
+      }
+      dropU.classList.toggle('filled', unifyFiles.length > 0);
+      unifyDetectCard.style.display = unifyFiles.length > 0 ? 'block' : 'none';
+      unifyManualCard.style.display = unifyFiles.length > 0 ? 'block' : 'none';
+      unifyApplyCard.style.display = unifyFiles.length > 0 ? 'block' : 'none';
+    }
+
+    function resetDetection(){
+      unifyStats.style.display = 'none';
+      unifyResults = [];
+      unifyResultsList.innerHTML = '';
+      unifyDownloadAllRow.style.display = 'none';
+      clearStatus(statusUnifyApply);
+      allNames = [];
+      selectedNames = [];
+      allNamesSection.style.display = 'none';
+      allNamesStrip.innerHTML = '';
+    }
+
+    dropU.addEventListener('click', ()=> fileU.click());
+    ['dragenter','dragover'].forEach(evt=>{
+      dropU.addEventListener(evt, e=>{ e.preventDefault(); dropU.classList.add('drag'); });
+    });
+    ['dragleave','drop'].forEach(evt=>{
+      dropU.addEventListener(evt, e=>{ e.preventDefault(); dropU.classList.remove('drag'); });
+    });
+
+    function addFiles(fileListObj){
+      const files = Array.from(fileListObj || []);
+      if(files.length === 0) return;
+      let pending = files.length;
+      files.forEach(file=>{
+        const reader = new FileReader();
+        reader.onload = ()=>{
+          unifyFiles.push({ id: Date.now()+'-'+Math.random().toString(36).slice(2), name: file.name, content: nl(reader.result).replace(/^\uFEFF/,'') });
+          pending--;
+          if(pending === 0){
+            unifyFiles.sort((a,b)=> a.name.localeCompare(b.name, undefined, { numeric:true, sensitivity:'base' }));
+            updateFileList();
+            resetDetection();
+            clearStatus(statusUnify);
+          }
+        };
+        reader.onerror = ()=>{
+          pending--;
+          setStatus(statusUnify, 'error', 'هەڵەیەک ڕوویدا لە خوێندنەوەی فایلی "'+file.name+'".');
+          if(pending === 0){ updateFileList(); }
+        };
+        reader.readAsText(file, 'utf-8');
+      });
+    }
+    fileU.addEventListener('change', ()=>{ addFiles(fileU.files); fileU.value=''; });
+    dropU.addEventListener('drop', e=>{ addFiles(e.dataTransfer.files); });
+
+    btnClearUnifyFiles.addEventListener('click', ()=>{
+      unifyFiles = [];
+      updateFileList();
+      resetDetection();
+      clearStatus(statusUnify);
+    });
+
+    updateFileList();
+
+    /* ---------- word extraction (only inside parentheses / quotation marks) ---------- */
+    function extractWords(content){
+      // Invisible direction marks (RLM/LRM/embedding) are very common in Kurdish SRTs
+      // and used to make otherwise-valid names fail the letter check.
+      const BIDI = /[\u200e\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g;
+      // Each bracket/quote type is scanned on its own, and one subtitle cue at a time,
+      // so a single stray quote or apostrophe can no longer shift the pairing for the whole file.
+      const PAIRS = [
+        /\(([^()]*)\)/g, /«([^«»]*)»/g, /»([^«»]*)«/g,
+        /“([^“”]*)”/g, /”([^“”]*)“/g, /"([^"]*)"/g,
+        /‘([^‘’]*)’/g, /'([^']*)'/g, /‹([^‹›]*)›/g
+      ];
+      const EDGE = /^[\s\-–—.،,:؛;!؟?…]+|[\s\-–—.،,:؛;!؟?…]+$/gu;
+      const names = [];
+      content.replace(/\r/g,'').split(/\n\s*\n/).forEach(block=>{
+        const cue = block.split('\n').filter(line=>{
+          const t = line.trim();
+          return t !== '' && !/^\d+$/.test(t) && !/-->/.test(t);
+        }).join(' ')
+          .replace(BIDI,'')
+          .replace(/<[^>]+>/g,' ')
+          .replace(/\{[^}]+\}/g,' ');
+        PAIRS.forEach(re=>{
+          re.lastIndex = 0;
+          let m;
+          while((m = re.exec(cue)) !== null){
+            const raw = (m[1]||'').replace(/\s+/g,' ').trim();
+            if(!raw) continue;
+            // "A، B" → two separate names
+            raw.split(/\s*[،,]\s*/).forEach(part=>{
+              const t = part.replace(EDGE,'');
+              if(!t || t.length < 2) return;
+              if(/[؟?!:؛;…]/.test(t)) return;                 // sentence punctuation inside → not a name
+              const wc = t.split(/\s+/).length;
+              if(wc < 1 || wc > 5) return;                     // names up to 5 words
+              if(!/\p{L}/u.test(t)) return;                    // must contain a letter
+              if(/^[\p{L}\p{M}\p{N}’ʼ'\u200c\u200d.\-\s]+$/u.test(t)) names.push(t);
+            });
+          }
+        });
+      });
+      return names;
+    }
+
+    btnDetectNames.addEventListener('click', ()=>{
+      if(unifyFiles.length === 0){
+        setStatus(statusUnify, 'error', 'تکایە سەرەتا فایلێک باربکە.');
+        return;
+      }
+      setStatus(statusUnify, 'info', 'لە دۆزینەوەدایە...');
+      setTimeout(runDetection, 30);
+    });
+
+    function runDetection(){
+      const freq = new Map(); // word -> { count, files:Set }
+      unifyFiles.forEach((f, idx)=>{
+        const words = extractWords(f.content);
+        words.forEach(w=>{
+          if(STOPWORDS.has(w)) return;
+          if(!freq.has(w)) freq.set(w, { count:0, files:new Set() });
+          const entry = freq.get(w);
+          entry.count++;
+          entry.files.add(idx);
+        });
+      });
+
+      // All names found — no minimum file count, so single-spelling and
+      // single-file names show up too (this is what the strip in the UI shows).
+      allNames = [];
+      freq.forEach((v,w)=>{
+        allNames.push({ word:w, count:v.count, fileCount:v.files.size });
+      });
+      allNames.sort((a,b)=> b.count - a.count);
+      selectedNames = [];
+      renderAllNames();
+
+      statFileCount.textContent = kuNum(unifyFiles.length);
+      statWordCount.textContent = kuNum(allNames.length);
+      unifyStats.style.display = 'grid';
+
+      if(allNames.length === 0){
+        setStatus(statusUnify, 'success', 'هیچ ناوێک لەناو کەوانە یان تەقەڵدا نەدۆزرایەوە.');
+      } else {
+        setStatus(statusUnify, 'success', kuNum(allNames.length) + ' ناوی جیاواز دۆزرایەوە. لە خوارەوە کرتەیان لەسەر بکە بۆ دیاریکردن. ✓');
+      }
+    }
+
+    /* ---------- all-names scroll strip ---------- */
+    function renderAllNames(){
+      allNamesStrip.innerHTML = '';
+      allNamesCount.textContent = kuNum(allNames.length);
+      allNamesSection.style.display = allNames.length ? 'block' : 'none';
+
+      if(allNames.length === 0){
+        const empty = document.createElement('div');
+        empty.className = 'names-empty';
+        empty.textContent = 'هیچ ناوێک لەناو کەوانە یان تەقەڵدا نەدۆزرایەوە.';
+        allNamesStrip.appendChild(empty);
+        return;
+      }
+
+      allNames.forEach(n=>{
+        const chip = document.createElement('span');
+        chip.className = 'name-chip' + (selectedNames.includes(n.word) ? ' active' : '');
+        const cw = document.createElement('span'); cw.textContent = n.word;
+        const cc = document.createElement('span'); cc.className = 'cnt'; cc.textContent = '×' + n.count;
+        chip.appendChild(cw); chip.appendChild(cc);
+        chip.addEventListener('click', ()=>{
+          // Multi-selection: toggle this name in/out of the picked list.
+          const i = selectedNames.indexOf(n.word);
+          if(i === -1) selectedNames.push(n.word);
+          else selectedNames.splice(i, 1);
+          manualFrom.value = selectedNames.join('، ');
+          renderAllNames();
+          manualTo.focus();
+        });
+        allNamesStrip.appendChild(chip);
+      });
+    }
+
+    btnClearNameSelection.addEventListener('click', ()=>{
+      selectedNames = [];
+      manualFrom.value = '';
+      renderAllNames();
+    });
+
+    /* ---------- manual rules ---------- */
+    function renderManualRules(){
+      manualRulesList.innerHTML = '';
+      if(manualRules.length === 0) return;
+      manualRules.forEach(rule=>{
+        const row = document.createElement('div');
+        row.className = 'subst-row';
+        const text = document.createElement('div');
+        text.style.flex = '1';
+        text.style.fontSize = '13px';
+        text.style.color = 'var(--text-dim)';
+        text.textContent = rule.from.join('، ') + '  →  ' + rule.to;
+        const del = document.createElement('button');
+        del.className = 'del-btn';
+        del.type = 'button';
+        del.textContent = '✕';
+        del.addEventListener('click', ()=>{
+          manualRules = manualRules.filter(r=>r.id !== rule.id);
+          renderManualRules();
+        });
+        row.appendChild(text);
+        row.appendChild(del);
+        manualRulesList.appendChild(row);
+      });
+    }
+
+    btnAddManualRule.addEventListener('click', ()=>{
+      const fromRaw = manualFrom.value.trim();
+      const toRaw = manualTo.value.trim();
+      if(!fromRaw || !toRaw){
+        setStatus(statusUnify, 'error', 'تکایە شێوازەکان و ناوی دروست پڕبکەرەوە.');
+        return;
+      }
+      const from = fromRaw.split(/[,،\n]/).map(s=>s.trim()).filter(Boolean);
+      if(from.length === 0) return;
+      manualRules.push({ id: Date.now()+'-'+Math.random().toString(36).slice(2), from, to: toRaw });
+      manualFrom.value = '';
+      manualTo.value = '';
+      selectedNames = [];
+      // These names are now handled — drop them from the found-names strip
+      // so it doesn't keep showing names the user already dealt with.
+      allNames = allNames.filter(n=> !from.includes(n.word));
+      allNamesCount.textContent = kuNum(allNames.length);
+      statWordCount.textContent = kuNum(allNames.length);
+      renderAllNames();
+      renderManualRules();
+      clearStatus(statusUnify);
+    });
+
+    /* ---------- apply & download ---------- */
+    // ئۆپشنی پاشگر
+    const optBox = document.createElement('div');
+    optBox.style.margin = '12px 0 0';
+    optBox.innerHTML = '<label class="cluster-toggle"><input type="checkbox" id="optSuffix"> پاشگریش بپارێزە (جۆن ← جۆنەکە، جۆنی، جۆنیش، جۆنان ...)</label>';
+    const applyRow = btnApplyUnify.parentNode;
+    applyRow.parentNode.insertBefore(optBox, applyRow);
+    const optSuffix = optBox.querySelector('#optSuffix');
+
+    // ــ ڕێکخستنی نووسین: ي/ى→ی ، ك→ک ، ھ→ه ، و لابردنی ZWNJ / تەتوین / نیشانەی دەنگ
+    const STRIP_RE = /[\u200c\u200d\u0640\u064B-\u065F\u0670]/g;
+    const INTER = '[\\u200c\\u200d\\u0640\\u064B-\\u065F\\u0670]*';
+    const VARIANTS = { 'ی':'[یيى]', 'ک':'[کك]', 'ه':'[هھ]' };
+    const SUFFIX = '(?:ەکانیش|ەکانی|ەکان|ەکەیش|ەکەی|ەکە|ێکی|ێک|یانی|یان|یەکی|یەک|یش|مان|تان|ەوە|ەش|ی|ش|م|ت|ە|ان|ێ)';
+
+    function normKey(w){
+      return w.replace(STRIP_RE,'').replace(/[يى]/g,'ی').replace(/ك/g,'ک').replace(/ھ/g,'ه').replace(/\s+/g,' ').trim();
+    }
+    function wordToPattern(w){
+      return Array.from(normKey(w)).map(c => c === ' ' ? '\\s+' : (VARIANTS[c] || escapeRegExp(c))).join(INTER);
+    }
+
+    btnApplyUnify.addEventListener('click', ()=>{
+      if(unifyFiles.length === 0){
+        setStatus(statusUnifyApply, 'error', 'تکایە سەرەتا فایلێک باربکە.');
+        return;
+      }
+      const map = new Map();
+      const conflicts = [];
+      manualRules.forEach(r=>{
+        r.from.forEach(w=>{
+          const k = normKey(w);
+          if(!k || w === r.to) return;
+          if(map.has(k) && map.get(k) !== r.to) conflicts.push(w);
+          map.set(k, r.to);
+        });
+      });
+
+      if(map.size === 0){
+        setStatus(statusUnifyApply, 'error', 'هیچ یاسایەکی چالاک نییە. لە کارتی "یاسای دەستی" ناوێک زیاد بکە.');
+        return;
+      }
+
+      const keys = [...map.keys()].sort((a,b)=> b.length - a.length);
+      const names = keys.map(wordToPattern).join('|');
+      const useSuffix = optSuffix.checked;
+      const pattern = new RegExp(
+        '(?<![\\p{L}\\p{M}])(' + names + ')' +
+        (useSuffix ? '(' + INTER + SUFFIX + '?)' : '') +
+        '(?![\\p{L}\\p{M}])', 'gu');
+
+      unifyResults = [];
+      let totalReplacements = 0;
+      unifyFiles.forEach(f=>{
+        let count = 0;
+        const newContent = f.content.replace(pattern, (match, name, suffix)=>{
+          const to = map.get(normKey(name));
+          if(to === undefined) return match;
+          const out = to + (typeof suffix === 'string' ? suffix : '');
+          if(out !== match) count++;
+          return out;
+        });
+        totalReplacements += count;
+        unifyResults.push({ name: f.name, content: newContent, replacements: count });
+      });
+
+      renderResults();
+      let msg = kuNum(totalReplacements) + ' گۆڕانکاری لەسەر ' + kuNum(unifyFiles.length) + ' فایل جێبەجێکرا. ✓';
+      if(conflicts.length){
+        msg += ' ئاگاداری: ' + conflicts.length + ' شێواز لە دوو یاسادا بە ناوی جیاواز هاتبوون (یاسای دواتر بەکارهات): ' + [...new Set(conflicts)].join('، ');
+      }
+      setStatus(statusUnifyApply, conflicts.length ? 'info' : 'success', msg);
+      unifyDownloadAllRow.style.display = 'flex';
+    });
+
+    function renderResults(){
+      unifyResultsList.innerHTML = '';
+      unifyResults.forEach(r=>{
+        const row = document.createElement('div');
+        row.className = 'result-item';
+        const name = document.createElement('div');
+        name.className = 'rname';
+        name.textContent = r.name;
+        const count = document.createElement('div');
+        count.className = 'rcount';
+        count.textContent = r.replacements + ' گۆڕانکاری';
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'btn btn-ghost';
+        copyBtn.type = 'button';
+        copyBtn.textContent = '📋 کۆپیکردن';
+        copyBtn.addEventListener('click', ()=>{
+          if(window.PS_logFile) window.PS_logFile('ناو (فرە فایل)', r.name, r.content);
+          copyBtnFeedback(copyBtn, r.content, null, ()=>{
+            setStatus(statusUnifyApply, 'error', 'کۆپیکردنی فایلی "'+r.name+'" سەرکەوتوو نەبوو.');
+          });
+        });
+
+        row.appendChild(name);
+        row.appendChild(count);
+        row.appendChild(copyBtn);
+        unifyResultsList.appendChild(row);
+      });
+    }
+
+
+    // کۆپیکردنی هەموو فایلەکان پێکەوە (هەرفایلێک بە هێڵی ناونیشانەوە جیادەکرێتەوە)
+    document.getElementById('btnCopyAllUnify').addEventListener('click', ()=>{
+      if(!unifyResults.length) return;
+      if(window.PS_logFile) unifyResults.forEach(r => window.PS_logFile('ناو (فرە فایل)', r.name, r.content));
+      const all = unifyResults.map(r => '===== ' + r.name + ' =====\n' + r.content).join('\n\n');
+      copyBtnFeedback(document.getElementById('btnCopyAllUnify'), all, ()=>{
+        setStatus(statusUnifyApply, 'success', 'هەموو ' + unifyResults.length + ' فایلەکە کۆپیکران (هەریەکە بە ناونیشانی خۆیەوە). ✓');
+      }, ()=>{
+        setStatus(statusUnifyApply, 'error', 'کۆپیکردن سەرکەوتوو نەبوو.');
+      });
+    });
+
+  })();
+
+  /* ===================== LINKS TAB LOGIC ===================== */
+  const LK_KEY = 'preTranslate_links_v1';
+  const LK_DEFAULTS = [
+    {name:'Kaito Vault',   url:'https://beta.kaitovault.com/'},
+    {name:'NovaHD',        url:'https://novahd.cc/'},
+    {name:'SubSource',     url:'https://subsource.net/recent?type=movie&lang=english'},
+    {name:'5TV',           url:'https://5tv.asia/'},
+    {name:'Fasel HD',      url:'https://www.fasel-hd.co/main'},
+    {name:'FMHY',          url:'https://fmhy.net/'},
+    {name:'WhenOn Digital',url:'https://whenondigital.com/'},
+    {name:'HiveX',         url:'https://hivex.stream/'},
+    {name:'DaddyLive',     url:'https://daddylive.pk/'},
+    {name:'MovieBox HD',   url:'https://movieboxhd.net/'},
+    {name:'EgyDead',       url:'https://tv10.egydead.live/'},
+    {name:'TukTuk Cinemas',url:'https://tuktukcinemas.com/main/'},
+    {name:'Webtor',        url:'https://webtor.io/'},
+    {name:'FPrime',        url:'https://fprime.at/'}
+  ];
+  const LK_SEEN_KEY = 'preTranslate_links_seen_v1';
+
+  let lkItems = [];
+  let lkQuery = '';
+  let lkFavOnly = false;
+  let lkEditingId = null;
+  let lkOpenId = null;
+
+  const lkNameEl = document.getElementById('lkName');
+  const lkUrlEl = document.getElementById('lkUrl');
+  const lkListEl = document.getElementById('lkList');
+  const lkCountBadge = document.getElementById('lkCountBadge');
+  const lkSearchEl = document.getElementById('lkSearch');
+  const btnLkFav = document.getElementById('btnLkFav');
+  const statusLinks = document.getElementById('statusLinks');
+  const statusLinksIO = document.getElementById('statusLinksIO');
+  const lkImportEl = document.getElementById('lkImport');
+
+  function lkId(){ return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+
+  function lkNormalizeUrl(raw){
+    let u = (raw || '').trim();
+    if(!u) return null;
+    if(!/^[a-z][a-z0-9+.-]*:\/\//i.test(u)) u = 'https://' + u.replace(/^\/+/, '');
+    try{
+      const x = new URL(u);
+      if(x.protocol !== 'http:' && x.protocol !== 'https:') return null;
+      if(!x.hostname || x.hostname.indexOf('.') === -1) return null;
+      return x.href;
+    } catch(e){ return null; }
+  }
+  function lkHost(url){
+    try{ return new URL(url).hostname.replace(/^www\./i, ''); } catch(e){ return url; }
+  }
+  function lkKeyOf(url){
+    try{
+      const x = new URL(url);
+      return x.hostname.replace(/^www\./i, '').toLowerCase() + x.pathname.replace(/\/+$/, '') + x.search;
+    } catch(e){ return url; }
+  }
+  function lkHasUrl(url, exceptId){
+    const k = lkKeyOf(url);
+    return lkItems.some(it => it.id !== exceptId && lkKeyOf(it.url) === k);
+  }
+
+  function lkSave(){ safeStore.set(LK_KEY, JSON.stringify(lkItems)); }
+  function lkLoad(){
+    const raw = safeStore.get(LK_KEY);
+    let seen = [];
+    try{ seen = JSON.parse(safeStore.get(LK_SEEN_KEY) || '[]'); } catch(e){ seen = []; }
+    if(!Array.isArray(seen)) seen = [];
+
+    if(raw === null){
+      lkItems = LK_DEFAULTS.map(d => ({id: lkId(), name: d.name, url: d.url, fav: false}));
+    } else {
+      try{
+        const parsed = JSON.parse(raw);
+        lkItems = Array.isArray(parsed) ? parsed.filter(x => x && x.url) : [];
+      } catch(e){ lkItems = []; }
+      // Newly added built-in links are offered once; later deletions stay deleted.
+      // Existing users who never recorded a "seen" list: only the newest default is offered.
+      if(!seen.length) seen = LK_DEFAULTS.filter(d => d.url !== 'https://novahd.cc/').slice(0, -4).map(d => d.url);
+      LK_DEFAULTS.forEach((d, idx) => {
+        if(seen.indexOf(d.url) === -1 && !lkHasUrl(d.url)){
+          lkItems.splice(Math.min(idx, lkItems.length), 0, {id: lkId(), name: d.name, url: d.url, fav: false});
+        }
+      });
+    }
+    safeStore.set(LK_SEEN_KEY, JSON.stringify(LK_DEFAULTS.map(d => d.url)));
+    lkSave();
+  }
+
+  function lkAvatar(name, url){
+    const text = (name || lkHost(url) || '?').trim();
+    const ch = (Array.from(text)[0] || '?').toUpperCase();
+    let h = 0; const s = lkHost(url);
+    for(let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 360;
+    const el = document.createElement('div');
+    el.className = 'lk-avatar';
+    el.style.background = 'hsl(' + h + ' 38% 38%)';
+    el.textContent = ch;
+    return el;
+  }
+
+  function lkFlash(id){
+    const el = lkListEl.querySelector('[data-id="' + id + '"]');
+    if(!el) return;
+    el.scrollIntoView({block:'nearest'});
+    el.classList.add('flash');
+    setTimeout(()=> el.classList.remove('flash'), 1200);
+  }
+
+  function lkIsFiltering(){ return !!(lkQuery || lkFavOnly); }
+
+  function lkMove(id, dir){
+    const i = lkItems.findIndex(x => x.id === id);
+    const j = i + dir;
+    if(i < 0 || j < 0 || j >= lkItems.length) return;
+    const t = lkItems[i]; lkItems[i] = lkItems[j]; lkItems[j] = t;
+    lkSave(); lkRender(); lkFlash(id);
+  }
+
+  function lkMakeIcon(cls, text, title, onClick){
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'lk-ib ' + cls; b.textContent = text; b.title = title;
+    b.setAttribute('aria-label', title);
+    b.addEventListener('click', onClick);
+    return b;
+  }
+
+  function lkRender(){
+    const prevScroll = lkListEl.scrollTop;
+    lkListEl.innerHTML = '';
+    const total = lkItems.length;
+    const filtering = lkIsFiltering();
+    const q = lkQuery.trim().toLowerCase();
+    const shown = lkItems.filter(it =>
+      (!lkFavOnly || it.fav) &&
+      (!q || (it.name || '').toLowerCase().includes(q) || it.url.toLowerCase().includes(q))
+    );
+    lkCountBadge.textContent = filtering ? (shown.length + ' لە ' + total + ' لینک') : (total + ' لینک');
+
+    if(shown.length === 0){
+      const e = document.createElement('div');
+      e.className = 'lk-empty';
+      e.textContent = total === 0 ? 'هێشتا هیچ لینکێکت نییە. لە سەرەوە یەکێک زیاد بکە.' : 'هیچ لینکێک نەدۆزرایەوە.';
+      lkListEl.appendChild(e);
+      return;
+    }
+
+    shown.forEach(it => {
+      const idx = lkItems.indexOf(it);
+      const row = document.createElement('div');
+      row.className = 'lk-item';
+      row.dataset.id = it.id;
+
+      const grip = document.createElement('div');
+      grip.className = 'lk-grip' + (filtering || lkEditingId ? ' off' : '');
+      grip.textContent = '⠿';
+      grip.title = 'بۆ گۆڕینی ڕیزبەندی ڕایبکێشە';
+      if(!filtering && !lkEditingId) lkAttachDrag(grip, row);
+
+      row.appendChild(grip);
+      row.appendChild(lkAvatar(it.name, it.url));
+
+      if(lkEditingId === it.id){
+        const box = document.createElement('div');
+        box.className = 'lk-edit';
+        const n = document.createElement('input');
+        n.type = 'text'; n.className = 'text-input'; n.value = it.name || ''; n.placeholder = 'ناو';
+        const u = document.createElement('input');
+        u.type = 'text'; u.className = 'text-input ltr'; u.value = it.url; u.placeholder = 'example.com';
+        u.setAttribute('autocapitalize', 'off'); u.spellcheck = false;
+        const st = document.createElement('div'); st.className = 'status';
+        const bar = document.createElement('div'); bar.className = 'btn-row';
+        const ok = document.createElement('button'); ok.type = 'button'; ok.className = 'btn btn-primary'; ok.textContent = 'هەڵگرتن';
+        const no = document.createElement('button'); no.type = 'button'; no.className = 'btn btn-ghost'; no.textContent = 'پاشگەزبوونەوە';
+        const commit = ()=>{
+          const url = lkNormalizeUrl(u.value);
+          if(!url){ setStatus(st, 'error', 'لینکەکە دروست نییە.'); return; }
+          if(lkHasUrl(url, it.id)){ setStatus(st, 'error', 'ئەم لینکە پێشتر هەیە.'); return; }
+          it.name = n.value.trim() || lkHost(url);
+          it.url = url;
+          lkEditingId = null;
+          lkSave(); lkRender(); lkFlash(it.id);
+        };
+        ok.addEventListener('click', commit);
+        no.addEventListener('click', ()=>{ lkEditingId = null; lkRender(); });
+        [n, u].forEach(inp => inp.addEventListener('keydown', ev => {
+          if(ev.key === 'Enter') commit();
+          if(ev.key === 'Escape'){ lkEditingId = null; lkRender(); }
+        }));
+        bar.appendChild(ok); bar.appendChild(no);
+        box.appendChild(n); box.appendChild(u); box.appendChild(st); box.appendChild(bar);
+        row.appendChild(box);
+        lkListEl.appendChild(row);
+        return;
+      }
+
+      const main = document.createElement('a');
+      main.className = 'lk-main';
+      main.href = it.url; main.target = '_blank'; main.rel = 'noopener noreferrer';
+      const nm = document.createElement('div'); nm.className = 'lk-name'; nm.textContent = it.name || lkHost(it.url);
+      const ur = document.createElement('div'); ur.className = 'lk-url'; ur.textContent = lkHost(it.url) + (new URL(it.url).pathname.length > 1 ? '/…' : '');
+      ur.title = it.url;
+      main.appendChild(nm); main.appendChild(ur);
+      row.appendChild(main);
+
+      const fav = lkMakeIcon('fav' + (it.fav ? ' on' : ''), it.fav ? '★' : '☆', 'دڵخواز', ()=>{
+        it.fav = !it.fav; lkSave(); lkRender();
+      });
+      const isOpen = lkOpenId === it.id;
+      const more = lkMakeIcon('more' + (isOpen ? ' on' : ''), '⋯', 'زیاتر', ()=>{
+        lkOpenId = isOpen ? null : it.id; lkRender();
+      });
+      row.appendChild(fav);
+      row.appendChild(more);
+      if(isOpen) row.classList.add('open');
+
+      if(isOpen){
+        const act = document.createElement('div');
+        act.className = 'lk-actions';
+        const up = lkMakeIcon('', '▲', 'بەرەو سەرەوە', ()=> lkMove(it.id, -1));
+        const dn = lkMakeIcon('', '▼', 'بەرەو خوارەوە', ()=> lkMove(it.id, 1));
+        if(filtering){ up.disabled = true; dn.disabled = true; }
+        else { if(idx === 0) up.disabled = true; if(idx === total - 1) dn.disabled = true; }
+
+        const cp = lkMakeIcon('', '⧉', 'کۆپیکردنی لینک', ()=>{
+          copyTextToClipboard(it.url, ()=>{
+            cp.classList.add('copied'); cp.textContent = '✓';
+            setTimeout(()=>{ cp.classList.remove('copied'); cp.textContent = '⧉'; }, 1300);
+          }, ()=> setStatus(statusLinks, 'error', 'کۆپیکردن سەرکەوتوو نەبوو.'));
+        });
+        const ed = lkMakeIcon('', '✎', 'دەستکاری', ()=>{ lkEditingId = it.id; lkOpenId = null; lkRender(); });
+        const del = lkMakeIcon('del', '✕', 'سڕینەوە', ()=>{
+          if(!act.classList.contains('confirming')){
+            act.classList.add('confirming'); del.classList.add('confirm'); del.textContent = 'دڵنیام؟ بسڕەوە';
+            setTimeout(()=>{ if(del.isConnected){ act.classList.remove('confirming'); del.classList.remove('confirm'); del.textContent = '✕'; } }, 3000);
+            return;
+          }
+          lkItems = lkItems.filter(x => x.id !== it.id);
+          if(lkOpenId === it.id) lkOpenId = null;
+          lkSave(); lkRender();
+          setStatus(statusLinks, 'info', 'لینکەکە سڕدرایەوە.');
+        });
+        [up, dn, cp, ed, del].forEach(b => act.appendChild(b));
+        row.appendChild(act);
+      }
+      lkListEl.appendChild(row);
+    });
+    lkListEl.scrollTop = prevScroll;
+  }
+
+  /* ---- drag & drop reordering (mouse + touch, via pointer events) ---- */
+  function lkAttachDrag(grip, row){
+    grip.addEventListener('pointerdown', ev => {
+      if(ev.button !== undefined && ev.button !== 0) return;
+      ev.preventDefault();
+      const id = row.dataset.id;
+      row.classList.add('dragging');
+      let targetId = null, after = false, lastY = ev.clientY, raf = 0;
+
+      const rows = ()=> Array.from(lkListEl.querySelectorAll('.lk-item'));
+      const mark = ()=>{
+        rows().forEach(r => r.classList.remove('drop-above', 'drop-below'));
+        const list = rows().filter(r => r !== row);
+        targetId = null; after = false;
+        for(const r of list){
+          const b = r.getBoundingClientRect();
+          if(lastY < b.top + b.height / 2){ targetId = r.dataset.id; break; }
+        }
+        if(targetId === null && list.length){
+          targetId = list[list.length - 1].dataset.id; after = true;
+        }
+        const t = lkListEl.querySelector('[data-id="' + targetId + '"]');
+        if(t) t.classList.add(after ? 'drop-below' : 'drop-above');
+      };
+      const tick = ()=>{
+        const b = lkListEl.getBoundingClientRect();
+        const edge = 48;
+        if(lastY < b.top + edge) lkListEl.scrollTop -= 12;
+        else if(lastY > b.bottom - edge) lkListEl.scrollTop += 12;
+        mark();
+        raf = requestAnimationFrame(tick);
+      };
+      const move = e => { lastY = e.clientY; };
+      const finish = commit => {
+        cancelAnimationFrame(raf);
+        window.removeEventListener('pointermove', move);
+        window.removeEventListener('pointerup', onUp);
+        window.removeEventListener('pointercancel', onCancel);
+        if(commit && targetId && targetId !== id){
+          const from = lkItems.findIndex(x => x.id === id);
+          const item = lkItems.splice(from, 1)[0];
+          let to = lkItems.findIndex(x => x.id === targetId);
+          if(after) to += 1;
+          lkItems.splice(to, 0, item);
+          lkSave();
+        }
+        lkRender();
+        if(commit) lkFlash(id);
+      };
+      const onUp = ()=> finish(true);
+      const onCancel = ()=> finish(false);
+      window.addEventListener('pointermove', move);
+      window.addEventListener('pointerup', onUp);
+      window.addEventListener('pointercancel', onCancel);
+      raf = requestAnimationFrame(tick);
+    });
+  }
+
+  /* ---- add ---- */
+  function lkAdd(){
+    const url = lkNormalizeUrl(lkUrlEl.value);
+    if(!url){ setStatus(statusLinks, 'error', 'تکایە لینکێکی دروست بنووسە (بۆ نموونە example.com).'); return; }
+    if(lkHasUrl(url)){ setStatus(statusLinks, 'error', 'ئەم لینکە پێشتر هەیە.'); return; }
+    const name = lkNameEl.value.trim() || lkHost(url);
+    const item = {id: lkId(), name, url, fav: false};
+    lkItems.push(item);
+    lkQuery = ''; lkFavOnly = false; lkSearchEl.value = ''; btnLkFav.classList.remove('on');
+    lkSave(); lkRender();
+    lkListEl.scrollTop = lkListEl.scrollHeight;
+    lkFlash(item.id);
+    lkNameEl.value = ''; lkUrlEl.value = '';
+    setStatus(statusLinks, 'success', 'لینکەکە زیادکرا. ✓');
+  }
+  document.getElementById('btnLkAdd').addEventListener('click', lkAdd);
+  [lkNameEl, lkUrlEl].forEach(el => el.addEventListener('keydown', e => { if(e.key === 'Enter') lkAdd(); }));
+
+  /* ---- search / favourites ---- */
+  lkSearchEl.addEventListener('input', ()=>{ lkQuery = lkSearchEl.value; lkRender(); });
+  btnLkFav.addEventListener('click', ()=>{
+    lkFavOnly = !lkFavOnly;
+    btnLkFav.classList.toggle('on', lkFavOnly);
+    lkRender();
+  });
+
+  /* ---- copy all / import / restore ---- */
+  document.getElementById('btnLkCopyAll').addEventListener('click', ()=>{
+    if(!lkItems.length){ setStatus(statusLinksIO, 'error', 'هیچ لینکێک نییە بۆ کۆپیکردن.'); return; }
+    const text = lkItems.map(it => (it.name || lkHost(it.url)) + ' | ' + it.url).join('\n');
+    copyTextToClipboard(text, ()=>{
+      setStatus(statusLinksIO, 'success', lkItems.length + ' لینک کۆپیکران. ✓');
+    }, ()=> setStatus(statusLinksIO, 'error', 'کۆپیکردن سەرکەوتوو نەبوو.'));
+  });
+
+  function lkParseImport(text){
+    const out = [];
+    text.split(/\r?\n/).forEach(line => {
+      line = line.trim();
+      if(!line) return;
+      let name = '', rawUrl = '';
+      if(line.indexOf('|') !== -1 || line.indexOf('\t') !== -1){
+        const parts = line.split(/\||\t/).map(s => s.trim()).filter(Boolean);
+        const ui = parts.findIndex(p => lkNormalizeUrl(p));
+        if(ui === -1) return;
+        rawUrl = parts[ui];
+        name = parts.filter((_, i) => i !== ui).join(' ');
+      } else {
+        const m = line.match(/(https?:\/\/\S+|(?:[a-z0-9-]+\.)+[a-z]{2,}(?:[\/?#]\S*)?)/i);
+        if(!m) return;
+        rawUrl = m[0];
+        name = line.replace(m[0], '').replace(/^[\s\-–—:]+|[\s\-–—:]+$/g, '');
+      }
+      const url = lkNormalizeUrl(rawUrl);
+      if(url) out.push({name: name.trim(), url});
+    });
+    return out;
+  }
+
+  document.getElementById('btnLkImport').addEventListener('click', ()=>{
+    const parsed = lkParseImport(lkImportEl.value);
+    if(!parsed.length){ setStatus(statusLinksIO, 'error', 'هیچ لینکێکی دروست لە دەقەکەدا نەدۆزرایەوە.'); return; }
+    let added = 0, dup = 0;
+    parsed.forEach(p => {
+      if(lkHasUrl(p.url)){ dup++; return; }
+      lkItems.push({id: lkId(), name: p.name || lkHost(p.url), url: p.url, fav: false});
+      added++;
+    });
+    lkSave(); lkRender();
+    lkImportEl.value = '';
+    setStatus(statusLinksIO, added ? 'success' : 'info',
+      added + ' لینک زیادکران' + (dup ? ' و ' + dup + ' دووبارە بوون (نەهاتن)' : '') + '.');
+  });
+
+  document.getElementById('btnLkRestore').addEventListener('click', ()=>{
+    let added = 0;
+    LK_DEFAULTS.forEach(d => {
+      if(!lkHasUrl(d.url)){ lkItems.push({id: lkId(), name: d.name, url: d.url, fav: false}); added++; }
+    });
+    lkSave(); lkRender();
+    setStatus(statusLinksIO, added ? 'success' : 'info',
+      added ? added + ' لینکی بنەڕەتی گەڕایەوە.' : 'هەموو لینکە بنەڕەتییەکان لە لیستەکەتدان.');
+  });
+
+  lkLoad();
+  lkRender();
 
 })();
 </script>
@@ -5055,6 +7422,214 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')setOpen(fals
 </script>
 
 <script>
+(function(){
+  "use strict";
+  var $ = function(id){return document.getElementById(id)};
+  var panel = $("panel-player");
+  var mode = "movie";
+  var KEY = "presub_player_state_v2";
+  var SOURCES = {
+    vidora:{
+      movie:"https://vidora.ac/movie/{id}",
+      tv:"https://vidora.ac/tv/{id}/{s}/{e}"
+    },
+    framextv:{
+      movie:"https://framextv.xyz/embed/{id}?autoplay=1&muted=0",
+      tv:"https://framextv.xyz/embed/tv/{id}/{s}/{e}?autoplay=1&muted=0"
+    },
+    // movie URL comes from the embed code; the tv pattern is a guess (untested) — edit in advanced settings if needed
+    vidhive:{
+      movie:"https://vidhive.lol/embed/movie/{id}",
+      tv:"https://vidhive.lol/embed/tv/{id}/{s}/{e}"
+    },
+    zxcstream:{
+      movie:"https://zxcstream.cc/player/movie/{id}",
+      tv:"https://zxcstream.cc/player/tv/{id}/{s}/{e}"
+    }
+  };
+  function applySource(k){
+    var t = SOURCES[k]; if(!t) return;
+    $("plMovieTpl").value = t.movie;
+    $("plTvTpl").value = t.tv;
+  }
+  function syncSource(){ panel.classList.toggle("custom", $("plSource").value==="custom"); }
+  $("plSource").addEventListener("change", function(){
+    if(this.value!=="custom") applySource(this.value);
+    syncSource();
+  });
+
+  function setMode(m){
+    mode = m;
+    panel.classList.toggle("tv", m==="tv");
+    $("plBMovie").setAttribute("aria-pressed", String(m==="movie"));
+    $("plBTv").setAttribute("aria-pressed", String(m==="tv"));
+  }
+  $("plBMovie").onclick = function(){setMode("movie")};
+  $("plBTv").onclick = function(){setMode("tv")};
+
+  try{
+    var s = JSON.parse(localStorage.getItem(KEY)||"{}");
+    // یەکجار: vidora دەبێتە سەرچاوەی سەرەکی، ئەگەر پێشتر سەرچاوەیەکی تر هەڵگیرابێت
+    if(localStorage.getItem("presub_player_vidora_main") !== "1"){
+      delete s.source; delete s.movieTpl; delete s.tvTpl;
+      localStorage.setItem(KEY, JSON.stringify(s));
+      localStorage.setItem("presub_player_vidora_main", "1");
+    }
+    if(s.id) $("plTmdb").value = s.id;
+    if(s.season) $("plSeason").value = s.season;
+    if(s.episode) $("plEpisode").value = s.episode;
+    if(s.mode) setMode(s.mode);
+    if(s.source && (SOURCES[s.source] || s.source==="custom")) $("plSource").value = s.source;
+    if(s.custom) $("plCustomUrl").value = s.custom;
+    if(s.movieTpl) $("plMovieTpl").value = s.movieTpl;
+    if(s.tvTpl) $("plTvTpl").value = s.tvTpl;
+  }catch(e){}
+
+  function num(v){ var n = parseInt(String(v).replace(/\D/g,""),10); return isNaN(n)?null:n; }
+
+  var lastUrl = "", pseudo = false;
+
+  function play(){
+    var stage = $("plStage");
+    if(pseudo) exitPseudo();
+    var url, id = null, se = 1, ep = 1;
+
+    if($("plSource").value === "custom"){
+      var raw = $("plCustomUrl").value.trim();
+      var m = raw.match(/src\s*=\s*["']([^"']+)["']/i);   // accept a pasted <iframe ...> snippet
+      url = (m ? m[1] : raw).trim();
+      if(url.indexOf("//") === 0) url = "https:" + url;
+      if(!url){ stage.textContent = "ئادرەسێک بنووسە."; return; }
+    }else{
+      id = num($("plTmdb").value);
+      if(!id){ stage.textContent = "ژمارەیەکی دروست بنووسە."; return; }
+      var tpl = mode==="movie" ? $("plMovieTpl").value : $("plTvTpl").value;
+      se = num($("plSeason").value)||1; ep = num($("plEpisode").value)||1;
+      url = tpl.replace("{id}",id).replace("{s}",se).replace("{e}",ep);
+    }
+    if(!/^https:\/\//i.test(url)){ stage.textContent = "ئادرەسەکە دەبێت بە https دەست پێبکات."; return; }
+    lastUrl = url;
+
+    var f = document.createElement("iframe");
+    f.src = url;
+    f.allowFullscreen = true;
+    f.setAttribute("allowfullscreen","");
+    f.setAttribute("webkitallowfullscreen","");
+    f.setAttribute("mozallowfullscreen","");
+    f.setAttribute("allow","autoplay; fullscreen *; picture-in-picture; encrypted-media");
+    f.setAttribute("referrerpolicy","no-referrer");
+    stage.textContent = "";
+    stage.appendChild(f);
+
+    try{
+      localStorage.setItem(KEY, JSON.stringify({
+        id:id, season:se, episode:ep, mode:mode, source:$("plSource").value, custom:$("plCustomUrl").value,
+        movieTpl:$("plMovieTpl").value, tvTpl:$("plTvTpl").value
+      }));
+    }catch(e){}
+  }
+
+  /* ---- Fullscreen: fullscreen the wrapper (not the iframe), so it works even when the
+         embedded page forgot to allow fullscreen. Falls back to a CSS "fake" fullscreen
+         where the browser has no element fullscreen (e.g. iPhone Safari). ---- */
+  function enterPseudo(){
+    var stage = $("plStage");
+    stage.classList.add("pl-full");
+    document.documentElement.style.overflow = "hidden";
+    var b = document.createElement("button");
+    b.id = "plExit"; b.type = "button"; b.textContent = "✕"; b.setAttribute("aria-label","دەرچوون");
+    b.onclick = exitPseudo;
+    stage.appendChild(b);
+    pseudo = true;
+  }
+  function exitPseudo(){
+    $("plStage").classList.remove("pl-full");
+    document.documentElement.style.overflow = "";
+    var b = $("plExit"); if(b) b.remove();
+    pseudo = false;
+  }
+  function toggleFull(){
+    var stage = $("plStage");
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    if(fsEl){ (document.exitFullscreen || document.webkitExitFullscreen).call(document); return; }
+    if(pseudo){ exitPseudo(); return; }
+    var req = stage.requestFullscreen || stage.webkitRequestFullscreen;
+    if(!req){ enterPseudo(); return; }
+    try{
+      var r = req.call(stage);
+      if(r && r.catch) r.catch(enterPseudo);
+    }catch(e){ enterPseudo(); }
+  }
+  $("plFull").onclick = toggleFull;
+  document.addEventListener("keydown", function(e){ if(e.key==="Escape" && pseudo) exitPseudo(); });
+
+  $("plOpen").onclick = function(){
+    if(lastUrl) window.open(lastUrl, "_blank", "noopener,noreferrer");
+    else $("plStage").textContent = "سەرەتا پەخش بکە، پاشان دەتوانیت لە تابی نوێدا بیکەیتەوە.";
+  };
+
+  syncSource();
+  /* ---- Search TMDB by title (uses the same API key as the "movie info" tab) ---- */
+  async function searchTitle(){
+    var q = $("plQuery").value.trim(), st = $("plSearchStatus"), box = $("plResults");
+    box.textContent = "";
+    if(!q){ st.textContent = "ناوی فیلم یان دراماکە بنووسە."; return; }
+    var key = "";
+    try{ key = (localStorage.getItem("tmdb_api_key") || "").trim(); }catch(e){}
+    if(!key){ st.textContent = "سەرەتا کلیلی TMDB لە تابی «زانیاری فیلم» دابنێ — هەمان کلیل لێرەش بەکاردێت."; return; }
+    st.textContent = "لە گەڕاندایە...";
+    try{
+      var r = await fetch("https://api.themoviedb.org/3/search/multi?api_key=" + encodeURIComponent(key)
+        + "&query=" + encodeURIComponent(q) + "&language=en-US&include_adult=false");
+      var d = await r.json();
+      if(d && d.status_code){ st.textContent = "هەڵەی TMDB: " + (d.status_message || d.status_code); return; }
+      var list = ((d && d.results) || []).filter(function(x){ return x.media_type === "movie" || x.media_type === "tv"; }).slice(0, 8);
+      if(!list.length){ st.textContent = "هیچ ئەنجامێک نەدۆزرایەوە."; return; }
+      st.textContent = "یەکێک هەڵبژێرە:";
+      list.forEach(function(x){
+        var title = x.title || x.name || "";
+        var date = x.release_date || x.first_air_date || "";
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "pl-res";
+        var th;
+        if(x.poster_path){ th = document.createElement("img"); th.src = "https://image.tmdb.org/t/p/w92" + x.poster_path; th.alt = ""; th.loading = "lazy"; }
+        else { th = document.createElement("div"); th.className = "pl-noimg"; }
+        var info = document.createElement("div");
+        var t = document.createElement("div"); t.className = "pl-t"; t.textContent = title;
+        var m = document.createElement("div"); m.className = "pl-m";
+        m.textContent = (x.media_type === "tv" ? "زنجیرە" : "فیلم") + (date ? " · " + date.slice(0,4) : "") + " · ID " + x.id;
+        info.appendChild(t); info.appendChild(m);
+        b.appendChild(th); b.appendChild(info);
+        b.onclick = function(){
+          $("plTmdb").value = x.id;
+          setMode(x.media_type === "tv" ? "tv" : "movie");
+          box.textContent = "";
+          st.textContent = "هەڵبژێردرا: " + title + " (" + x.id + ") ✓";
+        };
+        box.appendChild(b);
+      });
+    }catch(e){
+      st.textContent = "نەتوانرا پەیوەندی بە TMDB بکرێت.";
+    }
+  }
+  $("plSearch").onclick = searchTitle;
+  $("plQuery").addEventListener("keydown", function(e){ if(e.key === "Enter") searchTitle(); });
+
+  $("plPlay").onclick = play;
+  $("plTmdb").addEventListener("keydown", function(e){ if(e.key==="Enter") play(); });
+
+  function step(d){
+    var e = (num($("plEpisode").value)||1) + d;
+    if(e<1) e=1;
+    $("plEpisode").value = e;
+    play();
+  }
+  $("plNext").onclick = function(){step(1)};
+  $("plPrev").onclick = function(){step(-1)};
+})();
+</script>
+
+<script>
 /* ================= ناو و وێنەی سەرەکی (گۆڕین + هەڵگرتن) ================= */
 (function(){
 "use strict";
@@ -6110,5 +8685,223 @@ admProbe.addEventListener("click", probeVisitWrite);
 })();
 </script>
 
+<!-- ===================== BLOCK BLAST WINDOW ===================== -->
+<style>
+  #bbFab{position:fixed;z-index:9000;inset-inline-end:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:52px;height:52px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;color:var(--text);padding:0;
+    background:linear-gradient(135deg,rgba(255,255,255,var(--lg-sheen-a,.5)),rgba(255,255,255,var(--lg-sheen-b,.1)) 55%),var(--lg-tint,rgba(255,255,255,.45));
+    -webkit-backdrop-filter:blur(var(--lg-blur,22px)) saturate(190%);backdrop-filter:blur(var(--lg-blur,22px)) saturate(190%);
+    border:1px solid var(--lg-edge,rgba(255,255,255,.5));box-shadow:inset 0 1px 0 var(--lg-rim,#fff),0 14px 28px -12px var(--lg-shade,rgba(0,0,0,.35));}
+  #bbWin{position:fixed;z-index:9001;left:50%;top:50%;width:min(92vw,380px);display:none;flex-direction:column;gap:10px;padding:12px;border-radius:26px;direction:ltr;
+    transform:translate(-50%,-50%);color:var(--text);font-family:var(--font-body,sans-serif);touch-action:none;-webkit-user-select:none;user-select:none;
+    background:linear-gradient(135deg,rgba(255,255,255,var(--lg-sheen-a,.5)),rgba(255,255,255,var(--lg-sheen-b,.1)) 55%),var(--lg-tint,rgba(255,255,255,.45));
+    -webkit-backdrop-filter:blur(var(--lg-blur,22px)) saturate(190%) brightness(1.04);backdrop-filter:blur(var(--lg-blur,22px)) saturate(190%) brightness(1.04);
+    border:1px solid var(--lg-edge,rgba(255,255,255,.5));
+    box-shadow:inset 0 1px 0 var(--lg-rim,#fff),inset 0 -1px 0 var(--lg-edge,rgba(255,255,255,.4)),0 28px 56px -22px var(--lg-shade,rgba(0,0,0,.4)),0 2px 8px -2px rgba(0,0,0,.08);}
+  #bbWin.open{display:flex;}
+  #bbHead{display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:grab;padding:2px 4px;}
+  #bbHead b{font-size:15px;direction:rtl;}
+  .bbBtn{border:0;cursor:pointer;color:var(--text);font:inherit;font-size:15px;line-height:1;width:30px;height:30px;border-radius:50%;
+    background:var(--lg-fill,rgba(255,255,255,.35));box-shadow:inset 0 1px 0 var(--lg-rim,#fff);}
+  #bbScores{display:flex;gap:8px;direction:rtl;}
+  #bbScores div{flex:1;text-align:center;font-size:11px;padding:5px 8px;border-radius:14px;color:var(--text-dim);background:var(--lg-fill,rgba(255,255,255,.35));box-shadow:inset 0 1px 0 var(--lg-rim,#fff);}
+  #bbScores b{display:block;font-size:18px;color:var(--text);}
+  #bbBoard{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;padding:4px;border-radius:18px;aspect-ratio:1;background:var(--lg-fill,rgba(255,255,255,.3));box-shadow:inset 0 1px 0 var(--lg-rim,#fff);}
+  #bbBoard i{display:block;border-radius:6px;background:rgba(127,127,127,.14);}
+  #bbBoard i.f{background:linear-gradient(145deg,rgba(255,255,255,.55),transparent 55%),var(--c);box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 2px 5px -2px rgba(0,0,0,.35);}
+  #bbBoard i.pv{background:rgba(var(--accent-rgb),.5);}
+  #bbBoard i.cl{animation:bbp .3s;}
+  @keyframes bbp{50%{transform:scale(.55);opacity:.35}}
+  #bbTray{display:flex;justify-content:space-around;align-items:center;height:104px;border-radius:18px;background:var(--lg-fill,rgba(255,255,255,.3));box-shadow:inset 0 1px 0 var(--lg-rim,#fff);}
+  .bbSlot{width:32%;height:100%;display:flex;align-items:center;justify-content:center;touch-action:none;cursor:grab;}
+  .bbPc{display:grid;gap:2px;direction:ltr;}
+  .bbPc i{display:block;border-radius:4px;}
+  .bbPc i.b{background:linear-gradient(145deg,rgba(255,255,255,.55),transparent 55%),var(--c);box-shadow:inset 0 1px 0 rgba(255,255,255,.6);}
+  #bbGhost{position:fixed;z-index:9100;pointer-events:none;display:none;direction:ltr;}
+  #bbOver{position:absolute;inset:0;border-radius:26px;display:none;flex-direction:column;align-items:center;justify-content:center;gap:6px;direction:rtl;
+    background:rgba(0,0,0,.35);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#fff;}
+  #bbOver button{border:0;cursor:pointer;font:inherit;padding:9px 20px;border-radius:999px;background:var(--accent);color:var(--on-accent,#fff);box-shadow:inset 0 1px 0 rgba(255,255,255,.5);}
+
+  #bbWin[data-g="snake"] #bbScores,#bbWin[data-g="snake"] #bbBoard,#bbWin[data-g="snake"] #bbTray,#bbWin[data-g="snake"] #bbOver,
+  #bbWin[data-g="arch"] #bbScores,#bbWin[data-g="arch"] #bbBoard,#bbWin[data-g="arch"] #bbTray,#bbWin[data-g="arch"] #bbOver{display:none!important;}
+  #bbSnake,#bbArch{display:none;flex-direction:column;gap:10px;}
+  #bbWin[data-g="snake"] #bbSnake,#bbWin[data-g="arch"] #bbArch{display:flex;}
+  .bbTabs{display:flex;gap:6px;direction:rtl;padding:4px;border-radius:999px;background:var(--lg-fill,rgba(255,255,255,.3));box-shadow:inset 0 1px 0 var(--lg-rim,#fff);}
+  .bbTabs button{flex:1;border:0;cursor:pointer;font:inherit;font-size:12.5px;font-weight:600;padding:7px 4px;border-radius:999px;background:transparent;color:var(--text-dim);white-space:nowrap;}
+  .bbTabs button.on{background:var(--accent);color:var(--on-accent,#fff);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 6px 14px -6px rgba(var(--accent-rgb),.7);}
+  .bbSc{display:flex;gap:8px;direction:rtl;}
+  .bbSc div{flex:1;text-align:center;font-size:11px;padding:5px 8px;border-radius:14px;color:var(--text-dim);background:var(--lg-fill,rgba(255,255,255,.35));box-shadow:inset 0 1px 0 var(--lg-rim,#fff);}
+  .bbSc b{display:block;font-size:18px;color:var(--text);}
+  .bbCv{display:block;width:min(100%,max(200px,calc(100dvh - 330px)));aspect-ratio:1;margin:0 auto;border-radius:18px;touch-action:none;background:var(--lg-fill,rgba(255,255,255,.3));box-shadow:inset 0 1px 0 var(--lg-rim,#fff);}
+  .bbPad{display:grid;grid-template-columns:repeat(3,42px);grid-template-rows:repeat(2,38px);gap:6px;justify-content:center;}
+  .bbPad .bbBtn{width:42px;height:38px;border-radius:14px;}
+</style>
+
+<button id="bbFab" type="button" title="یاریەکان" aria-label="یاریەکان">🎮</button>
+<div id="bbWin" data-g="blast" role="dialog" aria-label="یاریەکان">
+  <div id="bbHead"><button class="bbBtn" id="bbClose" type="button" aria-label="داخستن">✕</button><b>🎮 یاریەکان</b></div>
+  <div class="bbTabs" id="bbTabs"><button type="button" data-g="blast" class="on">🧩 بلۆک</button><button type="button" data-g="snake">🐍 کرم</button><button type="button" data-g="arch">🎯 تیر و نیشان</button></div>
+  <div id="bbScores"><div>باشترین<b id="bbB">0</b></div><div>خاڵ<b id="bbS">0</b></div></div>
+  <div id="bbBoard"></div>
+  <div id="bbTray"></div>
+  <div id="bbSnake">
+    <div class="bbSc"><div>باشترین<b id="bbSnB">0</b></div><div>خاڵ<b id="bbSnS">0</b></div></div>
+    <canvas id="bbSnCv" class="bbCv" width="320" height="320"></canvas>
+    <div class="bbPad"><button class="bbBtn" type="button" data-d="u" style="grid-column:2;grid-row:1">▲</button><button class="bbBtn" type="button" data-d="l" style="grid-column:1;grid-row:2">◀</button><button class="bbBtn" type="button" data-d="d" style="grid-column:2;grid-row:2">▼</button><button class="bbBtn" type="button" data-d="r" style="grid-column:3;grid-row:2">▶</button></div>
+  </div>
+  <div id="bbArch">
+    <div class="bbSc"><div>باشترین<b id="bbArB">0</b></div><div>خاڵ<b id="bbArS">0</b></div><div>تیرەکان<b id="bbArL">10</b></div></div>
+    <canvas id="bbArCv" class="bbCv" width="320" height="320"></canvas>
+    <div style="text-align:center;font-size:12px;color:var(--text-dim);direction:rtl">پەنجەت ڕابکێشە بۆ ئاراستەکردن، ئازادی بکە بۆ تیرهاویشتن</div>
+  </div>
+  <div id="bbOver"><h3 style="margin:0">یاری تەواو بوو</h3><div>خاڵەکانت: <b id="bbFs">0</b></div><button id="bbRs" type="button">دووبارە یاری بکە</button></div>
+</div>
+<div id="bbGhost"></div>
+
+<script>
+(function(){
+  const N=8,COLORS=['#e4572e','#2e86ab','#76b041','#f2a541','#9b5de5','#e63946'];
+  const SHAPES=[[[0,0]],[[0,0],[0,1]],[[0,0],[1,0]],[[0,0],[0,1],[0,2]],[[0,0],[1,0],[2,0]],[[0,0],[0,1],[1,0],[1,1]],
+  [[0,0],[0,1],[0,2],[1,0],[1,1],[1,2],[2,0],[2,1],[2,2]],[[0,0],[1,0],[1,1]],[[0,0],[0,1],[1,0]],[[0,0],[0,1],[1,1]],[[0,1],[1,0],[1,1]],
+  [[0,0],[0,1],[0,2],[0,3]],[[0,0],[1,0],[2,0],[3,0]],[[0,0],[1,0],[2,0],[2,1],[2,2]],[[0,0],[0,1],[0,2],[1,0],[2,0]],[[0,0],[0,1],[1,0],[1,1],[2,0],[2,1]]];
+  const $=id=>document.getElementById(id),win=$('bbWin'),board=$('bbBoard'),tray=$('bbTray'),ghost=$('bbGhost');
+  let grid,pieces,score=0,best=0,drag=null,busy=false,started=false;
+  try{best=+localStorage.getItem('bb_best')||0}catch(e){}
+  const cells=[];for(let i=0;i<N*N;i++){const c=document.createElement('i');board.appendChild(c);cells.push(c)}
+
+  $('bbFab').onclick=()=>{win.classList.toggle('open');if(win.classList.contains('open')&&!started){started=true;start()}};
+  $('bbClose').onclick=()=>win.classList.remove('open');
+  $('bbRs').onclick=start;
+
+  // move the window by its header
+  const head=$('bbHead');let mv=null;
+  head.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;const r=win.getBoundingClientRect();
+    win.style.transform='none';win.style.left=r.left+'px';win.style.top=r.top+'px';mv={x:e.clientX-r.left,y:e.clientY-r.top};head.setPointerCapture(e.pointerId);head.style.cursor='grabbing'});
+  head.addEventListener('pointermove',e=>{if(!mv)return;const w=win.offsetWidth,h=win.offsetHeight;
+    win.style.left=Math.min(Math.max(0,e.clientX-mv.x),innerWidth-w)+'px';win.style.top=Math.min(Math.max(0,e.clientY-mv.y),innerHeight-h)+'px'});
+  const endMv=()=>{mv=null;head.style.cursor='grab'};head.addEventListener('pointerup',endMv);head.addEventListener('pointercancel',endMv);
+
+  function start(){grid=Array.from({length:N},()=>Array(N).fill(null));score=0;$('bbOver').style.display='none';busy=false;deal();draw()}
+  function rnd(){return{s:SHAPES[Math.floor(Math.random()*SHAPES.length)],c:COLORS[Math.floor(Math.random()*COLORS.length)],used:false}}
+  function deal(){pieces=[rnd(),rnd(),rnd()];renderTray()}
+  function size(s){return[Math.max(...s.map(p=>p[0]))+1,Math.max(...s.map(p=>p[1]))+1]}
+  function build(p,cs){const[h,w]=size(p.s),d=document.createElement('div');d.className='bbPc';d.style.gridTemplateColumns=`repeat(${w},${cs}px)`;d.style.setProperty('--c',p.c);
+    for(let r=0;r<h;r++)for(let c=0;c<w;c++){const i=document.createElement('i');i.style.width=i.style.height=cs+'px';if(p.s.some(q=>q[0]==r&&q[1]==c))i.className='b';d.appendChild(i)}return d}
+  function renderTray(){tray.innerHTML='';pieces.forEach((p,i)=>{const sl=document.createElement('div');sl.className='bbSlot';
+    if(!p.used){sl.appendChild(build(p,17));sl.addEventListener('pointerdown',e=>down(e,i))}tray.appendChild(sl)})}
+  function draw(){for(let r=0;r<N;r++)for(let c=0;c<N;c++){const el=cells[r*N+c],v=grid[r][c];el.className=v?'f':'';el.style.setProperty('--c',v||'')}
+    $('bbS').textContent=score;$('bbB').textContent=best}
+  function can(s,r,c){return s.every(([a,b])=>{const y=r+a,x=c+b;return y>=0&&y<N&&x>=0&&x<N&&!grid[y][x]})}
+  function fits(s){for(let r=0;r<N;r++)for(let c=0;c<N;c++)if(can(s,r,c))return true;return false}
+
+  function down(e,i){if(busy)return;e.preventDefault();const p=pieces[i],cs=board.getBoundingClientRect().width/N-3;
+    ghost.innerHTML='';ghost.appendChild(build(p,cs));ghost.style.display='block';drag={i,p,cs};move(e)}
+  function pos(e){const[h,w]=size(drag.p.s),cs=drag.cs+3,gx=e.clientX-w*cs/2,gy=e.clientY-h*cs-50;
+    ghost.style.left=gx+'px';ghost.style.top=gy+'px';const br=board.getBoundingClientRect();
+    return[Math.round((gy-br.top)/cs),Math.round((gx-br.left)/cs)]}
+  const clearPv=()=>cells.forEach(c=>c.classList.remove('pv'));
+  function move(e){if(!drag)return;const[r,c]=pos(e);clearPv();if(can(drag.p.s,r,c))drag.p.s.forEach(([a,b])=>cells[(r+a)*N+c+b].classList.add('pv'))}
+  function up(e){if(!drag)return;const[r,c]=pos(e);clearPv();ghost.style.display='none';const d=drag;drag=null;if(can(d.p.s,r,c))place(d,r,c)}
+  addEventListener('pointermove',move);addEventListener('pointerup',up);addEventListener('pointercancel',up);
+
+  function place(d,r,c){d.p.s.forEach(([a,b])=>grid[r+a][c+b]=d.p.c);d.p.used=true;score+=d.p.s.length;
+    const rows=[],cols=[];for(let i=0;i<N;i++){if(grid[i].every(Boolean))rows.push(i);if(grid.every(row=>row[i]))cols.push(i)}
+    const n=rows.length+cols.length;
+    if(n){busy=true;draw();rows.forEach(i=>{for(let x=0;x<N;x++)cells[i*N+x].classList.add('cl')});cols.forEach(i=>{for(let y=0;y<N;y++)cells[y*N+i].classList.add('cl')});
+      score+=n*10*n;setTimeout(()=>{rows.forEach(i=>grid[i]=Array(N).fill(null));cols.forEach(i=>{for(let y=0;y<N;y++)grid[y][i]=null});busy=false;after()},300)}
+    else after()}
+  function after(){if(pieces.every(p=>p.used))deal();else renderTray();
+    if(score>best){best=score;try{localStorage.setItem('bb_best',best)}catch(e){}}
+    draw();const left=pieces.filter(p=>!p.used);
+    if(left.length&&!left.some(p=>fits(p.s))){$('bbFs').textContent=score;$('bbOver').style.display='flex'}}
+})();
+</script>
+
+<script>
+(function(){
+  const $=id=>document.getElementById(id),win=$('bbWin');
+  const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+  const acc=()=>css('--accent')||'#27423a',accL=()=>css('--accent-lt')||'#4f7d6c';
+  const best={snake:0,arch:0};
+  try{best.snake=+localStorage.getItem('bb_snake')||0;best.arch=+localStorage.getItem('bb_arch')||0}catch(e){}
+  const save=(k,v)=>{try{localStorage.setItem('bb_'+k,v)}catch(e){}};
+  function msg(c,t1,t2){c.fillStyle='rgba(0,0,0,.4)';c.fillRect(0,0,320,320);c.fillStyle='#fff';c.textAlign='center';c.direction='rtl';
+    c.font='700 20px Vazirmatn,sans-serif';c.fillText(t1,160,150);c.font='500 14px Vazirmatn,sans-serif';c.fillText(t2,160,178)}
+  const cell=(c,x,y,s,col)=>{c.fillStyle=col;c.beginPath();c.roundRect?c.roundRect(x+1,y+1,s-2,s-2,5):c.rect(x+1,y+1,s-2,s-2);c.fill()};
+
+  /* ---------- SNAKE ---------- */
+  const sc=$('bbSnCv'),sx=sc.getContext('2d'),G=16,C=20;
+  let sn,dir,nd,food,ss=0,tm=null,sOver=false,spd=150,snInited=false;
+  function placeFood(){let p;do{p={x:Math.floor(Math.random()*G),y:Math.floor(Math.random()*G)}}while(sn.some(s=>s.x==p.x&&s.y==p.y));food=p}
+  function stopSn(){clearInterval(tm);tm=null}
+  function snScore(){$('bbSnS').textContent=ss;$('bbSnB').textContent=best.snake}
+  function snInit(){snInited=true;sn=[{x:8,y:8},{x:7,y:8},{x:6,y:8}];dir=nd={x:1,y:0};ss=0;sOver=false;spd=150;stopSn();placeFood();snDraw();snScore()}
+  function snStart(){if(tm||sOver)return;tm=setInterval(snTick,spd)}
+  function snTick(){dir=nd;const h={x:sn[0].x+dir.x,y:sn[0].y+dir.y};
+    if(h.x<0||h.y<0||h.x>=G||h.y>=G||sn.some(s=>s.x==h.x&&s.y==h.y)){sOver=true;stopSn();snDraw();return}
+    sn.unshift(h);
+    if(h.x==food.x&&h.y==food.y){ss++;if(ss>best.snake){best.snake=ss;save('snake',ss)}placeFood();if(spd>70){spd-=4;stopSn();snStart()}}else sn.pop();
+    snDraw();snScore()}
+  function snDraw(){sx.clearRect(0,0,320,320);sx.fillStyle='rgba(127,127,127,.12)';sx.fillRect(0,0,320,320);
+    sx.fillStyle='#e63946';sx.beginPath();sx.arc(food.x*C+C/2,food.y*C+C/2,C/2-3,0,7);sx.fill();
+    sn.forEach((s,i)=>cell(sx,s.x*C,s.y*C,C,i?acc():accL()));
+    if(sOver)msg(sx,'تەواو بوو ('+ss+')','کرتە بکە بۆ دووبارە');else if(!tm)msg(sx,'ئامادەی؟','ڕابکێشە یان دوگمەیەک دابگرە')}
+  function setDir(x,y){if(sOver){snInit()}if(x==-dir.x&&y==-dir.y)return;nd={x,y};snStart()}
+  const DM={u:[0,-1],d:[0,1],l:[-1,0],r:[1,0]};
+  document.querySelectorAll('#bbSnake .bbPad button').forEach(b=>b.addEventListener('pointerdown',e=>{e.preventDefault();const d=DM[b.dataset.d];setDir(d[0],d[1])}));
+  let sw=null;
+  sc.addEventListener('pointerdown',e=>{sw={x:e.clientX,y:e.clientY}});
+  sc.addEventListener('pointerup',e=>{if(!sw)return;const dx=e.clientX-sw.x,dy=e.clientY-sw.y;sw=null;
+    if(Math.max(Math.abs(dx),Math.abs(dy))<20){if(sOver)snInit();else if(!tm)snStart();return}
+    if(Math.abs(dx)>Math.abs(dy))setDir(dx>0?1:-1,0);else setDir(0,dy>0?1:-1)});
+  addEventListener('keydown',e=>{if(!win.classList.contains('open')||win.dataset.g!=='snake')return;
+    const k={ArrowUp:'u',w:'u',ArrowDown:'d',s:'d',ArrowLeft:'l',a:'l',ArrowRight:'r',d:'r'}[e.key];if(!k)return;e.preventDefault();setDir(DM[k][0],DM[k][1])});
+
+  /* ---------- ARCHERY ---------- */
+  const ac=$('bbArCv'),ax=ac.getContext('2d'),W=320,TY=70,R=36,BY=292;
+  let raf=null,last=0,tx,tv,bx,arrow,stuck,pops,shots,as=0,aOver=false,arInited=false;
+  function arScore(){$('bbArS').textContent=as;$('bbArB').textContent=best.arch;$('bbArL').textContent=shots}
+  function stopAr(){cancelAnimationFrame(raf);raf=null}
+  function runAr(){last=0;if(!raf)raf=requestAnimationFrame(arLoop)}
+  function arInit(){arInited=true;tx=160;tv=1.6;bx=160;arrow=null;stuck=[];pops=[];shots=10;as=0;aOver=false;stopAr();arScore();runAr()}
+  function arFire(){if(aOver){arInit();return}if(arrow||shots<=0)return;shots--;arrow={x:bx,y:BY-24,done:false};arScore()}
+  function arLoop(t){raf=null;if(!last)last=t;const dt=Math.min((t-last)/16.67,3);last=t;
+    tx+=tv*dt;if(tx>W-R-4){tx=W-R-4;tv=-Math.abs(tv)}if(tx<R+4){tx=R+4;tv=Math.abs(tv)}
+    if(arrow){arrow.y-=9*dt;
+      if(!arrow.done&&arrow.y<=TY){arrow.done=true;const d=Math.abs(arrow.x-tx)/R,p=d<.2?10:d<.5?7:d<.8?4:d<1?2:0;
+        as+=p;if(as>best.arch){best.arch=as;save('arch',as)}
+        pops.push({x:arrow.x,y:TY-R-6,p,t:0});tv=Math.sign(tv)*Math.min(4.5,Math.abs(tv)*1.08);arScore();
+        if(p){stuck.push({o:arrow.x-tx,t:0});arrow=null}}
+      if(arrow&&arrow.y<-30)arrow=null}
+    if(shots===0&&!arrow)aOver=true;
+    stuck.forEach(s=>s.t+=dt);stuck=stuck.filter(s=>s.t<80);pops.forEach(q=>{q.t+=dt;q.y-=.4*dt});pops=pops.filter(q=>q.t<50);
+    arDraw();if(win.classList.contains('open')&&win.dataset.g==='arch')raf=requestAnimationFrame(arLoop)}
+  function shaft(x,y){ax.strokeStyle='#8a5a2b';ax.lineWidth=3;ax.beginPath();ax.moveTo(x,y);ax.lineTo(x,y+28);ax.stroke();
+    ax.fillStyle=acc();ax.beginPath();ax.moveTo(x,y-5);ax.lineTo(x-4,y+3);ax.lineTo(x+4,y+3);ax.fill();
+    ax.strokeStyle='#e63946';ax.lineWidth=2;ax.beginPath();ax.moveTo(x-3,y+30);ax.lineTo(x,y+24);ax.lineTo(x+3,y+30);ax.stroke()}
+  function arDraw(){ax.clearRect(0,0,W,W);ax.fillStyle='rgba(127,127,127,.12)';ax.fillRect(0,0,W,W);
+    [[1,'#f5f5f5'],[.8,'#e63946'],[.5,'#f5f5f5'],[.2,'#e63946']].forEach(([k,c])=>{ax.fillStyle=c;ax.beginPath();ax.arc(tx,TY,R*k,0,7);ax.fill();ax.strokeStyle='rgba(0,0,0,.25)';ax.lineWidth=1;ax.stroke()});
+    stuck.forEach(s=>shaft(tx+s.o,TY-2));
+    if(arrow)shaft(arrow.x,arrow.y);
+    ax.strokeStyle='#8a5a2b';ax.lineWidth=5;ax.lineCap='round';ax.beginPath();ax.arc(bx,BY+10,24,Math.PI*1.15,Math.PI*1.85);ax.stroke();
+    ax.strokeStyle='rgba(127,127,127,.9)';ax.lineWidth=1.5;ax.beginPath();ax.moveTo(bx-21.4,BY-.9);ax.lineTo(bx,BY+6);ax.lineTo(bx+21.4,BY-.9);ax.stroke();
+    if(!arrow&&shots>0)shaft(bx,BY-24);
+    pops.forEach(q=>{ax.globalAlpha=Math.max(0,1-q.t/50);ax.fillStyle=q.p?acc():'#e63946';ax.font='800 18px Vazirmatn,sans-serif';ax.textAlign='center';ax.fillText(q.p?'+'+q.p:'✕',q.x,q.y);ax.globalAlpha=1});
+    if(aOver)msg(ax,'تەواو بوو: '+as+' خاڵ','کرتە بکە بۆ دووبارە')}
+  const setBx=e=>{const r=ac.getBoundingClientRect();bx=Math.min(W-16,Math.max(16,(e.clientX-r.left)*W/r.width))};
+  ac.addEventListener('pointerdown',e=>{ac.setPointerCapture(e.pointerId);setBx(e)});
+  ac.addEventListener('pointermove',e=>{if(e.buttons||e.pointerType==='touch')setBx(e)});
+  ac.addEventListener('pointerup',e=>{setBx(e);arFire()});
+
+  /* ---------- tabs ---------- */
+  function show(g){stopSn();stopAr();win.dataset.g=g;
+    document.querySelectorAll('#bbTabs button').forEach(b=>b.classList.toggle('on',b.dataset.g===g));
+    if(g==='snake'){if(!snInited)snInit();else snDraw()}
+    if(g==='arch'){if(!arInited)arInit();else runAr()}}
+  document.querySelectorAll('#bbTabs button').forEach(b=>b.addEventListener('click',()=>show(b.dataset.g)));
+  new MutationObserver(()=>{if(win.classList.contains('open')){if(win.dataset.g==='snake'&&snInited)snDraw();if(win.dataset.g==='arch'&&arInited)runAr()}else{stopSn();stopAr()}})
+    .observe(win,{attributes:true,attributeFilter:['class']});
+})();
+</script>
 </body>
 </html>
