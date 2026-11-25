@@ -1109,19 +1109,8 @@
   #seTm .se-ph,#seGl .se-ph{flex:1 1 auto;font-size:13px;font-weight:700;color:var(--text);}
   #seTm .se-tmk{flex:none;font-size:12px;color:var(--text-dim);}
   #seTmInfo,#seGlInfo{flex:1 1 120px;min-width:0;font-size:12px;color:var(--text-dim);}
-  #seGlList{max-height:min(30vh,220px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--surface-2);}
-  #seGlList:empty{display:none;}
-  #seGlList .se-gi{display:flex;align-items:center;gap:8px;padding:6px 9px;border-bottom:1px solid var(--border);cursor:pointer;font-size:13px;color:var(--text);}
-  #seGlList .se-gi:last-child{border-bottom:0;}
-  #seGlList .se-gi:hover,#seGlList .se-gi.ed{background:var(--accent-soft);}
-  #seGlList .se-gck{width:auto;margin:0;flex:none;accent-color:var(--accent);}
   #seGlDetInfo{flex:1 1 120px;min-width:0;font-size:12px;color:var(--text-dim);}
   #seGl .se-gl-note{flex:1 1 150px;min-width:0;font-size:12px;color:var(--text-dim);}
-  #seGlList .se-gn{flex:none;max-width:40%;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  #seGlList .se-gv{flex:1 1 auto;min-width:0;color:var(--text-dim);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-  #seGlList .se-gc{flex:none;font-size:11px;color:var(--text-dim);}
-  #seGlList .se-gx{flex:none;background:none;border:0;color:var(--text-dim);font-size:15px;cursor:pointer;padding:2px 6px;}
-  #seGlList .se-gx:hover{color:var(--danger);}
   #seRepList{max-height:min(34vh,260px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;border:1px solid var(--border);border-radius:var(--r-sm);background:var(--surface-2);}
   #seRepList:empty{display:none;}
   #seRepList .se-ri{display:flex;align-items:center;gap:8px;padding:6px 9px;border-bottom:1px solid var(--border);cursor:pointer;font-size:13px;color:var(--text);}
@@ -2356,7 +2345,7 @@
             <button class="btn btn-ghost se-ic" id="seUndoAll" type="button" title="گەڕانەوەی دوایین فرمانی گشتی" aria-label="گەڕانەوەی دوایین فرمانی گشتی" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>
             <button class="btn btn-ghost se-ic" id="seSplit" type="button" title="لەتکردنی ڕستە درێژەکان" aria-label="لەتکردنی ڕستە درێژەکان"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16"/><path d="M4 12h10a3 3 0 0 1 0 6H8"/><path d="m10.5 15.5-2.5 2.5 2.5 2.5"/></svg></button>
             <button class="btn btn-ghost se-ic" id="seTmB" type="button" title="گۆڕینی کات (پێشخستن / دواخستن / فریم‌ڕەیت)" aria-label="گۆڕینی کات"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></button>
-            <button class="btn btn-ghost se-ic" id="seGlB" type="button" title="فەرهەنگی ناو و زاراوە" aria-label="فەرهەنگی ناو و زاراوە"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M9 8h6"/></svg></button>
+            <button class="btn btn-ghost se-ic" id="seGlB" type="button" title="دۆزینەوە و گۆڕینی ناوەکان" aria-label="دۆزینەوە و گۆڕینی ناوەکان"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5M9 8h6"/></svg></button>
             <button class="btn btn-ghost se-ic" id="seFs" type="button" title="شاشەی تەواو" aria-label="شاشەی تەواو"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
             <button class="btn btn-ghost se-ic" id="seCp" type="button" title="کۆپیکردنی فایل" aria-label="کۆپیکردنی فایل"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg></button>
             <button class="btn btn-download se-ic" id="seDl" type="button" title="دابەزاندن" aria-label="دابەزاندن"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 19h14"/></svg></button>
@@ -2386,24 +2375,20 @@
             <div class="se-rep-row"><span id="seTmInfo"></span><button class="btn btn-ghost" id="seTmUndo" type="button" disabled>↶ پەشیمانبوونەوە</button></div>
           </div>
           <div id="seGl" class="se-hide" dir="rtl">
-            <div class="se-rep-row"><span class="se-ph">📖 فەرهەنگی ناو و زاراوە</span><button class="btn btn-ghost se-rep-x" id="seGlX" type="button" aria-label="داخستن">✕</button></div>
+            <div class="se-rep-row"><span class="se-ph">📖 ناوەکان</span><button class="btn btn-ghost se-rep-x" id="seGlX" type="button" aria-label="داخستن">✕</button></div>
             <div class="se-rep-row"><button class="btn btn-primary" id="seGlDet" type="button">🔍 دۆزینەوەی ناوەکان</button><span id="seGlDetInfo"></span></div>
             <div id="seGlStripW" class="se-hide"><div class="names-scroll-strip" id="seGlStrip"></div></div>
             <div class="se-rep-row">
               <input type="text" id="seGlVars" placeholder="شێوە هەڵەکان (کرتە لە ناوەکان بکە یان بنووسە، بە کۆما)" dir="auto" autocomplete="off" spellcheck="false">
               <input type="text" id="seGlName" placeholder="ناوی دروست" dir="auto" autocomplete="off" spellcheck="false">
-              <button class="btn btn-ghost" id="seGlAdd" type="button">➕ زیادکردن</button>
-            </div>
-            <div id="seGlList"></div>
-            <div class="se-rep-row">
-              <button class="btn btn-ghost" id="seGlAll" type="button">☑ هەڵبژاردنی هەموو</button>
-              <span class="se-gl-note">تەنها ناوی ناو ( ) « » " " دەگۆڕدرێت؛ وشەی هاوشێوە لە دەرەوەیان دەستکاری ناکرێت</span>
             </div>
             <div class="se-rep-row">
-              <button class="btn btn-download" id="seGlFix" type="button">✓ هاوتاکردنی هەڵبژێرراوەکان</button>
+              <span class="se-gl-note">ناوەکان بە کەوانە یان تەقەڵەوە دەدۆزرێنەوە و لە کاتی گۆڕیندا هەمان کەوانە و تەقەڵیان بۆ دادەنرێتەوە؛ وشەی دەرەوەی کەوانە و تەقەڵ دەستکاری ناکرێت و هیچ ناوێک پاشەکەوت ناکرێت</span>
+            </div>
+            <div class="se-rep-row">
+              <button class="btn btn-download" id="seGlFix" type="button">✓ گۆڕینی ناوەکان</button>
               <button class="btn btn-ghost" id="seGlUndo" type="button" title="گەڕانەوەی دوایین گۆڕانکاری گشتی" disabled>↶ گەڕانەوە</button>
             </div>
-            <div class="se-rep-row"><span id="seGlInfo"></span></div>
           </div>
           <div class="se-lw">
             <div class="se-list" id="seList"></div>
@@ -7075,30 +7060,23 @@ tmTo.addEventListener('input',()=>tmHint(false));
 tmNew.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();tmGo();}});
 rBtn.addEventListener('click',()=>{if(!repBox.classList.contains('se-hide')){tmToggle(false);glToggle(false);}});
 
-/* ---- glossary: names / terms kept in this browser, the same for every episode.
-   "Find names" works like the multi-file names tab: it lists the names found inside ( ) « » " " of this file; tap them to fill the wrong spellings, type the correct name, add.
-   "Match" changes only those bracketed / quoted names, the same way the multi-file names tab sees them. ---- */
-const glBox=$('seGl'),glOpen=$('seGlB'),glName=$('seGlName'),glVars=$('seGlVars'),glList=$('seGlList'),glInfo=$('seGlInfo'),glAdd=$('seGlAdd');
+/* ---- names: "find names" lists the names found inside ( ) « » " " of this file; tap them to fill the wrong spellings, type the correct name, press change.
+   Nothing is saved. Only the typed / tapped wrong forms are replaced (whole words only), nothing else in the file is touched. ---- */
+const glBox=$('seGl'),glOpen=$('seGlB'),glName=$('seGlName'),glVars=$('seGlVars');
 const glStrip=$('seGlStrip'),glStripW=$('seGlStripW'),glDetInfo=$('seGlDetInfo');
-const GLK='presub_se_gloss_v1';
-let gl=[],glEd=-1,glSel=new Set(),glNames=[],glPick=[]; /* glSel / glNames / glPick start empty every time the panel opens */
-try{
-  const t=JSON.parse(localStorage.getItem(GLK));
-  if(Array.isArray(t))gl=t.filter(e=>e&&typeof e.n==='string'&&e.n).map(e=>({
-    n:e.n,
-    v:Array.isArray(e.v)?e.v.filter(x=>typeof x==='string'&&x):[]
-  }));
-}catch(_){}
-function glSave(){try{localStorage.setItem(GLK,JSON.stringify(gl));}catch(_){say('فەرهەنگەکە پاشەکەوت نەکرا');}}
+let glNames=[],glPick=[];
+try{localStorage.removeItem('presub_se_gloss_v1');}catch(_){} /* the old saved dictionary is not used any more */
 const GL_STOP=new Set(['ئەوە','ئەوان','ئێمە','ئێوە','تۆ','من','ئەو','ئەم','ئەمە','ئەوەی','کە','لە','بۆ','لەگەڵ','دەبێت','هەیە','نییە','ناکات','دەکات','دەکەم','دەکەیت','دەکەین','دەکەن','بووە','بوو','دەبم','دەبیت','دەبین','دەبن','هەموو','هیچ','چۆن','کەی','بۆچی','چی','کێ','ئایا','یان','بەڵام','هەروەها','ئەگەر','چونکە','تاکو','پێش','دوای','ناو','سەر','ژێر','پاش','هەر','تەنها','دەبوو','بکات','بکەم','بکەیت','بکەین','بکەن','وا','ئاوا','ئێستا','هەمیشە','هەرگیز','بەڵێ','نەخێر','زۆر','کەم','باش','خراپ','گەورە','بچووک','نوێ','کۆن','ڕاست','هەڵە','ئێرە','ئەوێ','هەتا','بەرلە','دوایی','پێویستە','دەبێ','دەتوانی','دەتوانم','دەتوانین','ناتوانم','ناتوانیت','گوتی','گوتم','گوتیت','ووتی','دەڵێت','دەڵێم','بڵێ','ئێمەش','تۆش','منیش','ئەویش','ئەوانیش','ئێستاش']);
 /* names inside ( ) « » " " of one block's visible text (same rules as the multi-file names tab) */
+/* opening / closing mark of each pair, same order as the patterns of glExtract and glFind */
+const GL_BR=[['(',')'],['«','»'],['»','«'],['“','”'],['”','“'],['"','"'],['‘','’'],["'","'"],['‹','›']];
 function glExtract(text){
   const BIDI=/[\u200e\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g;
   const PAIRS=[/\(([^()]*)\)/g,/«([^«»]*)»/g,/»([^«»]*)«/g,/“([^“”]*)”/g,/”([^“”]*)“/g,/"([^"]*)"/g,/‘([^‘’]*)’/g,/'([^']*)'/g,/‹([^‹›]*)›/g];
   const EDGE=/^[\s\-–—.،,:؛;!؟?…]+|[\s\-–—.،,:؛;!؟?…]+$/gu;
   const cue=text.replace(/\n/g,' ').replace(BIDI,'').replace(/<[^>]+>/g,' ').replace(/\{[^}]+\}/g,' ');
   const names=[];
-  PAIRS.forEach(re=>{
+  PAIRS.forEach((re,pi)=>{
     re.lastIndex=0;let m;
     while((m=re.exec(cue))!==null){
       const raw=(m[1]||'').replace(/\s+/g,' ').trim();
@@ -7110,7 +7088,7 @@ function glExtract(text){
         const wc=t.split(/\s+/).length;
         if(wc<1||wc>5)return;
         if(!/\p{L}/u.test(t))return;
-        if(/^[\p{L}\p{M}\p{N}’ʼ'\u200c\u200d.\-\s]+$/u.test(t))names.push(t);
+        if(/^[\p{L}\p{M}\p{N}’ʼ'\u200c\u200d.\-\s]+$/u.test(t))names.push({w:t,o:GL_BR[pi][0],c:GL_BR[pi][1]});
       });
     }
   });
@@ -7142,19 +7120,13 @@ function glStripDraw(done){
 function glDetect(){
   if(!S)return;
   const freq=new Map();
-  S.blocks.forEach(b=>{glExtract(splitColors(b.x).d).forEach(w=>{if(!GL_STOP.has(w))freq.set(w,(freq.get(w)||0)+1);});});
+  S.blocks.forEach(b=>{glExtract(splitColors(b.x).d).forEach(e=>{if(GL_STOP.has(e.w))return;const lb=e.o+e.w+e.c;freq.set(lb,(freq.get(lb)||0)+1);});});
   glNames=[...freq].map(([w,c])=>({w,c})).sort((a,b)=>b.c-a.c);
   glPick=[];glVars.value='';
   glStripDraw(true);
   glDetInfo.textContent=glNames.length?(glNames.length+' ناوی جیاواز دۆزرایەوە. کرتەیان لەسەر بکە بۆ دیاریکردن'):'';
 }
 $('seGlDet').onclick=glDetect;
-/* ---- name matching: the SAME places the "find names" button and the multi-file names tab look at.
-   A name is what stands inside ( ) « » " " ‘ ’ ... ; one bracket can hold several names split by a comma (A، B).
-   A name is changed ONLY when a whole name inside such a bracket / quote is exactly a wrong form.
-   Words outside brackets and quotes are never touched, and a word that merely STARTS like a name never matches
-   (name (گوم) -> (گۆم) leaves the plain word گومان alone). Written forms are compared like the multi-file tab:
-   ي ى -> ی , ك -> ک , ھ -> ه ; ZWNJ / tatweel / vowel marks / RLE marks / spaces are ignored. Never inside a {..} code. ---- */
 const GL_IGN=/[\u200c\u200d\u0640\u064b-\u065f\u0670\u200e\u200f\u202a-\u202e\u2066-\u2069\ufeff]/;
 const glMap=ch=>ch==='ي'||ch==='ى'?'ی':ch==='ك'?'ک':ch==='ھ'?'ه':ch;
 function glSkel(d){ /* text without the ignorable characters */
@@ -7168,16 +7140,29 @@ function glSkel(d){ /* text without the ignorable characters */
   return {s};
 }
 const glKey=t=>glSkel(t||'').s.trim();
+
+/* A name is what stands inside ( ) « » " " ‘ ’ ... ; one bracket can hold several names split by a comma (A، B).
+   A name is changed ONLY when a whole name inside such a bracket / quote is exactly a wrong form; the brackets / quotes stay as they are.
+   Words outside brackets and quotes are never touched. A wrong form written with its bracket, e.g. (گوم) or «گوم», only matches inside that kind of bracket.
+   Written forms are compared like the multi-file names tab: ي ى -> ی , ك -> ک , ھ -> ه ; ZWNJ / tatweel / vowel marks / RLE marks / spaces are ignored. Never inside a {..} code. */
 const GL_PAIRS=['\\(([^()]*)\\)','«([^«»]*)»','»([^«»]*)«','“([^“”]*)”','”([^“”]*)“','"([^"]*)"','‘([^‘’]*)’',"'([^']*)'",'‹([^‹›]*)›'];
 const GL_TRIM=/[\s\-–—.،,:؛;!؟?…]/;
-/* keys: [{k:wrong form (normalised), tk:correct name (normalised), to:correct name}] -> [{j,e,to}] places in d to replace, no overlaps */
+/* "(گوم)" / «گوم» / plain "گوم" -> {name, br:[open,close] or null} */
+function glParse(s){
+  s=(s||'').replace(/[\r\n]+/g,' ').trim();
+  for(const p of GL_BR){
+    if(s.length>=p[0].length+p[1].length+1&&s.startsWith(p[0])&&s.endsWith(p[1]))return {name:s.slice(p[0].length,s.length-p[1].length).trim(),br:p};
+  }
+  return {name:s,br:null};
+}
+/* keys: [{k:wrong form (normalised), br:[open,close]|null, to:correct name}] -> [{j,e,to}] places in d to replace, no overlaps */
 function glFind(d,keys){
   const out=[];if(!keys.length)return out;
-  const by=new Map();keys.forEach(o=>{if(o.k)by.set(o.k,o);});
+  const by=new Map();keys.forEach(o=>{if(o.k){if(!by.has(o.k))by.set(o.k,[]);by.get(o.k).push(o);}});
   if(!by.size)return out;
   let br=null;
   const seen=new Set();
-  GL_PAIRS.forEach(src=>{
+  GL_PAIRS.forEach((src,pi)=>{
     const re=new RegExp(src,'g');let m;
     while((m=re.exec(d))!==null){
       const a0=m.index+m[0].indexOf(m[1],1),a1=a0+m[1].length; /* inside of the bracket / quote */
@@ -7193,7 +7178,8 @@ function glFind(d,keys){
           break;
         }
         if(y>x&&!seen.has(x+':'+y)){
-          const o=by.get(glKey(d.slice(x,y)));
+          const c=by.get(glKey(d.slice(x,y)));
+          const o=c&&c.find(z=>!z.br||(z.br[0]===GL_BR[pi][0]&&z.br[1]===GL_BR[pi][1]));
           if(o){
             if(!br)br=braceMask(d);
             let inB=0;for(let q=x;q<y;q++)if(br[q]){inB=1;break;}
@@ -7224,77 +7210,19 @@ function glApply(d,c,keys){
   nc.an=c.an;
   return {d:nd,c:nc,n:ps.length};
 }
-function glDraw(){
-  glList.textContent='';
-  const ds=S?S.blocks.map(b=>splitColors(b.x).d):[];
-  const fr=document.createDocumentFragment();
-  gl.forEach((e,k)=>{
-    let vc=0,cc=0;
-    const nk=glKey(e.n),vk=e.v.map(v=>({k:glKey(v),tk:nk,to:e.n})),cq=[{k:nk,tk:'',to:e.n}];
-    ds.forEach(d=>{vc+=glFind(d,vk).filter(p=>d.slice(p.j,p.e)!==e.n).length;cc+=glFind(d,cq).length;});
-    const row=document.createElement('div');row.className='se-gi'+(k===glEd?' ed':'');row.dataset.k=k;
-    const ck=document.createElement('input');ck.type='checkbox';ck.className='se-gck';ck.dataset.n=e.n;ck.checked=glSel.has(e.n);ck.setAttribute('aria-label','هەڵبژاردن');
-    const n=document.createElement('span');n.className='se-gn';n.dir='auto';n.textContent=e.n;
-    const v=document.createElement('span');v.className='se-gv';v.dir='auto';v.textContent=e.v.join(' ، ');
-    const c=document.createElement('span');c.className='se-gc';c.textContent=S?(vc?('هەڵە: '+vc+' · '):'')+'دروست: '+cc:'';
-    const x=document.createElement('button');x.className='se-gx';x.type='button';x.dataset.del=k;x.setAttribute('aria-label','سڕینەوە');x.textContent='✕';
-    row.append(ck,n,v,c,x);fr.appendChild(row);
-  });
-  glList.appendChild(fr);
-  glSelInfo();
-}
-function glSelInfo(){
-  const n=gl.filter(e=>glSel.has(e.n)).length;
-  $('seGlAll').textContent=n===gl.length&&n?'☐ لابردنی هەموو':'☑ هەڵبژاردنی هەموو';
-  glInfo.textContent=gl.length?(n+' لە '+gl.length+' ناو هەڵبژێردراوە. «هاوکردن» تەنها بۆ هەڵبژێردراوەکان کار دەکات'):'ناوەکان بدۆزەرەوە، شێوە هەڵەکان هەڵبژێرە، ناوی دروست بنووسە و زیادی بکە';
-}
-$('seGlAll').onclick=()=>{
-  const all=gl.length&&gl.every(e=>glSel.has(e.n));
-  glSel.clear();if(!all)gl.forEach(e=>glSel.add(e.n));
-  glList.querySelectorAll('.se-gck').forEach(c=>{c.checked=glSel.has(c.dataset.n);});
-  glSelInfo();
-};
-function glClearForm(){glEd=-1;glName.value='';glVars.value='';glPick=[];glStrip.querySelectorAll('.name-chip.active').forEach(c=>c.classList.remove('active'));glAdd.textContent='➕ زیادکردن';}
-glAdd.onclick=()=>{
-  const n=glName.value.replace(/[\r\n]+/g,' ').trim();
-  if(!n){say('ناوی دروست بنووسە');glName.focus();return;}
-  const v=[...new Set(glVars.value.split(/[,،;\n]+/).map(s=>s.trim()).filter(s=>s&&s!==n))];
-  const e={n,v};
-  if(glEd>=0&&gl[glEd]){if(glSel.delete(gl[glEd].n))glSel.add(n);gl[glEd]=e;}
-  else{const dup=gl.findIndex(x=>x.n===n);if(dup>=0)gl[dup]=e;else gl.push(e);}
-  glSel.add(n);
-  glClearForm();glSave();glDraw();
-};
-[glName,glVars].forEach(el=>el.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();glAdd.click();}}));
-glList.addEventListener('click',e=>{
-  const ck=e.target.closest('.se-gck');
-  if(ck){if(ck.checked)glSel.add(ck.dataset.n);else glSel.delete(ck.dataset.n);glSelInfo();return;}
-  const del=e.target.closest('.se-gx');
-  if(del){
-    const k=+del.dataset.del;
-    if(gl[k]){
-      const nm=gl[k].n;
-      seConfirm('«'+nm+'» لە فەرهەنگ دەسڕدرێتەوە. بەردەوام بیت؟').then(ok=>{
-        if(!ok)return;
-        const j=gl.findIndex(x=>x.n===nm);if(j<0)return;
-        glSel.delete(nm);gl.splice(j,1);glClearForm();glSave();glDraw();
-      });
-    }
-    return;
-  }
-  const row=e.target.closest('.se-gi');if(!row)return;
-  const k=+row.dataset.k,g=gl[k];if(!g)return;
-  glEd=k;glName.value=g.n;glVars.value=g.v.join(' ، ');glAdd.textContent='✓ نوێکردنەوە';
-  glList.querySelectorAll('.se-gi').forEach(r=>r.classList.toggle('ed',r===row));
-  glName.focus();
-});
-/* fix: every wrong form of the ticked names -> the correct name, in the whole file (undo: the ↶ button of the toolbar) */
+/* change: the wrong forms in the box -> the correct name, in the whole file (undo: the ↶ button) */
 $('seGlFix').onclick=()=>{
   if(!S)return;
-  if(!gl.some(e=>glSel.has(e.n))){say('سەرەتا ناوەکان هەڵبژێرە');return;}
-  const keys=[];
-  gl.forEach(e=>{if(glSel.has(e.n)){const tk=glKey(e.n);e.v.forEach(v=>{const k=glKey(v);if(k&&v!==e.n)keys.push({k,tk,to:e.n});});}});
-  if(!keys.length){say('هیچ شێوەیەکی هەڵە بۆ ناوە هەڵبژێردراوەکان نییە');return;}
+  const to=glParse(glName.value).name;
+  if(!to){say('ناوی دروست بنووسە');glName.focus();return;}
+  const keys=[],seenK=new Set();
+  glVars.value.split(/[;\n]+|،(?![^()«»]*[)»])|,/).forEach(s=>{
+    const f=glParse(s);if(!f.name||(!f.br&&f.name===to))return;
+    const k=glKey(f.name);if(!k)return;
+    const id=k+'|'+(f.br?f.br[0]+f.br[1]:'');if(seenK.has(id))return;seenK.add(id);
+    keys.push({k,br:f.br,to});
+  });
+  if(!keys.length){say('شێوە هەڵەکان هەڵبژێرە یان بنووسە');glVars.focus();return;}
   let total=0;
   const n=bulk(x=>{
     let {d,c}=splitColors(x);
@@ -7304,14 +7232,20 @@ $('seGlFix').onclick=()=>{
     if(c.an>=0){const f=ensureRleAn(d,c);d=f.d;c=f.c;}
     return joinColors(d,c);
   });
-  say(n?('✓ '+total+' ناو هاوکرا لە '+n+' بلۆکدا'):'هیچ شێوەیەکی هەڵە نەدۆزرایەوە');
-  glDraw();
+  say(n?('✓ '+total+' ناو گۆڕدرا لە '+n+' بلۆکدا'):'هیچ شێوەیەکی هەڵە نەدۆزرایەوە');
+  if(n){
+    /* the names that were just changed leave the list; the list is not searched again */
+    glNames=glNames.filter(o=>{const f=glParse(o.w),k=glKey(f.name);return !keys.some(z=>z.k===k&&(!z.br||(f.br&&z.br[0]===f.br[0]&&z.br[1]===f.br[1])));});
+    glPick=[];glName.value='';glVars.value='';
+    glStripDraw(true);
+    glDetInfo.textContent=glNames.length?(glNames.length+' ناوی جیاواز ماوە. کرتەیان لەسەر بکە بۆ دیاریکردن'):'';
+  }
 };
 function glToggle(show){
   const on=show==null?glBox.classList.contains('se-hide'):show;
   if(on){repToggle(false);tmToggle(false);}
   glBox.classList.toggle('se-hide',!on);glOpen.classList.toggle('on',on);
-  if(on){glSel.clear();glNames=[];glPick=[];glClearForm();glStripDraw(false);glDetInfo.textContent='';glDraw();}
+  if(on){glNames=[];glPick=[];glName.value='';glVars.value='';glStripDraw(false);glDetInfo.textContent='';}
 }
 glOpen.onclick=()=>glToggle();
 $('seGlX').onclick=()=>glToggle(false);
